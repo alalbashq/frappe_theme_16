@@ -43,12 +43,19 @@ def get_context(context):
 	lang = "ar" if (frappe.local.lang or "").startswith("ar") else "en"
 	context.awl = frappe._dict(WORDS[lang])
 	context.awl.lang = lang
-	context.awl.version = advanced_workspace.__version__
+	context.awl.version = asset_version()
 	context.awl.logo = logo_on_disk(context.get("logo"))
 	# Frappe's own heading asks for the logo too; a missing file is not requested at all
 	context.logo = context.awl.logo or ""
 	context.awl.year = frappe.utils.getdate().year
 	return out
+
+
+def asset_version():
+	"""Changes whenever the page's stylesheet or script does, so browsers never keep an old one."""
+	public = os.path.join(os.path.dirname(advanced_workspace.__file__), "public")
+	stamps = [os.path.getmtime(os.path.join(public, path)) for path in ("css/login.css", "js/login_stage.js")]
+	return f"{advanced_workspace.__version__}-{int(max(stamps))}"
 
 
 def logo_on_disk(url):
