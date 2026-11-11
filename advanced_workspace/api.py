@@ -201,6 +201,7 @@ def module_figures(key, company, part=None):
 		out["kpis"] = [card for card in (figures.kpi(spec) for spec in module["kpis"]) if card]
 	if part in (None, "lists"):
 		out["docs"] = figures.documents(module)
+		out["queue"] = figures.queue(module, out["docs"])
 		out["recent"] = figures.recent(module)
 	return out
 
@@ -275,32 +276,47 @@ class Figures:
 		return income - expense
 
 	def kpi(self, spec):
-		today = nowdate()
-		month_start = get_first_day(today)
-		last_start = add_months(month_start, -1)
-		last_end = add_days(month_start, -1)
-		year_start = getdate(today).replace(month=1, day=1)
+		"""A figure for the year to date, this month against last, and its last twelve months."""
+		today = getdate(nowdate())
+		months = last_months(today)
+		this, before = months[-1], months[-2]
 		money = spec["k"] != "count"
 		if spec["k"] == "gl":
 			if not can_read("GL Entry") or not self.company:
 				return None
-			now, before = getdate(today), getdate(last_start)
 			route = ["query-report", "General Ledger"]
-			value = self.gl_value(spec["root"], [(now.year, m) for m in range(1, now.month + 1)])
 			if spec["root"] == "Cash":
-				return card(spec, value, money, None, None, route)
-			current = self.gl_value(spec["root"], [(now.year, now.month)])
-			previous = self.gl_value(spec["root"], [(before.year, before.month)])
-			return card(spec, value, money, current, previous, route)
+				return card(spec, self.gl_value("Cash", []), money, None, None, route)
+			value = self.gl_value(spec["root"], [(today.year, m) for m in range(1, today.month + 1)])
+			series = [self.gl_value(spec["root"], [month]) for month in months]
+			return card(spec, value, money, series[-1], series[-2], route, series)
 		if not can_read(spec["dt"]):
 			return None
 		route = ["List", spec["dt"]]
 		if not spec.get("d"):
 			return card(spec, self.measure(spec, None, None), money, None, None, route)
-		value = self.measure(spec, year_start, today)
-		current = self.measure(spec, month_start, today)
-		previous = self.measure(spec, last_start, last_end)
-		return card(spec, value, money, current, previous, route)
+		by_month = self.monthly(spec, months[0], today)
+		series = [by_month.get(month, 0) for month in months]
+		value = sum(v for (y, _m), v in by_month.items() if y == today.year)
+		return card(spec, value, money, by_month.get(this, 0), by_month.get(before, 0), route, series)
+
+	def monthly(self, spec, first, today):
+		"""Sum or count per month from the first month on, in one grouped read that
+		keeps the user's permissions."""
+		doctype = spec["dt"]
+		filters = dict(spec.get("w") or {})
+		if self.company and frappe.get_meta(doctype).has_field("company"):
+			filters["company"] = self.company
+		filters[spec["d"]] = ["between", [f"{first[0]}-{first[1]:02d}-01", str(today)]]
+		value = {"SUM": spec["f"], "as": "v"} if spec.get("f") else {"COUNT": "name", "as": "v"}
+		rows = frappe.get_list(
+			doctype,
+			filters=filters,
+			fields=[{"YEAR": spec["d"], "as": "y"}, {"MONTH": spec["d"], "as": "m"}, value],
+			group_by="y, m",
+			order_by="y asc, m asc",
+		)
+		return {(int(row.y), int(row.m)): flt(row.v) for row in rows}
 
 	def doctypes(self, module):
 		"""The module's own documents this user can read, once each, in menu order."""
@@ -336,6 +352,31 @@ class Figures:
 			out[doctype] = row
 		return out
 
+	def queue(self, module, docs):
+		"""What waits for someone: invoices past their due date, those due within a
+		week, and drafts awaiting approval."""
+		today = nowdate()
+		week = add_days(today, 7)
+		late, soon, drafts = [], [], []
+		for doctype in self.doctypes(module):
+			meta = frappe.get_meta(doctype)
+			if docs.get(doctype, {}).get("drafts"):
+				drafts.append({"k": "draft", "dt": doctype, "c": docs[doctype]["drafts"]})
+			if not (meta.is_submittable and meta.has_field("outstanding_amount") and meta.has_field("due_date")):
+				continue
+			base = {"docstatus": 1, "outstanding_amount": [">", 0]}
+			if self.company and meta.has_field("company"):
+				base["company"] = self.company
+			for bucket, kind, due in ((late, "late", ["<", today]), (soon, "soon", ["between", [today, week]])):
+				row = frappe.get_list(
+					doctype,
+					filters={**base, "due_date": due},
+					fields=[{"COUNT": "name", "as": "c"}, {"SUM": "outstanding_amount", "as": "v"}],
+				)
+				if row and row[0].c:
+					bucket.append({"k": kind, "dt": doctype, "c": int(row[0].c), "v": flt(row[0].v), "today": today, "week": week})
+		return late + soon + drafts
+
 	def recent(self, module, limit=8):
 		"""The latest documents of the module, newest first. By creation, which every
 		table indexes: sorting a large one by its last change took seconds."""
@@ -343,7 +384,15 @@ class Figures:
 		for doctype in self.doctypes(module):
 			meta = frappe.get_meta(doctype)
 			title = meta.title_field if meta.title_field and meta.has_field(meta.title_field) else None
-			fields = ["name", "creation", "modified", "docstatus"] + ([title] if title else [])
+			party = next(
+				(f for f in (title, "customer_name", "supplier_name", "party_name", "employee_name", "title") if f and meta.has_field(f)),
+				None,
+			)
+			amount = next(
+				(f for f in ("grand_total", "paid_amount", "total_debit", "total_amount") if meta.has_field(f)), None
+			)
+			extra = [f for f in (party, amount, "currency", "status") if f and meta.has_field(f)]
+			fields = ["name", "creation", "modified", "docstatus", *dict.fromkeys(extra)]
 			filters = {"company": self.company} if self.company and meta.has_field("company") else {}
 			for row in frappe.get_list(
 				doctype, filters=filters, fields=fields, order_by="creation desc", limit_page_length=4
@@ -353,6 +402,10 @@ class Figures:
 						"dt": doctype,
 						"name": row.name,
 						"title": row.get(title) if title else None,
+						"party": row.get(party) if party else None,
+						"amount": flt(row.get(amount)) if amount else None,
+						"currency": row.get("currency") or None,
+						"status": row.get("status") or None,
 						"created": str(row.creation),
 						"modified": str(row.modified),
 						"ds": row.docstatus,
@@ -363,8 +416,18 @@ class Figures:
 		return rows[:limit]
 
 
-def card(spec, value, money, current, previous, route):
+def last_months(today):
+	"""The last twelve (year, month) pairs, oldest first, ending with this month."""
+	out, year, month = [], today.year, today.month
+	for _ in range(12):
+		out.append((year, month))
+		year, month = (year, month - 1) if month > 1 else (year - 1, 12)
+	return out[::-1]
+
+
+def card(spec, value, money, current, previous, route, series=None):
 	return {
+		"series": series,
 		"l": spec["l"],
 		"v": value,
 		"m": 1 if money else 0,

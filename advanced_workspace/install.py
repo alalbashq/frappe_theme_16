@@ -152,8 +152,23 @@ def seed_modules():
 		doc.insert(ignore_permissions=True)
 
 
+# What waits on the module home (unpaid invoices by due date) is a few hundred rows out
+# of a table that runs to hundreds of thousands; without this a full scan took seconds.
+INDEXES = {
+	"Sales Invoice": ["outstanding_amount", "due_date"],
+	"Purchase Invoice": ["outstanding_amount", "due_date"],
+}
+
+
+def ensure_indexes():
+	for doctype, columns in INDEXES.items():
+		if frappe.db.table_exists(doctype):
+			frappe.db.add_index(doctype, columns, index_name="aw_outstanding_due_index")
+
+
 def ensure_basics():
 	"""What every site needs, safe to run on each migrate: nothing a site changed is undone."""
+	ensure_indexes()
 	# rows from before the English column get it, never overwritten
 	for table in DOCTYPES[:3]:
 		for row in frappe.get_all(table, filters={"label_en": ["in", ["", None]]}, fields=["name", "label"]):

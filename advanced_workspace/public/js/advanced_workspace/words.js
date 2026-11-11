@@ -30,5 +30,16 @@ export const WORDS = {
 	"ملغى": "Cancelled",
 	"محفوظ": "Saved",
 	"لا توجد مستندات بعد.": "No documents yet.",
-	"لا جديد هذا الشهر": "Nothing new this month"
+	"لا جديد هذا الشهر": "Nothing new this month",
+	"نظرة عامة": "Overview",
+	"ما ينتظرك": "Waiting for you",
+	"متأخرة السداد": "overdue",
+	"تستحق خلال ٧ أيام": "due within 7 days",
+	"مسودات بانتظار الاعتماد": "drafts awaiting approval",
+	"لا شيء ينتظرك الآن": "Nothing is waiting for you",
+	"المستند": "Document",
+	"الطرف": "Party",
+	"القيمة": "Amount",
+	"الحالة": "Status",
+	"منذ": "When"
 };

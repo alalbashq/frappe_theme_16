@@ -144,61 +144,83 @@ function run(scope) {
 		});
 	}
 
-	// A module's home, after the role centres of Business Central and SAP Fiori: figures that
-	// keep their width, then every document with its numbers and a way to make one, and what
-	// was made last. Every number opens the list behind it.
+	// A module's home. After Stripe, Ramp and the Business Central role centre: one panel of
+	// figures led by the module's first, each with its last twelve months; what waits for
+	// someone; the latest documents in a dense table; then every document with a way to make
+	// one. Colour is kept for status. Every number opens the list behind it.
 	const DOC_TYPES = ["dt", "tree", "page"];
+	const label = (mod, doctype) => (mod.items.find((item) => item.n === doctype) || {}).l || __(doctype);
+	const full = (value) => Number(value || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
+	// The lead figure takes the first column over every row; the rest fill up to three
+	// columns beside it, and blank cells close the last row so no gap shows.
+	const grid = (n) => {
+		const others = Math.max(n - 1, 0);
+		// up to four in one row; past that, three or four columns, whichever leaves fewer blanks
+		let cols = Math.max(Math.min(others, 4), 1);
+		if (others > 4) {
+			const blanksFor = (c) => Math.ceil(others / c) * c - others;
+			cols = blanksFor(4) < blanksFor(3) ? 4 : 3;
+		}
+		const rows = Math.max(1, Math.ceil(others / cols));
+		return { cols, rows, blanks: others ? cols * rows - others : 0, odd: others % 2 === 1 };
+	};
+	const blanks = (count) => '<div class="aw-cell blank" aria-hidden="true"></div>'.repeat(count);
 
 	function layout(mod) {
 		const docs = mod.items.map((item, i) => [item, i]).filter(([item]) => DOC_TYPES.includes(item.t));
 		const links = mod.items.map((item, i) => [item, i]).filter(([item]) => !DOC_TYPES.includes(item.t));
+		const hasDocs = docs.some(([item]) => item.t === "dt");
 		const options = home.companies.map((c) => `<option>${esc(c)}</option>`).join("");
 		const tools = `<span class="aw-bar-tools"><small>${t("من بداية السنة")}</small>${
 			home.companies.length > 1 ? `<select data-company aria-label="${t("الشركة")}">${options}</select>` : ""
 		}<button data-refresh title="${t("تحديث")}" aria-label="${t("تحديث")}"><svg viewBox="0 0 24 24">${
 			ICONS.refresh
 		}</svg></button></span>`;
-		// Empty tiles of the final size, so nothing moves when the figures land.
-		const places = Array.from(
-			{ length: mod.n || 0 },
-			() => '<div class="aw-kpi is-wait" aria-hidden="true"><i></i><i></i></div>'
-		).join("");
-		const docRows = docs
+		// Cells of the final size, so nothing moves when the figures land.
+		const n = mod.n || 0;
+		const shape = grid(n);
+		const cells =
+			Array.from(
+				{ length: n },
+				(_, i) => `<div class="aw-cell is-wait${i === 0 ? " hero" : ""}" aria-hidden="true"><i></i><i></i></div>`
+			).join("") + blanks(shape.blanks);
+		const chips = docs
 			.map(
-				([item, i]) => `<div class="aw-doc" data-doc="${i}">
-        <button class="aw-doc-open" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span></button>
-        <span class="aw-month" data-month></span>
-        <span data-drafts-slot></span>
-        <span data-new-slot></span>
+				([item, i]) => `<div class="aw-chip" data-doc="${i}">
+        <button class="aw-chip-open" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span></button>
+        <small data-month></small><span data-new-slot></span>
       </div>`
 			)
 			.join("");
-		const linkRows = links
+		const reports = links
 			.map(
 				([item, i]) =>
-					`<button class="aw-link" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span></button>`
+					`<button class="aw-rep" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span></button>`
 			)
 			.join("");
 		main.innerHTML = `
-    <div class="aw-bar"><h2>${mod.n ? t("الإحصائيات") : t("المستندات")}</h2>${tools}</div>
-    ${mod.n ? `<div class="aw-kpis" data-kpis>${places}</div>` : ""}
-    <div class="aw-cols">
-      <section class="aw-sec">
-        ${mod.n && docs.length ? `<div class="aw-sec-head"><h2>${t("المستندات")}</h2></div>` : ""}
-        ${docs.length ? `<div class="aw-panel">${docRows}</div>` : ""}
-        ${
-			links.length
-				? `<div class="aw-sec-head aw-sub-head"><h2>${t("التقارير والصفحات")}</h2></div><div class="aw-links">${linkRows}</div>`
-				: ""
-		}
+    <div class="aw-bar"><h2>${t("نظرة عامة")}</h2>${tools}</div>
+    ${
+		n
+			? `<section class="aw-figs${n === 1 ? " solo" : ""}" data-figs style="--cols: ${shape.cols}; --rows: ${shape.rows}">${cells}</section>`
+			: ""
+	}
+    ${
+		hasDocs
+			? `<div class="aw-two">
+      <section class="aw-box">
+        <header><h2>${t("ما ينتظرك")}</h2><span class="aw-count-badge" data-queue-count hidden></span></header>
+        <div data-queue><div class="aw-none">${t("جارٍ التحميل")}</div></div>
       </section>
-      ${
-			docs.some(([item]) => item.t === "dt")
-				? `<aside class="aw-sec"><div class="aw-sec-head"><h2>${t("آخر المستندات")}</h2></div>
-        <div class="aw-panel" data-recent><div class="aw-none">${t("جارٍ التحميل")}</div></div></aside>`
-				: ""
-		}
-    </div>`;
+      <section class="aw-box aw-recent">
+        <header><h2>${t("آخر المستندات")}</h2></header>
+        <div data-recent><div class="aw-none">${t("جارٍ التحميل")}</div></div>
+      </section>
+    </div>`
+			: ""
+	}
+    ${docs.length ? `<h2 class="aw-sec-title">${t("المستندات")}</h2><div class="aw-chips">${chips}</div>` : ""}
+    ${links.length ? `<h2 class="aw-sec-title">${t("التقارير والصفحات")}</h2><div class="aw-reps">${reports}</div>` : ""}`;
 		const select = one("[data-company]");
 		if (select && company) select.value = company;
 		select?.addEventListener("change", (event) => {
@@ -210,83 +232,138 @@ function run(scope) {
 		all("[data-link]").forEach((el) => el.addEventListener("click", () => open(mod.items[el.dataset.link])));
 	}
 
+	// A line of the last twelve months, oldest first, with the area under it barely tinted.
+	function spark(series, tall) {
+		if (!series || series.length < 2 || !series.some((v) => v)) return "";
+		const w = 120;
+		const h = 32;
+		const top = Math.max(...series);
+		const low = Math.min(0, ...series);
+		const span = top - low || 1;
+		const points = series.map((v, i) => [(i / (series.length - 1)) * w, h - 3 - ((v - low) / span) * (h - 6)]);
+		const line = points.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+		const [lx, ly] = points[points.length - 1];
+		return `<svg class="aw-spark${tall ? " tall" : ""}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+      <polygon points="0,${h} ${line} ${w},${h}"/><polyline points="${line}"/>
+      <circle cx="${lx.toFixed(1)}" cy="${ly.toFixed(1)}" r="2.2"/></svg>`;
+	}
+
 	function amount(value, isMoney, currency) {
 		return `<span dir="ltr">${compact(value)}</span>${isMoney ? money(currency) : ""}`;
 	}
 
-	function tile(card, i, currency) {
+	function cell(card, i, currency) {
+		const hero = i === 0;
 		const dated = card.cur != null;
-		const top = Math.max(Math.abs(card.cur || 0), Math.abs(card.prev || 0)) || 1;
 		const delta =
 			card.delta == null
 				? ""
-				: `<span class="aw-delta ${card.delta < 0 ? "down" : ""}"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>${Math.abs(
+				: `<span class="aw-delta${card.delta < 0 ? " down" : ""}"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>${Math.abs(
 						card.delta
 				  )}%</span>`;
 		const compare = dated
-			? `<dl class="aw-compare">
-      <div><dt>${t("هذا الشهر")}</dt><dd>${amount(card.cur, false)}</dd></div>
-      <div><dt>${t("الشهر الماضي")}</dt><dd>${amount(card.prev || 0, false)}</dd></div>
-    </dl>
-    <div class="aw-meter" aria-hidden="true"><i class="past" style="width:${
-		(Math.abs(card.prev || 0) / top) * 100
-	}%"></i><i style="width:${(Math.abs(card.cur) / top) * 100}%"></i></div>`
+			? `<p class="aw-cmp"><span>${t("هذا الشهر")} <b dir="ltr">${compact(card.cur)}</b></span><span>${t(
+					"الشهر الماضي"
+			  )} <b dir="ltr">${compact(card.prev || 0)}</b></span></p>`
 			: "";
-		return `<button class="aw-kpi ${dated ? "" : "plain"}" data-kpi="${i}">
-    <div class="aw-kpi-label"><span>${esc(card.l)}</span>${delta}</div>
-    <div class="aw-kpi-value">${amount(card.v, card.m, currency)}</div>${compare}</button>`;
+		return `<button class="aw-cell${hero ? " hero" : ""}" data-kpi="${i}" title="${esc(card.l)}: ${full(card.v)}">
+      <span class="aw-cell-label"><span>${esc(card.l)}</span>${delta}</span>
+      <span class="aw-cell-value">${amount(card.v, card.m, currency)}</span>
+      ${spark(card.series, hero)}${compare}</button>`;
 	}
 
 	function paintKpis(mod, data) {
 		const select = one("[data-company]");
 		if (select && data.company) select.value = data.company;
-		const box = one("[data-kpis]");
+		const box = one("[data-figs]");
 		if (!box) return;
 		const cards = data.kpis || [];
+		const shape = grid(cards.length);
+		box.style.setProperty("--cols", shape.cols);
+		box.style.setProperty("--rows", shape.rows);
+		box.classList.toggle("solo", cards.length === 1);
+		box.classList.toggle("odd", shape.odd);
 		box.innerHTML = cards.length
-			? cards.map((card, i) => tile(card, i, data.currency)).join("")
+			? cards.map((card, i) => cell(card, i, data.currency)).join("") + blanks(shape.blanks)
 			: `<div class="aw-none">${t("لا توجد إحصائيات لهذا المديول.")}</div>`;
 		all("[data-kpi]").forEach((el) =>
 			el.addEventListener("click", () => frappe.set_route(...cards[el.dataset.kpi].route))
 		);
 	}
 
-	const STATUS = { 0: "مسودة", 1: "معتمد", 2: "ملغى" };
+	const QUEUE = {
+		late: { dot: "late", sub: "متأخرة السداد" },
+		soon: { dot: "soon", sub: "تستحق خلال ٧ أيام" },
+		draft: { dot: "draft", sub: "مسودات بانتظار الاعتماد" },
+	};
+	const STATUS_TONE = {
+		Paid: "ok", Completed: "ok", Submitted: "ok", Closed: "ok", Delivered: "ok", "To Bill": "ok",
+		Unpaid: "warn", "Partly Paid": "warn", "To Deliver and Bill": "warn", "To Deliver": "warn",
+		"To Receive and Bill": "warn", "To Receive": "warn", "Partially Paid": "warn",
+		Overdue: "bad", Cancelled: "bad", "Overdue and Discounted": "bad",
+		Draft: "draft", Return: "plain", "Credit Note Issued": "plain", "Debit Note Issued": "plain",
+	};
+
+	function queueRoute(row) {
+		if (row.k === "draft") return frappe.set_route("List", row.dt, { docstatus: 0 });
+		frappe.route_options = {
+			docstatus: 1,
+			outstanding_amount: [">", 0],
+			due_date: row.k === "late" ? ["<", row.today] : ["between", [row.today, row.week]],
+		};
+		frappe.set_route("List", row.dt);
+	}
 
 	function paintLists(mod, data) {
 		const docs = data.docs || {};
-		all("[data-doc]").forEach((row) => {
-			const item = mod.items[row.dataset.doc];
+		all("[data-doc]").forEach((chip) => {
+			const item = mod.items[chip.dataset.doc];
 			const figures = docs[item.n];
 			if (!figures) return;
-			const month = row.querySelector("[data-month]");
-			// a quiet line when nothing moved, so the rows that did stand out
-			month.innerHTML =
+			chip.querySelector("[data-month]").innerHTML =
 				figures.cur || figures.prev
-					? `<b dir="ltr">${figures.cur.toLocaleString("en-US")}</b><small>${t(
-							"هذا الشهر"
-					  )} · ${figures.prev.toLocaleString("en-US")} ${t("الشهر الماضي")}</small>`
-					: `<small class="quiet">${t("لا جديد هذا الشهر")}</small>`;
-			month.title = t("هذا الشهر");
-			if (figures.drafts) {
-				row.querySelector("[data-drafts-slot]").innerHTML = `<button class="aw-pill" data-drafts>${figures.drafts.toLocaleString(
-					"en-US"
-				)} ${t("مسودة")}</button>`;
-				row.querySelector("[data-drafts]").addEventListener("click", () =>
-					frappe.set_route("List", item.n, { docstatus: 0 })
-				);
-			}
+					? `<b dir="ltr">${figures.cur.toLocaleString("en-US")}</b> ${t("هذا الشهر")}`
+					: t("لا جديد هذا الشهر");
 			if (figures.new) {
-				row.querySelector("[data-new-slot]").innerHTML = `<button class="aw-new" data-new>${icon("plus")}<span>${t(
+				chip.querySelector("[data-new-slot]").innerHTML = `<button class="aw-plus" data-new title="${t(
 					"جديد"
-				)}</span></button>`;
-				row.querySelector("[data-new]").addEventListener("click", () => frappe.new_doc(item.n));
+				)}: ${esc(item.l)}" aria-label="${t("جديد")}: ${esc(item.l)}">${icon("plus")}</button>`;
+				chip.querySelector("[data-new]").addEventListener("click", () => frappe.new_doc(item.n));
 			}
 		});
-		const box = one("[data-recent]");
-		if (!box) return;
+
+		// a server not yet restarted sends no queue: its drafts stand in for it
+		const queue =
+			data.queue ||
+			Object.entries(docs)
+				.filter(([, figures]) => figures.drafts)
+				.map(([doctype, figures]) => ({ k: "draft", dt: doctype, c: figures.drafts })) ||
+			[];
+		const queueBox = one("[data-queue]");
+		if (queueBox) {
+			const badge = one("[data-queue-count]");
+			const total = queue.reduce((sum, row) => sum + row.c, 0);
+			badge.hidden = !total;
+			badge.textContent = total.toLocaleString("en-US");
+			queueBox.innerHTML = queue.length
+				? queue
+						.map(
+							(row, i) => `<button class="aw-q" data-q="${i}">
+            <i class="aw-dot ${QUEUE[row.k].dot}"></i>
+            <b class="aw-q-count" dir="ltr">${row.c.toLocaleString("en-US")}</b>
+            <span class="aw-q-text"><span>${esc(label(mod, row.dt))}</span><small>${t(QUEUE[row.k].sub)}</small></span>
+            ${row.v ? `<span class="aw-q-amount">${amount(row.v, true, data.currency)}</span>` : ""}
+            <svg class="aw-q-go" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+          </button>`
+						)
+						.join("")
+				: `<div class="aw-clear">${icon("check")}<span>${t("لا شيء ينتظرك الآن")}</span></div>`;
+			all("[data-q]").forEach((el) => el.addEventListener("click", () => queueRoute(queue[el.dataset.q])));
+		}
+
+		const recentBox = one("[data-recent]");
+		if (!recentBox) return;
 		const recent = data.recent || [];
-		const label = (doctype) => (mod.items.find((item) => item.n === doctype) || {}).l || __(doctype);
 		const when = (value) => {
 			try {
 				return frappe.datetime.prettyDate ? frappe.datetime.prettyDate(value) : window.prettyDate(value);
@@ -294,27 +371,32 @@ function run(scope) {
 				return value.slice(0, 10);
 			}
 		};
-		box.innerHTML = recent.length
-			? recent
-					.map((row, i) => {
-						const state = row.ds === 0 && !row.sub ? "محفوظ" : STATUS[row.ds];
-						return `<button class="aw-act" data-act="${i}">
-          <span class="aw-act-main"><b>${esc(row.title || row.name)}</b><small>${esc(label(row.dt))} · <span dir="ltr">${esc(
-							row.name
-						)}</span></small></span>
-          <span class="aw-act-side"><i class="aw-st s${row.ds}${row.ds === 0 && !row.sub ? " saved" : ""}">${t(
-							state
-						)}</i><small>${esc(when(row.created))}</small></span>
-        </button>`;
-					})
-					.join("")
+		const state = (row) => {
+			const name = row.status || (row.ds === 2 ? "Cancelled" : row.ds === 0 ? "Draft" : "Submitted");
+			// some translations carry direction marks the font has no glyph for
+			const text = __(name).replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, "");
+			return `<i class="aw-st ${STATUS_TONE[name] || "plain"}">${esc(text)}</i>`;
+		};
+		recentBox.innerHTML = recent.length
+			? `<table class="aw-table"><thead><tr>
+          <th>${t("المستند")}</th><th>${t("الطرف")}</th><th class="num">${t("القيمة")}</th><th>${t("الحالة")}</th><th>${t("منذ")}</th>
+        </tr></thead><tbody>${recent
+			.map(
+				(row, i) => `<tr data-act="${i}" tabindex="0">
+          <td><b dir="ltr">${esc(row.name)}</b><small>${esc(label(mod, row.dt))}</small></td>
+          <td class="party">${esc(row.party || row.title || "")}</td>
+          <td class="num">${row.amount != null ? amount(row.amount, true, row.currency || data.currency) : ""}</td>
+          <td>${state(row)}</td>
+          <td class="when">${esc(when(row.created))}</td>
+        </tr>`
+			)
+			.join("")}</tbody></table>`
 			: `<div class="aw-none">${t("لا توجد مستندات بعد.")}</div>`;
-		all("[data-act]").forEach((el) =>
-			el.addEventListener("click", () => {
-				const row = recent[el.dataset.act];
-				frappe.set_route("Form", row.dt, row.name);
-			})
-		);
+		all("[data-act]").forEach((el) => {
+			const go = () => frappe.set_route("Form", recent[el.dataset.act].dt, recent[el.dataset.act].name);
+			el.addEventListener("click", go);
+			el.addEventListener("keydown", (event) => event.key === "Enter" && go());
+		});
 	}
 
 	const CACHE_MS = 5 * 60 * 1000;
@@ -329,7 +411,7 @@ function run(scope) {
 		}
 	}
 
-	// The documents come back at once; the figures can take seconds on a large ledger,
+	// The lists come back at once; the figures can take seconds on a large ledger,
 	// so the two are asked for side by side and each paints when it lands.
 	async function load(mod, part, paint, fresh, mine) {
 		const saved = !fresh && cached(mod, part);
@@ -344,8 +426,11 @@ function run(scope) {
 			if (mine === request) paint(mod, data);
 		} catch (error) {
 			if (mine !== request) return;
-			const box = one(part === "kpis" ? "[data-kpis]" : "[data-recent]");
-			if (box) box.innerHTML = `<div class="aw-none">${t("تعذر التحميل. أعد فتح المديول.")}</div>`;
+			const boxes = part === "kpis" ? ["[data-figs]"] : ["[data-queue]", "[data-recent]"];
+			boxes.forEach((selector) => {
+				const box = one(selector);
+				if (box) box.innerHTML = `<div class="aw-none">${t("تعذر التحميل. أعد فتح المديول.")}</div>`;
+			});
 		}
 	}
 
