@@ -6,11 +6,11 @@ Photographs from Pexels, under the Pexels License (free to use, no attribution r
 - accessories: https://www.pexels.com/photo/display-of-jewelry-20858959/
 - market: https://www.pexels.com/photo/vibrant-supermarket-aisles-with-products-32550092/
 - route: https://www.pexels.com/photo/parcels-inside-a-delivery-van-6170458/
-- people: https://www.pexels.com/photo/7984733/
+- people: https://www.pexels.com/photo/smiling-man-in-traditional-clothing-holding-smartphone-5416859/
 - store: https://www.pexels.com/photo/4483610/
 - make: https://www.pexels.com/photo/factory-production-line-13974251/
 - tailor: https://www.pexels.com/photo/a-person-holding-a-fabric-7998224/
-- crm: https://www.pexels.com/photo/8939053/
+- crm: https://www.pexels.com/photo/5416860/
 
 License: https://www.pexels.com/license/
 
