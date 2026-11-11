@@ -25,8 +25,8 @@ export function mount() {
 	document.body.appendChild(host);
 	const scope = host.attachShadow({ mode: "open" });
 	scope.innerHTML = `<style>${CSS}</style>${HTML}`;
-	// Kept for this user on this browser: a new tab or a restart keeps the frame.
-	localStorage.setItem(`advanced_workspace_shell:${frappe.session.user}`, "1");
+	// Left by earlier versions, which kept the frame for anyone who had opened it once.
+	localStorage.removeItem(`advanced_workspace_shell:${frappe.session.user}`);
 	document.head.appendChild(pageStyle());
 	document.documentElement.classList.add("aw-on");
 	run(scope);

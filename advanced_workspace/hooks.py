@@ -8,6 +8,9 @@ app_license = "mit"
 # The workspace frame, its start on /desk and its font: on every Desk page
 app_include_js = ["advanced_workspace.bundle.js"]
 
+# whether this user gets the workspace design, decided on the server
+boot_session = "advanced_workspace.boot.boot_session"
+
 before_install = "advanced_workspace.install.before_install"
 after_install = "advanced_workspace.install.after_install"
 after_migrate = "advanced_workspace.install.after_migrate"

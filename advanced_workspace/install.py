@@ -23,6 +23,8 @@ STAT_TYPES = {"sum": "Sum", "count": "Count", "gl": "Ledger"}
 
 def before_install():
 	adopt_package()
+	# the workspace record names this role, and is synced before after_install runs
+	access.ensure_role(access.ADVANCED_ROLE)
 
 
 def after_install():

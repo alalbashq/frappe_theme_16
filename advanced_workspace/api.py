@@ -11,12 +11,15 @@ from frappe import _
 from frappe.utils import add_days, add_months, flt, get_first_day, getdate, nowdate
 
 MODULE_DT = "Advanced Workspace Module"
+ADVANCED_ROLE = "مستخدم مساحة العمل المتقدمة"
 ITEM_TYPES = {"DocType": "dt", "Tree": "tree", "Report": "rp", "Page": "page", "Link": "url"}
 
 
 @frappe.whitelist()
 def home(action=None, key=None, company=None, lang=None):
 	if frappe.session.user == "Guest" or frappe.get_cached_value("User", frappe.session.user, "user_type") != "System User":
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+	if ADVANCED_ROLE not in frappe.get_roles():
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 	if action == "home":
 		profile = frappe.db.get_value("User", frappe.session.user, ["full_name", "user_image"], as_dict=True)
@@ -165,6 +168,9 @@ def visible_modules():
 
 
 def companies():
+	# a user who cannot read companies still gets the menu, without the company picker
+	if not frappe.has_permission("Company", "read"):
+		return []
 	return frappe.get_list("Company", pluck="name", order_by="name asc", limit_page_length=50)
 
 

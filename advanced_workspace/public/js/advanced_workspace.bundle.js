@@ -1,22 +1,17 @@
-// Loaded on every Desk page. Holders of the workspace role, and whoever has opened the
-// workspace on this browser, get its frame on any route, a reload or a new tab included.
-import { isHome, mount } from "./advanced_workspace/shell";
+// Loaded on every Desk page. The server decides at boot who gets the workspace design:
+// the workspace role and a module to see. Everyone else keeps Frappe's own Desk.
+import { mount } from "./advanced_workspace/shell";
 
-const ROLE = "مستخدم مساحة العمل المتقدمة";
-const roles = () => (frappe.boot && frappe.boot.user && frappe.boot.user.roles) || [];
+const on = () => Boolean(frappe.boot && frappe.boot.advanced_workspace);
 
 // Before the router starts, so Frappe's own desktop never flashes on /desk.
 (function () {
 	const path = window.location.pathname.replace(/\/$/, "");
-	if (path === "/desk" && roles().includes(ROLE)) {
+	if (path === "/desk" && on()) {
 		window.history.replaceState(null, "", "/desk/advanced-workspace");
 	}
 })();
 
 $(document).on("app_ready", () => {
-	const seen = localStorage.getItem(`advanced_workspace_shell:${frappe.session.user}`);
-	if (seen || roles().includes(ROLE) || isHome()) mount();
-	frappe.router.on("change", () => {
-		if (isHome()) mount();
-	});
+	if (on()) mount();
 });

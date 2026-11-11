@@ -24,6 +24,19 @@ MANAGER = {
 }
 
 
+def workspace_on(user=None):
+	"""Whether the user gets the workspace design: the workspace role and at least one module to see.
+
+	Everyone else keeps Frappe's own Desk, untouched.
+	"""
+	user = user or frappe.session.user
+	if user == "Guest" or ADVANCED_ROLE not in frappe.get_roles(user):
+		return False
+	from advanced_workspace.api import visible_modules
+
+	return bool(visible_modules())
+
+
 def ensure_role(name):
 	if not frappe.db.exists("Role", name):
 		frappe.get_doc({"doctype": "Role", "role_name": name, "desk_access": 1}).insert(ignore_permissions=True)
