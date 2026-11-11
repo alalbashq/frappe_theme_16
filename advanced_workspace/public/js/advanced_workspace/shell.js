@@ -79,6 +79,7 @@ function run(scope) {
 	const CHEVRON = '<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
 	const icon = (name) => `<svg viewBox="0 0 24 24">${ICONS[name] || ICONS.box}</svg>`;
 	const KIND_ICONS = { dt: "doc", tree: "tree", page: "window", rp: "chart", url: "link" };
+	const KIND_WORDS = { tree: "شجرة", page: "صفحة", rp: "تقرير", url: "رابط" };
 	const api = (args) => frappe.xcall("advanced_workspace.api.home", args);
 
 	let home = null;
@@ -204,10 +205,12 @@ function run(scope) {
       </div>`
 			)
 			.join("");
-		const moreRows = more
+		const tiles = more
 			.map(
-				([item, i]) =>
-					`<button class="aw-mr" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span><svg class="aw-go" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>`
+				([item, i]) => `<button class="aw-tile" data-link="${i}">
+        <span class="aw-tile-ico">${icon(KIND_ICONS[item.t])}</span>
+        <span class="aw-tile-text"><b>${esc(item.l)}</b><small>${t(KIND_WORDS[item.t] || "رابط")}</small></span>
+        <svg class="aw-go" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>`
 			)
 			.join("");
 		main.innerHTML = `
@@ -224,20 +227,17 @@ function run(scope) {
 			: ""
 	}
     ${
-		docs.length || more.length
-			? `<div class="aw-lower${docs.length ? "" : " only-more"}">
-      ${
-			docs.length
-				? `<section class="aw-sheet aw-recent"><header><h2>${t("آخر المستندات")}</h2></header>
-        <div data-recent><div class="aw-none">${t("جارٍ التحميل")}</div></div></section>`
-				: ""
-		}
-      ${
-			more.length
-				? `<section class="aw-sheet aw-more"><header><h2>${t("التقارير والصفحات")}</h2></header><div>${moreRows}</div></section>`
-				: ""
-		}
-    </div>`
+		more.length
+			? `<div class="aw-bar aw-bar-sub"><h2>${t("التقارير والصفحات")}</h2></div>
+    <section class="aw-tiles" style="--tcols: ${docColumns(more.length)}">${tiles}</section>`
+			: ""
+	}
+    ${
+		docs.length
+			? `<section class="aw-panel">
+      <header class="aw-panel-head"><div><h2>${t("آخر المستندات")}</h2><p data-recent-sub>${t("جارٍ التحميل")}</p></div></header>
+      <div class="aw-items" data-recent></div>
+    </section>`
 			: ""
 	}`;
 		const select = one("[data-company]");
@@ -382,37 +382,95 @@ function run(scope) {
 			attn.textContent = `${total.toLocaleString("en-US")} ${t("بانتظار إجراء")}`;
 		}
 
-		const recentBox = one("[data-recent]");
-		if (!recentBox) return;
-		const recent = data.recent || [];
-		const when = (value) => {
-			try {
-				return frappe.datetime.prettyDate ? frappe.datetime.prettyDate(value) : window.prettyDate(value);
-			} catch (error) {
-				return value.slice(0, 10);
-			}
-		};
-		const state = (row) => {
-			const name = row.status || (row.ds === 2 ? "Cancelled" : row.ds === 0 ? "Draft" : "Submitted");
-			// some translations carry direction marks the font has no glyph for
-			const text = __(name).replace(/[‎‏‪-‮⁦-⁩]/g, "");
-			return { tone: STATUS_TONE[name] || "plain", text };
-		};
-		recentBox.innerHTML = recent.length
-			? recent
-					.map((row, i) => {
-						const s = state(row);
-						return `<button class="aw-rr" data-act="${i}">
-          <i class="aw-sdot ${s.tone}" title="${esc(s.text)}"></i>
-          <span class="aw-rr-doc"><b><span dir="ltr">${esc(row.name)}</span></b><small>${esc(label(mod, row.dt))} · ${esc(s.text)}</small></span>
-          <span class="aw-rr-party">${esc(row.party || row.title || "")}</span>
-          <span class="aw-rr-amount">${row.amount != null ? amount(row.amount, true, row.currency || data.currency) : ""}</span>
-          <span class="aw-rr-when">${esc(when(row.created))}</span>
-        </button>`;
-					})
-					.join("")
-			: `<div class="aw-none">${t("لا توجد مستندات بعد.")}</div>`;
-		all("[data-act]").forEach((el) =>
+		paintRecent(mod, data);
+	}
+
+	// The latest documents: the last ten, each a small card of its own, with who it was with,
+	// what and when, the amount signed by which way the money went, and its state as a badge.
+	const RECENT_LIMIT = 10;
+	const LOCALE = LANG === "ar" ? "ar-SA-u-nu-latn-ca-gregory" : "en-GB";
+	const atTime = new Intl.DateTimeFormat(LOCALE, { hour: "numeric", minute: "2-digit" });
+	const onWeekday = new Intl.DateTimeFormat(LOCALE, { weekday: "long" });
+	const onDate = new Intl.DateTimeFormat(LOCALE, { day: "numeric", month: "long" });
+	const onDateYear = new Intl.DateTimeFormat(LOCALE, { day: "numeric", month: "long", year: "numeric" });
+	const dateOf = (value) => new Date(String(value).replace(" ", "T").slice(0, 19));
+	function whenText(date) {
+		const today = new Date();
+		const start = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+		const days = Math.round((start(today) - start(date)) / 86400000);
+		const time = atTime.format(date);
+		if (days === 0) return `${t("اليوم")} ${time}`;
+		if (days === 1) return `${t("أمس")} ${time}`;
+		if (days > 1 && days < 7) return `${onWeekday.format(date)} ${time}`;
+		return (date.getFullYear() === today.getFullYear() ? onDate : onDateYear).format(date);
+	}
+	// some translations carry direction marks or pictographs the font has no glyph for
+	const plainText = (text) =>
+		String(text)
+			.replace(/[‎‏‪-‮⁦-⁩]/g, "")
+			.replace(/\p{Extended_Pictographic}|️/gu, "")
+			.trim();
+	// two letters for the avatar: the first of each of two words, or the first two of one
+	function initials(text) {
+		const words = plainText(text).split(/\s+/).filter(Boolean);
+		if (!words.length) return "";
+		const pair = words.length > 1 ? [...words[0]][0] + [...words[1]][0] : [...words[0]].slice(0, 2).join("");
+		return pair;
+	}
+	const PILL_ICON = {
+		ok: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.6 2.6L16 9.5"/></svg>',
+		bad: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>',
+		warn: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+		draft: '<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>',
+		plain: '<i class="dot"></i>',
+	};
+	const documentsWord = (n) =>
+		n === 1 ? t("مستند واحد") : n === 2 ? t("مستندان") : `${n.toLocaleString("en-US")} ${t("مستندات")}`;
+
+	function recentItem(mod, row, i, currency) {
+		const name = row.status || (row.ds === 2 ? "Cancelled" : row.ds === 0 ? "Draft" : "Submitted");
+		const tone = STATUS_TONE[name] || "plain";
+		const kind = label(mod, row.dt);
+		const party = plainText(row.party || row.title || "");
+		const value = row.amount;
+		const negative = value != null && value < 0;
+		const sign = row.flow === "in" ? "+" : negative || row.flow === "out" ? "−" : "";
+		const tint = row.flow === "in" ? "in" : negative || row.flow === "back" ? "back" : "";
+		return `<button class="aw-item" data-act="${i}" title="${esc(kind)} ${esc(row.name)}">
+        <span class="aw-item-ava ${row.flow || ""}" aria-hidden="true">${esc(initials(party || kind))}</span>
+        <span class="aw-item-main">
+          <b>${esc(party || kind)}</b>
+          <small>${party ? `${esc(kind)} · ` : ""}<span class="aw-item-no"><span dir="ltr">${esc(row.name)}</span> · </span>${esc(
+						whenText(dateOf(row.created))
+					)}</small>
+        </span>
+        ${
+					value != null
+						? `<span class="aw-item-amt ${tint}"><span dir="ltr">${sign}${full(Math.abs(value))}</span>${money(row.currency || currency)}</span>`
+						: ""
+				}
+        <span class="aw-pill ${tone}">${PILL_ICON[tone]}<span>${esc(plainText(__(name)))}</span></span>
+        <svg class="aw-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>`;
+	}
+
+	function paintRecent(mod, data) {
+		const box = one("[data-recent]");
+		if (!box) return;
+		const recent = (data.recent || []).slice(0, RECENT_LIMIT);
+		const sub = one("[data-recent-sub]");
+		if (!recent.length) {
+			if (sub) sub.textContent = t("لا شيء بعد");
+			box.innerHTML = `<div class="aw-empty">
+          <svg viewBox="0 0 24 24"><path d="M3 13l2.5-7.5A2 2 0 0 1 7.4 4h9.2a2 2 0 0 1 1.9 1.5L21 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/></svg>
+          <b>${t("لا توجد مستندات بعد")}</b><p>${t("أول ما تسجّل مستندًا في هذا القسم يظهر هنا.")}</p></div>`;
+			box.style.removeProperty("--rows");
+			return;
+		}
+		if (sub) sub.textContent = `${documentsWord(recent.length)} · ${t("أحدثها")} ${whenText(dateOf(recent[0].created))}`;
+		box.style.setProperty("--rows", Math.ceil(recent.length / 2));
+		box.innerHTML = recent.map((row, i) => recentItem(mod, row, i, data.currency)).join("");
+		box.querySelectorAll("[data-act]").forEach((el) =>
 			el.addEventListener("click", () => frappe.set_route("Form", recent[el.dataset.act].dt, recent[el.dataset.act].name))
 		);
 	}

@@ -43,5 +43,18 @@ export const WORDS = {
 	"الحالة": "Status",
 	"منذ": "When",
 	"مسودة بانتظار الاعتماد": "drafts awaiting approval",
-	"بانتظار إجراء": "need action"
+	"بانتظار إجراء": "need action",
+	"شجرة": "Tree",
+	"صفحة": "Page",
+	"تقرير": "Report",
+	"رابط": "Link",
+	"مستند واحد": "1 document",
+	"مستندان": "2 documents",
+	"مستندات": "documents",
+	"أحدثها": "newest",
+	"لا شيء بعد": "Nothing yet",
+	"لا توجد مستندات بعد": "No documents yet",
+	"أول ما تسجّل مستندًا في هذا القسم يظهر هنا.": "Documents made in this section show up here.",
+	"اليوم": "Today",
+	"أمس": "Yesterday"
 };

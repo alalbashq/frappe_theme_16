@@ -276,29 +276,52 @@ class Figures:
 		return income - expense
 
 	def kpi(self, spec):
-		"""A figure for the year to date, this month against last, and its last twelve months."""
+		"""A figure for the year to date, this month against last, and its last twelve months.
+		Its route opens the list or report behind it with the same conditions applied."""
 		today = getdate(nowdate())
 		months = last_months(today)
 		this, before = months[-1], months[-2]
+		year_start, year_end = f"{today.year}-01-01", str(today)
 		money = spec["k"] != "count"
 		if spec["k"] == "gl":
 			if not can_read("GL Entry") or not self.company:
 				return None
-			route = ["query-report", "General Ledger"]
 			if spec["root"] == "Cash":
+				route = ["query-report", "General Ledger", {"company": self.company, "from_date": year_start, "to_date": year_end}]
 				return card(spec, self.gl_value("Cash", []), money, None, None, route)
+			route = [
+				"query-report",
+				"Profit and Loss Statement",
+				{
+					"company": self.company,
+					"filter_based_on": "Date Range",
+					"period_start_date": year_start,
+					"period_end_date": year_end,
+					"periodicity": "Monthly",
+				},
+			]
 			value = self.gl_value(spec["root"], [(today.year, m) for m in range(1, today.month + 1)])
 			series = [self.gl_value(spec["root"], [month]) for month in months]
 			return card(spec, value, money, series[-1], series[-2], route, series)
 		if not can_read(spec["dt"]):
 			return None
-		route = ["List", spec["dt"]]
+		route = ["List", spec["dt"], self.list_filters(spec, year_start, year_end)]
 		if not spec.get("d"):
 			return card(spec, self.measure(spec, None, None), money, None, None, route)
 		by_month = self.monthly(spec, months[0], today)
 		series = [by_month.get(month, 0) for month in months]
 		value = sum(v for (y, _m), v in by_month.items() if y == today.year)
 		return card(spec, value, money, by_month.get(this, 0), by_month.get(before, 0), route, series)
+
+	def list_filters(self, spec, start, end):
+		"""What the list behind a card shows: the card's own conditions, the company,
+		and the year so far when the card is dated."""
+		filters = dict(spec.get("w") or {})
+		if self.company and frappe.get_meta(spec["dt"]).has_field("company"):
+			filters["company"] = self.company
+		if spec.get("d"):
+			filters[spec["d"]] = ["Between", [start, end]]
+		return filters
 
 	def monthly(self, spec, first, today):
 		"""Sum or count per month from the first month on, in one grouped read that
@@ -377,7 +400,7 @@ class Figures:
 					bucket.append({"k": kind, "dt": doctype, "c": int(row[0].c), "v": flt(row[0].v), "today": today, "week": week})
 		return late + soon + drafts
 
-	def recent(self, module, limit=8):
+	def recent(self, module, limit=10):
 		"""The latest documents of the module, newest first. By creation, which every
 		table indexes: sorting a large one by its last change took seconds."""
 		rows = []
@@ -391,11 +414,11 @@ class Figures:
 			amount = next(
 				(f for f in ("grand_total", "paid_amount", "total_debit", "total_amount") if meta.has_field(f)), None
 			)
-			extra = [f for f in (party, amount, "currency", "status") if f and meta.has_field(f)]
+			extra = [f for f in (party, amount, "currency", "status", "payment_type", "is_return") if f and meta.has_field(f)]
 			fields = ["name", "creation", "modified", "docstatus", *dict.fromkeys(extra)]
 			filters = {"company": self.company} if self.company and meta.has_field("company") else {}
 			for row in frappe.get_list(
-				doctype, filters=filters, fields=fields, order_by="creation desc", limit_page_length=4
+				doctype, filters=filters, fields=fields, order_by="creation desc", limit_page_length=6
 			):
 				rows.append(
 					{
@@ -410,10 +433,23 @@ class Figures:
 						"modified": str(row.modified),
 						"ds": row.docstatus,
 						"sub": 1 if meta.is_submittable else 0,
+						"flow": flow(row),
 					}
 				)
 		rows.sort(key=lambda row: row["created"], reverse=True)
 		return rows[:limit]
+
+
+def flow(row):
+	"""Which way a document moves money, for its sign and colour: in, out, back or none."""
+	if row.get("is_return"):
+		return "back"
+	kind = row.get("payment_type")
+	if kind == "Receive":
+		return "in"
+	if kind == "Pay":
+		return "out"
+	return None
 
 
 def last_months(today):
