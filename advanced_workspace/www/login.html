@@ -1,118 +1,42 @@
 {% extends "frappe/www/login.html" %}
-{#- Frappe's sign-in forms, untouched, on a card over the system's own work in motion. -#}
+{#- A trader's day behind the sign-in: the shop, the till, the warehouse, the city at dusk.
+    Frappe's forms and their script sit in the panel untouched. -#}
+{%- set img = "/assets/advanced_workspace/images/login/" -%}
+{#- The words live here, not in login.py: a template reloads by itself, a module waits for a restart. -#}
+{%- set ar = awl.lang == "ar" -%}
+{%- set words = {
+	"morning": "صباح الخير" if ar else "Good morning",
+	"evening": "مساء الخير" if ar else "Good evening",
+	"hello": "أهلاً بك" if ar else "Welcome",
+	"sub": "سجّل دخولك وكمّل شغلك من حيث وقفت." if ar else "Sign in and pick up where you left off.",
+	"show": "عرض" if ar else "Show",
+} -%}
+{#- a trader's day, from the shop to the city at dusk -#}
+{%- set slides = [
+	{"photo": "souq", "label": "الدكان" if ar else "The shop",
+		"title": "تجارتك تبدأ من هنا" if ar else "Your trade starts here",
+		"text": "البيع والشراء والمخزون والحسابات، في نظام واحد يتكلم لغتك." if ar else "Selling, buying, stock and accounts in one system that speaks your language."},
+	{"photo": "till", "label": "الكاشير" if ar else "The till",
+		"title": "الكاشير ما يوقف" if ar else "The till keeps selling",
+		"text": "نقطة البيع تكمّل لو انقطع الإنترنت، وتزامن أول ما يرجع." if ar else "Point of sale carries on offline and syncs as soon as the connection is back."},
+	{"photo": "store", "label": "المستودع" if ar else "The warehouse",
+		"title": "مخزونك بالعدد والمكان" if ar else "Every item, counted and placed",
+		"text": "الرصيد في كل مستودع والتحويل بينها، لحظة بلحظة." if ar else "Balances in every warehouse and the transfers between them, as they happen."},
+	{"photo": "city", "label": "آخر اليوم" if ar else "End of day",
+		"title": "وآخر اليوم، أرقامك جاهزة" if ar else "And at the end of the day, your numbers",
+		"text": "المبيعات والمصروفات وصافي الربح، مقارنة بالشهر اللي فات." if ar else "Sales, expenses and net profit, against last month."},
+] -%}
 
 {% block head_include %}
 {{ super() }}
-<link rel="stylesheet" href="/assets/advanced_workspace/css/login.css?v={{ awl.version }}">
+<link rel="preload" as="image" href="{{ img }}{{ slides[0].photo }}-1920.webp" media="(min-width: 901px)" fetchpriority="high">
+<link rel="preload" as="image" href="{{ img }}{{ slides[0].photo }}-1000.webp" media="(max-width: 900px)" fetchpriority="high">
+<link rel="stylesheet" href="/assets/advanced_workspace/css/login_day.css?v={{ awl.version }}">
 {% endblock %}
 
 {% block page_content %}
-<div class="awl-stage" aria-hidden="true">
-	<div class="awl-light"></div>
-	<div class="awl-scenes">
-
-		{#- 1. an invoice in the print layout, writing itself -#}
-		<figure class="awl-slide is-on" data-slide="0">
-			<div class="sc sc-invoice">
-				<div class="paper paper-back"></div>
-				<div class="paper">
-					<div class="pp-head">
-						<span class="pp-mark"></span>
-						<span class="pp-co"><i></i><i></i></span>
-						<span class="pp-no"><i></i><b dir="ltr">INV-0515</b></span>
-					</div>
-					<div class="pp-rule"></div>
-					<div class="pp-title">{{ "فاتورة بيع" if awl.lang == "ar" else "Sales Invoice" }}</div>
-					<div class="pp-th"><span></span></div>
-					<div class="pp-row" style="--i: 1"><b>{{ "قهوة عربية ٥٠٠ جم" if awl.lang == "ar" else "Arabic coffee 500 g" }}</b><span dir="ltr">12</span><span dir="ltr">540.00</span></div>
-					<div class="pp-row" style="--i: 2"><b>{{ "تمر سكري ٣ كجم" if awl.lang == "ar" else "Sukkari dates 3 kg" }}</b><span dir="ltr">6</span><span dir="ltr">390.00</span></div>
-					<div class="pp-row" style="--i: 3"><b>{{ "زيت زيتون ١ لتر" if awl.lang == "ar" else "Olive oil 1 l" }}</b><span dir="ltr">8</span><span dir="ltr">232.00</span></div>
-					<div class="pp-row" style="--i: 4"><b>{{ "رز بسمتي ٥ كجم" if awl.lang == "ar" else "Basmati rice 5 kg" }}</b><span dir="ltr">2</span><span dir="ltr">122.50</span></div>
-					<div class="pp-foot">
-						<span class="pp-qr"></span>
-						<span class="pp-total"><small>{{ "الإجمالي" if awl.lang == "ar" else "Total" }}</small><b dir="ltr" data-count="1284.5" data-dec="2" data-at="1300">0.00</b><svg class="sar" viewBox="0 0 1124.14 1256.39"><path d="M699.62,1113.02h0c-20.06,44.48-33.32,92.75-38.4,143.37l424.51-90.24c20.06-44.47,33.31-92.75,38.4-143.37l-424.51,90.24Z"/><path d="M1085.73,895.8c20.06-44.47,33.32-92.75,38.4-143.37l-330.68,70.33v-135.2l292.27-62.11c20.06-44.47,33.32-92.75,38.4-143.37l-330.68,70.27V66.13c-50.67,28.45-95.67,66.32-132.25,110.99v403.35l-132.25,28.11V0c-50.67,28.44-95.67,66.32-132.25,110.99v525.69l-295.91,62.88c-20.06,44.47-33.33,92.75-38.42,143.37l334.33-71.05v170.26l-358.3,76.14c-20.06,44.47-33.32,92.75-38.4,143.37l375.04-79.7c30.53-6.35,56.77-24.4,73.83-49.24l68.78-101.97v-.02c7.14-10.55,11.3-23.27,11.3-36.97v-149.98l132.25-28.11v270.4l424.53-90.28Z"/></svg></span>
-					</div>
-				</div>
-			</div>
-			<figcaption><strong>{{ awl.slides[0][0] }}</strong><span>{{ awl.slides[0][1] }}</span></figcaption>
-		</figure>
-
-		{#- 2. stock moving between two warehouses, a barcode being read -#}
-		<figure class="awl-slide" data-slide="1">
-			<div class="sc sc-stock">
-				<div class="wh wh-a">
-					<h6>{{ "المستودع الرئيسي" if awl.lang == "ar" else "Main warehouse" }}</h6>
-					<div class="bins"><i></i><i></i><i></i><i></i><i></i><i class="go"></i></div>
-					<p><b dir="ltr" data-count="1320" data-at="700">0</b><small>{{ "حبة" if awl.lang == "ar" else "units" }}</small></p>
-				</div>
-				<div class="lane"><span class="crate"></span></div>
-				<div class="wh wh-b">
-					<h6>{{ "فرع جدة" if awl.lang == "ar" else "Jeddah branch" }}</h6>
-					<div class="bins"><i></i><i></i><i class="in"></i><i class="empty"></i><i class="empty"></i><i class="empty"></i></div>
-					<p><b dir="ltr" data-count="124" data-at="1500">0</b><small>{{ "حبة" if awl.lang == "ar" else "units" }}</small></p>
-				</div>
-				<div class="scan">
-					<div class="code"></div><div class="beam"></div>
-					<small dir="ltr">6 287034 951148</small>
-				</div>
-			</div>
-			<figcaption><strong>{{ awl.slides[1][0] }}</strong><span>{{ awl.slides[1][1] }}</span></figcaption>
-		</figure>
-
-		{#- 3. a receipt printing at the till, offline -#}
-		<figure class="awl-slide" data-slide="2">
-			<div class="sc sc-pos">
-				<div class="till">
-					<div class="till-screen">
-						<span class="off"><i></i>{{ "بدون إنترنت" if awl.lang == "ar" else "Offline" }}</span>
-						<b dir="ltr" data-count="167.5" data-dec="2" data-at="600">0.00</b>
-					</div>
-					<div class="slot"></div>
-				</div>
-				<div class="receipt">
-					<div class="rc-in">
-						<i class="w6"></i><i class="w4"></i><hr>
-						<p><span></span><span></span></p><p><span></span><span></span></p><p><span></span><span></span></p>
-						<hr><p class="tot"><span></span><span></span></p>
-						<div class="bars"></div>
-					</div>
-				</div>
-				<span class="paid">{{ "تم الدفع" if awl.lang == "ar" else "Paid" }}</span>
-			</div>
-			<figcaption><strong>{{ awl.slides[2][0] }}</strong><span>{{ awl.slides[2][1] }}</span></figcaption>
-		</figure>
-
-		{#- 4. the month's figures, counting and drawing -#}
-		<figure class="awl-slide" data-slide="3">
-			<div class="sc sc-figs">
-				<div class="kpi">
-					<small>{{ "المبيعات" if awl.lang == "ar" else "Sales" }}</small>
-					<b dir="ltr" data-count="128400" data-at="500">0</b>
-					<svg class="spark" viewBox="0 0 200 48" preserveAspectRatio="none"><path d="M0 40 L25 34 L50 37 L75 26 L100 29 L125 18 L150 21 L175 10 L200 6"/></svg>
-				</div>
-				<div class="kpi">
-					<small>{{ "المصروفات" if awl.lang == "ar" else "Expenses" }}</small>
-					<b dir="ltr" data-count="46250" data-at="700">0</b>
-					<svg class="spark low" viewBox="0 0 200 48" preserveAspectRatio="none"><path d="M0 22 L25 26 L50 20 L75 28 L100 24 L125 30 L150 27 L175 32 L200 30"/></svg>
-				</div>
-				<div class="kpi wide">
-					<small>{{ "صافي الربح" if awl.lang == "ar" else "Net profit" }}</small>
-					<b dir="ltr" data-count="82150" data-at="900">0</b>
-					<div class="cols"><i style="--h: 38%"></i><i style="--h: 52%"></i><i style="--h: 45%"></i><i style="--h: 64%"></i><i style="--h: 58%"></i><i style="--h: 77%"></i><i style="--h: 70%"></i><i style="--h: 92%"></i></div>
-				</div>
-			</div>
-			<figcaption><strong>{{ awl.slides[3][0] }}</strong><span>{{ awl.slides[3][1] }}</span></figcaption>
-		</figure>
-	</div>
-	<div class="awl-dots">
-		{%- for slide in awl.slides %}
-		<button type="button" tabindex="-1" aria-label="{{ awl.show }} {{ slide[0] }}" data-go="{{ loop.index0 }}"{% if loop.first %} class="is-on"{% endif %}><i></i></button>
-		{%- endfor %}
-	</div>
-</div>
-
-<div class="awl-panel">
-	<div class="awl-card" data-heading="{{ awl.heading }}" data-sub="{{ awl.sub }}">
+<div class="awl">
+	<div class="awl-panel">
 		<div class="awl-brand">
 			{%- if awl.logo %}
 			<img src="{{ awl.logo | e }}" alt="{{ app_name | e }}">
@@ -121,13 +45,43 @@
 			{%- endif %}
 			<span class="awl-name">{{ app_name | e }}</span>
 		</div>
-		{{ super() }}
+		<div class="awl-form" data-morning="{{ words.morning }}" data-evening="{{ words.evening }}" data-hello="{{ words.hello }}" data-sub="{{ words.sub }}">
+			{{ super() }}
+		</div>
 		<p class="awl-foot">© {{ awl.year }} {{ app_name | e }}</p>
+	</div>
+
+	<div class="awl-stage" aria-hidden="true">
+		<div class="awl-frames">
+			{%- for slide in slides %}
+			<div class="awl-frame awl-{{ slide.photo }}{% if loop.first %} is-on run{% endif %}" data-frame="{{ loop.index0 }}">
+				<img alt="" decoding="async" sizes="(max-width: 900px) 100vw, 76vw"
+					{% if loop.first %}srcset="{{ img }}{{ slide.photo }}-1000.webp 1000w, {{ img }}{{ slide.photo }}-1920.webp 1920w" src="{{ img }}{{ slide.photo }}-1920.webp" fetchpriority="high"
+					{% else %}data-srcset="{{ img }}{{ slide.photo }}-1000.webp 1000w, {{ img }}{{ slide.photo }}-1920.webp 1920w" data-src="{{ img }}{{ slide.photo }}-1920.webp"{% endif %}>
+			</div>
+			{%- endfor %}
+		</div>
+		<div class="awl-shade"></div>
+		<div class="awl-story">
+			<div class="awl-says">
+				{%- for slide in slides %}
+				<div class="awl-say{% if loop.first %} is-on{% endif %}" data-say="{{ loop.index0 }}">
+					<h2>{{ slide.title }}</h2>
+					<p>{{ slide.text }}</p>
+				</div>
+				{%- endfor %}
+			</div>
+			<div class="awl-steps">
+				{%- for slide in slides %}
+				<button type="button" tabindex="-1" data-go="{{ loop.index0 }}" aria-label="{{ words.show }} {{ slide.label }}"{% if loop.first %} class="is-on"{% endif %}><i></i><span>{{ slide.label }}</span></button>
+				{%- endfor %}
+			</div>
+		</div>
 	</div>
 </div>
 {% endblock %}
 
 {% block script %}
 {{ super() }}
-<script src="/assets/advanced_workspace/js/login_stage.js?v={{ awl.version }}"></script>
+<script src="/assets/advanced_workspace/js/login_day.js?v={{ awl.version }}"></script>
 {% endblock %}

@@ -12,49 +12,26 @@ from frappe.www.login import get_context as frappe_get_context
 
 import advanced_workspace
 
-WORDS = {
-	"ar": {
-		"heading": "مرحباً بعودتك",
-		"sub": "سجّل دخولك وكمّل شغلك من حيث وقفت.",
-		"slides": [
-			("فاتورتك جاهزة للطباعة", "قالب رسمي برمز الريال الجديد، ورصيد العميل في نفس الورقة."),
-			("مخزونك قدّام عينك", "الرصيد والتحويل بين المستودعات، لحظة بلحظة."),
-			("الكاشير ما يوقف", "نقطة البيع تكمّل لو انقطع الإنترنت، وتزامن أول ما يرجع."),
-			("أرقامك في نظرة", "المبيعات والمصروفات وصافي الربح، مقارنة بالشهر الماضي."),
-		],
-		"show": "عرض",
-	},
-	"en": {
-		"heading": "Welcome back",
-		"sub": "Sign in and pick up where you left off.",
-		"slides": [
-			("Invoices ready to print", "An official layout with the new riyal sign and the customer's balance on the page."),
-			("Your stock in plain sight", "Balances and transfers between warehouses, as they happen."),
-			("The till keeps selling", "Point of sale carries on offline and syncs as soon as the connection is back."),
-			("Your numbers at a glance", "Sales, expenses and net profit, against last month."),
-		],
-		"show": "Show",
-	},
-}
-
 
 def get_context(context):
 	out = frappe_get_context(context)
-	lang = "ar" if (frappe.local.lang or "").startswith("ar") else "en"
-	context.awl = frappe._dict(WORDS[lang])
-	context.awl.lang = lang
-	context.awl.version = asset_version()
-	context.awl.logo = logo_on_disk(context.get("logo"))
+	# the words and slides are in login.html; this gives it what only Python knows
+	context.awl = frappe._dict(
+		lang="ar" if (frappe.local.lang or "").startswith("ar") else "en",
+		version=asset_version(),
+		logo=logo_on_disk(context.get("logo")),
+		year=frappe.utils.getdate().year,
+	)
 	# Frappe's own heading asks for the logo too; a missing file is not requested at all
 	context.logo = context.awl.logo or ""
-	context.awl.year = frappe.utils.getdate().year
 	return out
 
 
 def asset_version():
 	"""Changes whenever the page's stylesheet or script does, so browsers never keep an old one."""
 	public = os.path.join(os.path.dirname(advanced_workspace.__file__), "public")
-	stamps = [os.path.getmtime(os.path.join(public, path)) for path in ("css/login.css", "js/login_stage.js")]
+	stamps = [os.path.getmtime(os.path.join(public, path)) for path in ("css/login_day.css", "js/login_day.js")]
+	stamps.append(os.path.getmtime(os.path.join(public, "images", "login")))
 	return f"{advanced_workspace.__version__}-{int(max(stamps))}"
 
 
