@@ -1,5 +1,5 @@
-// The sign-in page's day: one photograph at a time with a slow camera move, its line of
-// words, and progress steps that can be clicked. The greeting follows the visitor's clock.
+// The sign-in page: one line of work at a time, a photograph with a slow camera move, its line of
+// words and its name lit in the index, which can be clicked. The greeting follows the visitor's clock.
 (function () {
 	const form = document.querySelector(".awl-form");
 	const head = form && form.querySelector(".for-login .page-card-head");
@@ -18,7 +18,7 @@
 	const says = [...stage.querySelectorAll("[data-say]")];
 	const steps = [...stage.querySelectorAll("[data-go]")];
 	const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-	const HOLD = 8000;
+	const HOLD = 7000;
 	const FADE = 1700;
 	stage.style.setProperty("--awl-hold", `${HOLD}ms`);
 	let current = 0;
