@@ -16,7 +16,7 @@ ITEM_TYPES = {"DocType": "dt", "Tree": "tree", "Report": "rp", "Page": "page", "
 
 
 @frappe.whitelist()
-def home(action=None, key=None, company=None, lang=None):
+def home(action=None, key=None, company=None, lang=None, part=None):
 	if frappe.session.user == "Guest" or frappe.get_cached_value("User", frappe.session.user, "user_type") != "System User":
 		frappe.throw(_("Not permitted"), frappe.PermissionError)
 	if ADVANCED_ROLE not in frappe.get_roles():
@@ -32,7 +32,7 @@ def home(action=None, key=None, company=None, lang=None):
 	if action == "language":
 		return set_language(lang)
 	if action == "module":
-		return module_figures(key, company)
+		return module_figures(key, company, part)
 	frappe.throw(_("Unknown action"))
 
 
@@ -184,20 +184,25 @@ def pick_company(wanted):
 # ---------------------------------------------------------------------- figures
 
 
-def module_figures(key, company):
+def module_figures(key, company, part=None):
+	"""part="lists": the documents and recent activity, which come back at once;
+	part="kpis": the set statistics, which can take seconds on a large ledger."""
 	roles = set(frappe.get_roles())
 	module = next((row for row in load_modules() if row["key"] == key), None)
 	if not module or not holds_module(module, roles):
 		frappe.throw(_("Unknown module"), frappe.PermissionError)
 	company = pick_company(company)
 	figures = Figures(company)
-	cards = [card for card in (figures.kpi(spec) for spec in module["kpis"]) if card]
-	return {
+	out = {
 		"company": company,
 		"currency": frappe.db.get_value("Company", company, "default_currency") if company else None,
-		"kpis": cards,
-		"drafts": figures.drafts(module),
 	}
+	if part in (None, "kpis"):
+		out["kpis"] = [card for card in (figures.kpi(spec) for spec in module["kpis"]) if card]
+	if part in (None, "lists"):
+		out["docs"] = figures.documents(module)
+		out["recent"] = figures.recent(module)
+	return out
 
 
 class Figures:
@@ -297,18 +302,65 @@ class Figures:
 		previous = self.measure(spec, last_start, last_end)
 		return card(spec, value, money, current, previous, route)
 
-	def drafts(self, module):
-		out, seen = [], set()
+	def doctypes(self, module):
+		"""The module's own documents this user can read, once each, in menu order."""
+		seen = []
 		for item in module.get("items", []):
-			if item["t"] != "dt" or item["n"] in seen or not can_read(item["n"]):
+			doctype = item["n"]
+			if item["t"] != "dt" or doctype in seen or not can_read(doctype):
 				continue
-			seen.add(item["n"])
-			if not frappe.get_meta(item["n"]).is_submittable:
+			meta = frappe.get_meta(doctype)
+			if meta.issingle or meta.istable:
 				continue
-			count = int(self.measure({"dt": item["n"], "w": {"docstatus": 0}}, None, None))
-			if count:
-				out.append({"l": item["l"], "n": item["n"], "c": count})
+			seen.append(doctype)
+		return seen
+
+	def documents(self, module):
+		"""Per document: how many were made this month and last, drafts waiting, and whether
+		this user may make one. Every module has these, with or without set statistics."""
+		today = nowdate()
+		month_start = get_first_day(today)
+		last_start = add_months(month_start, -1)
+		last_end = add_days(month_start, -1)
+		out = {}
+		for doctype in self.doctypes(module):
+			made = {"dt": doctype, "d": "creation", "w": {}}
+			row = {
+				"cur": int(self.measure(made, f"{month_start} 00:00:00", f"{today} 23:59:59.999999")),
+				"prev": int(self.measure(made, f"{last_start} 00:00:00", f"{last_end} 23:59:59.999999")),
+				"drafts": 0,
+				"new": 1 if frappe.has_permission(doctype, "create") else 0,
+			}
+			if frappe.get_meta(doctype).is_submittable:
+				row["drafts"] = int(self.measure({"dt": doctype, "w": {"docstatus": 0}}, None, None))
+			out[doctype] = row
 		return out
+
+	def recent(self, module, limit=8):
+		"""The latest documents of the module, newest first. By creation, which every
+		table indexes: sorting a large one by its last change took seconds."""
+		rows = []
+		for doctype in self.doctypes(module):
+			meta = frappe.get_meta(doctype)
+			title = meta.title_field if meta.title_field and meta.has_field(meta.title_field) else None
+			fields = ["name", "creation", "modified", "docstatus"] + ([title] if title else [])
+			filters = {"company": self.company} if self.company and meta.has_field("company") else {}
+			for row in frappe.get_list(
+				doctype, filters=filters, fields=fields, order_by="creation desc", limit_page_length=4
+			):
+				rows.append(
+					{
+						"dt": doctype,
+						"name": row.name,
+						"title": row.get(title) if title else None,
+						"created": str(row.creation),
+						"modified": str(row.modified),
+						"ds": row.docstatus,
+						"sub": 1 if meta.is_submittable else 0,
+					}
+				)
+		rows.sort(key=lambda row: row["created"], reverse=True)
+		return rows[:limit]
 
 
 def card(spec, value, money, current, previous, route):

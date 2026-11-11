@@ -78,6 +78,7 @@ function run(scope) {
 	const main = one("[data-main]");
 	const CHEVRON = '<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
 	const icon = (name) => `<svg viewBox="0 0 24 24">${ICONS[name] || ICONS.box}</svg>`;
+	const KIND_ICONS = { dt: "doc", tree: "tree", page: "window", rp: "chart", url: "link" };
 	const api = (args) => frappe.xcall("advanced_workspace.api.home", args);
 
 	let home = null;
@@ -143,23 +144,61 @@ function run(scope) {
 		});
 	}
 
+	// A module's home, after the role centres of Business Central and SAP Fiori: figures that
+	// keep their width, then every document with its numbers and a way to make one, and what
+	// was made last. Every number opens the list behind it.
+	const DOC_TYPES = ["dt", "tree", "page"];
+
 	function layout(mod) {
-		const links = mod.items
-			.map((item, i) => `<button class="aw-card aw-link" data-link="${i}">${esc(item.l)}</button>`)
-			.join("");
+		const docs = mod.items.map((item, i) => [item, i]).filter(([item]) => DOC_TYPES.includes(item.t));
+		const links = mod.items.map((item, i) => [item, i]).filter(([item]) => !DOC_TYPES.includes(item.t));
 		const options = home.companies.map((c) => `<option>${esc(c)}</option>`).join("");
-		// Empty tiles of the final size, so nothing moves when the figures land.
-		const places = Array.from({ length: mod.n || 0 }, () => '<div class="aw-card aw-kpi plain"></div>').join("");
-		main.innerHTML = `<div class="aw-bar"><h2>${t("الإحصائيات")}</h2><span><small>${t("من بداية السنة")}</small>${
+		const tools = `<span class="aw-bar-tools"><small>${t("من بداية السنة")}</small>${
 			home.companies.length > 1 ? `<select data-company aria-label="${t("الشركة")}">${options}</select>` : ""
 		}<button data-refresh title="${t("تحديث")}" aria-label="${t("تحديث")}"><svg viewBox="0 0 24 24">${
 			ICONS.refresh
-		}</svg></button></span></div>
-    <div class="aw-kpis" data-kpis>${places}</div>
-    <h2 class="aw-head">${t("المستندات والتقارير")}</h2>
-    <div class="aw-links">${links}</div>
-    <h2 class="aw-head">${t("لوحة التحكم")}</h2>
-    <div class="aw-drafts" data-drafts></div>`;
+		}</svg></button></span>`;
+		// Empty tiles of the final size, so nothing moves when the figures land.
+		const places = Array.from(
+			{ length: mod.n || 0 },
+			() => '<div class="aw-kpi is-wait" aria-hidden="true"><i></i><i></i></div>'
+		).join("");
+		const docRows = docs
+			.map(
+				([item, i]) => `<div class="aw-doc" data-doc="${i}">
+        <button class="aw-doc-open" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span></button>
+        <span class="aw-month" data-month></span>
+        <span data-drafts-slot></span>
+        <span data-new-slot></span>
+      </div>`
+			)
+			.join("");
+		const linkRows = links
+			.map(
+				([item, i]) =>
+					`<button class="aw-link" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span></button>`
+			)
+			.join("");
+		main.innerHTML = `
+    <div class="aw-bar"><h2>${mod.n ? t("الإحصائيات") : t("المستندات")}</h2>${tools}</div>
+    ${mod.n ? `<div class="aw-kpis" data-kpis>${places}</div>` : ""}
+    <div class="aw-cols">
+      <section class="aw-sec">
+        ${mod.n && docs.length ? `<div class="aw-sec-head"><h2>${t("المستندات")}</h2></div>` : ""}
+        ${docs.length ? `<div class="aw-panel">${docRows}</div>` : ""}
+        ${
+			links.length
+				? `<div class="aw-sec-head aw-sub-head"><h2>${t("التقارير والصفحات")}</h2></div><div class="aw-links">${linkRows}</div>`
+				: ""
+		}
+      </section>
+      ${
+			docs.some(([item]) => item.t === "dt")
+				? `<aside class="aw-sec"><div class="aw-sec-head"><h2>${t("آخر المستندات")}</h2></div>
+        <div class="aw-panel" data-recent><div class="aw-none">${t("جارٍ التحميل")}</div></div></aside>`
+				: ""
+		}
+    </div>`;
 		const select = one("[data-company]");
 		if (select && company) select.value = company;
 		select?.addEventListener("change", (event) => {
@@ -193,66 +232,132 @@ function run(scope) {
 		(Math.abs(card.prev || 0) / top) * 100
 	}%"></i><i style="width:${(Math.abs(card.cur) / top) * 100}%"></i></div>`
 			: "";
-		return `<button class="aw-card aw-kpi ${dated ? "" : "plain"}" data-kpi="${i}">
+		return `<button class="aw-kpi ${dated ? "" : "plain"}" data-kpi="${i}">
     <div class="aw-kpi-label"><span>${esc(card.l)}</span>${delta}</div>
     <div class="aw-kpi-value">${amount(card.v, card.m, currency)}</div>${compare}</button>`;
 	}
 
-	function paint(mod, data) {
+	function paintKpis(mod, data) {
 		const select = one("[data-company]");
 		if (select && data.company) select.value = data.company;
-		one("[data-kpis]").innerHTML =
-			data.kpis.map((card, i) => tile(card, i, data.currency)).join("") ||
-			`<div class="aw-wait">${t("لا توجد إحصائيات لهذا المديول.")}</div>`;
-		one("[data-drafts]").innerHTML = data.drafts.length
-			? data.drafts
-					.map(
-						(row, i) =>
-							`<button data-draft="${i}"><span>${t("مسودات")} ${esc(row.l)}</span><b>${row.c}</b></button>`
-					)
-					.join("")
-			: `<p>${t("لا توجد مسودات تنتظر الاعتماد.")}</p>`;
+		const box = one("[data-kpis]");
+		if (!box) return;
+		const cards = data.kpis || [];
+		box.innerHTML = cards.length
+			? cards.map((card, i) => tile(card, i, data.currency)).join("")
+			: `<div class="aw-none">${t("لا توجد إحصائيات لهذا المديول.")}</div>`;
 		all("[data-kpi]").forEach((el) =>
-			el.addEventListener("click", () => frappe.set_route(...data.kpis[el.dataset.kpi].route))
+			el.addEventListener("click", () => frappe.set_route(...cards[el.dataset.kpi].route))
 		);
-		all("[data-draft]").forEach((el) =>
-			el.addEventListener("click", () =>
-				frappe.set_route("List", data.drafts[el.dataset.draft].n, { docstatus: 0 })
-			)
+	}
+
+	const STATUS = { 0: "مسودة", 1: "معتمد", 2: "ملغى" };
+
+	function paintLists(mod, data) {
+		const docs = data.docs || {};
+		all("[data-doc]").forEach((row) => {
+			const item = mod.items[row.dataset.doc];
+			const figures = docs[item.n];
+			if (!figures) return;
+			const month = row.querySelector("[data-month]");
+			// a quiet line when nothing moved, so the rows that did stand out
+			month.innerHTML =
+				figures.cur || figures.prev
+					? `<b dir="ltr">${figures.cur.toLocaleString("en-US")}</b><small>${t(
+							"هذا الشهر"
+					  )} · ${figures.prev.toLocaleString("en-US")} ${t("الشهر الماضي")}</small>`
+					: `<small class="quiet">${t("لا جديد هذا الشهر")}</small>`;
+			month.title = t("هذا الشهر");
+			if (figures.drafts) {
+				row.querySelector("[data-drafts-slot]").innerHTML = `<button class="aw-pill" data-drafts>${figures.drafts.toLocaleString(
+					"en-US"
+				)} ${t("مسودة")}</button>`;
+				row.querySelector("[data-drafts]").addEventListener("click", () =>
+					frappe.set_route("List", item.n, { docstatus: 0 })
+				);
+			}
+			if (figures.new) {
+				row.querySelector("[data-new-slot]").innerHTML = `<button class="aw-new" data-new>${icon("plus")}<span>${t(
+					"جديد"
+				)}</span></button>`;
+				row.querySelector("[data-new]").addEventListener("click", () => frappe.new_doc(item.n));
+			}
+		});
+		const box = one("[data-recent]");
+		if (!box) return;
+		const recent = data.recent || [];
+		const label = (doctype) => (mod.items.find((item) => item.n === doctype) || {}).l || __(doctype);
+		const when = (value) => {
+			try {
+				return frappe.datetime.prettyDate ? frappe.datetime.prettyDate(value) : window.prettyDate(value);
+			} catch (error) {
+				return value.slice(0, 10);
+			}
+		};
+		box.innerHTML = recent.length
+			? recent
+					.map((row, i) => {
+						const state = row.ds === 0 && !row.sub ? "محفوظ" : STATUS[row.ds];
+						return `<button class="aw-act" data-act="${i}">
+          <span class="aw-act-main"><b>${esc(row.title || row.name)}</b><small>${esc(label(row.dt))} · <span dir="ltr">${esc(
+							row.name
+						)}</span></small></span>
+          <span class="aw-act-side"><i class="aw-st s${row.ds}${row.ds === 0 && !row.sub ? " saved" : ""}">${t(
+							state
+						)}</i><small>${esc(when(row.created))}</small></span>
+        </button>`;
+					})
+					.join("")
+			: `<div class="aw-none">${t("لا توجد مستندات بعد.")}</div>`;
+		all("[data-act]").forEach((el) =>
+			el.addEventListener("click", () => {
+				const row = recent[el.dataset.act];
+				frappe.set_route("Form", row.dt, row.name);
+			})
 		);
 	}
 
 	const CACHE_MS = 5 * 60 * 1000;
-	const cacheKey = (mod) => `advanced_workspace:${frappe.session.user}:${LANG}:${mod.key}:${company || ""}`;
-	function cached(mod) {
+	const cacheKey = (mod, part) =>
+		`advanced_workspace:${frappe.session.user}:${LANG}:${mod.key}:${company || ""}:${part}`;
+	function cached(mod, part) {
 		try {
-			const saved = JSON.parse(sessionStorage.getItem(cacheKey(mod)));
+			const saved = JSON.parse(sessionStorage.getItem(cacheKey(mod, part)));
 			return saved && Date.now() - saved.at < CACHE_MS ? saved.data : null;
 		} catch (error) {
 			return null;
 		}
 	}
 
-	async function show(mod, fresh) {
-		current = mod;
-		one("[data-title]").textContent = mod.label;
-		all(".aw-mod").forEach((row) => row.classList.toggle("on", row.dataset.key === mod.key));
-		const mine = ++request;
-		layout(mod);
-		const saved = !fresh && cached(mod);
+	// The documents come back at once; the figures can take seconds on a large ledger,
+	// so the two are asked for side by side and each paints when it lands.
+	async function load(mod, part, paint, fresh, mine) {
+		const saved = !fresh && cached(mod, part);
 		if (saved) return paint(mod, saved);
 		try {
-			const data = await api({ action: "module", key: mod.key, company });
+			const data = await api({ action: "module", key: mod.key, company, part });
 			try {
-				sessionStorage.setItem(cacheKey(mod), JSON.stringify({ at: Date.now(), data }));
+				sessionStorage.setItem(cacheKey(mod, part), JSON.stringify({ at: Date.now(), data }));
 			} catch (error) {
 				// storage full: the figures still show
 			}
 			if (mine === request) paint(mod, data);
 		} catch (error) {
-			if (mine === request)
-				one("[data-kpis]").innerHTML = `<div class="aw-wait">${t("تعذر التحميل. أعد فتح المديول.")}</div>`;
+			if (mine !== request) return;
+			const box = one(part === "kpis" ? "[data-kpis]" : "[data-recent]");
+			if (box) box.innerHTML = `<div class="aw-none">${t("تعذر التحميل. أعد فتح المديول.")}</div>`;
 		}
+	}
+
+	function show(mod, fresh) {
+		current = mod;
+		one("[data-title]").textContent = mod.label;
+		all(".aw-mod").forEach((row) => row.classList.toggle("on", row.dataset.key === mod.key));
+		const mine = ++request;
+		layout(mod);
+		main.scrollTop = 0;
+		load(mod, "lists", paintLists, fresh, mine);
+		if (mod.n) load(mod, "kpis", paintKpis, fresh, mine);
 	}
 
 	function sync() {
