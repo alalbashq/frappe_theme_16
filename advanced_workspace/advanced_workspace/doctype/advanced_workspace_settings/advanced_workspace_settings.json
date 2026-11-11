@@ -1,0 +1,38 @@
+{
+ "actions": [],
+ "creation": "2026-11-12 02:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "common_doctypes"
+ ],
+ "fields": [
+  {
+   "fieldname": "common_doctypes",
+   "fieldtype": "Small Text",
+   "label": "Documents Every Role Reads (one per line)"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-11-12 02:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Advanced Workspace",
+ "name": "Advanced Workspace Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "read": 1,
+   "role": "All"
+  },
+  {
+   "read": 1,
+   "role": "System Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

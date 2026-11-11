@@ -1,0 +1,28 @@
+// English for the frame's own Arabic words.
+export const WORDS = {
+	"القائمة الرئيسية": "Main Menu",
+	"جارٍ التحميل": "Loading",
+	"الرئيسية": "Home",
+	"ملء الشاشة": "Full Screen",
+	"المظهر": "Theme",
+	"التنبيهات": "Notifications",
+	"حسابي": "My Account",
+	"القائمة": "Menu",
+	"المديولات": "Modules",
+	"الإحصائيات": "Statistics",
+	"المستندات والتقارير": "Documents and Reports",
+	"لوحة التحكم": "Dashboard",
+	"من بداية السنة": "Year to date",
+	"الشركة": "Company",
+	"تحديث": "Refresh",
+	"هذا الشهر": "This month",
+	"الشهر الماضي": "Last month",
+	"لا توجد إحصائيات لهذا المديول.": "This module has no statistics.",
+	"مسودات": "Drafts:",
+	"لا توجد مسودات تنتظر الاعتماد.": "No drafts are waiting for approval.",
+	"تعذر التحميل. أعد فتح المديول.": "Could not load. Open the module again.",
+	"لا توجد مديولات مخصصة لحسابك. اطلب من مدير النظام إسناد دور لك.": "No modules are assigned to your account. Ask your administrator for a role.",
+	"مساحة العمل": "Workspace",
+	"بحث": "Search",
+	"تعذر تحميل مساحة العمل. أعد تحميل الصفحة.": "The workspace could not load. Reload the page."
+};

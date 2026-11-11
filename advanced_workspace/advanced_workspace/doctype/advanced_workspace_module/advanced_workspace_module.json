@@ -1,0 +1,171 @@
+{
+ "actions": [],
+ "autoname": "field:module_key",
+ "creation": "2026-11-12 02:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "label",
+  "label_en",
+  "module_key",
+  "sequence",
+  "icon",
+  "column_a",
+  "enabled",
+  "read_only",
+  "direct_link",
+  "access",
+  "user_role",
+  "manager_role",
+  "column_b",
+  "roles",
+  "items_section",
+  "items",
+  "stats_section",
+  "stats",
+  "links_section",
+  "linked_doctypes"
+ ],
+ "fields": [
+  {
+   "fieldname": "label",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name in Arabic",
+   "reqd": 1
+  },
+  {
+   "fieldname": "label_en",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name in English"
+  },
+  {
+   "fieldname": "module_key",
+   "fieldtype": "Data",
+   "label": "Key",
+   "reqd": 1,
+   "set_only_once": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "sequence",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Sequence"
+  },
+  {
+   "default": "box",
+   "fieldname": "icon",
+   "fieldtype": "Select",
+   "label": "Icon",
+   "options": "wallet\nbanknote\nbag\nreceipt\nshield\nbox\npos\nusers\ncoins\ntarget\nbrief\nfactory\nbuilding\ncheck\nheadset\nspark\nlink\nrefresh"
+  },
+  {
+   "fieldname": "column_a",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "read_only",
+   "fieldtype": "Check",
+   "label": "Read Only for Module Roles"
+  },
+  {
+   "fieldname": "direct_link",
+   "fieldtype": "Check",
+   "label": "Opens First Item Directly"
+  },
+  {
+   "fieldname": "access",
+   "fieldtype": "Section Break",
+   "label": "Roles"
+  },
+  {
+   "fieldname": "user_role",
+   "fieldtype": "Link",
+   "label": "User Role",
+   "options": "Role"
+  },
+  {
+   "fieldname": "manager_role",
+   "fieldtype": "Link",
+   "label": "Manager Role",
+   "options": "Role"
+  },
+  {
+   "fieldname": "column_b",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "roles",
+   "fieldtype": "Table MultiSelect",
+   "label": "Other Roles That See This Module",
+   "options": "Has Role"
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Menu Items"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Menu Items",
+   "options": "Advanced Workspace Item"
+  },
+  {
+   "fieldname": "stats_section",
+   "fieldtype": "Section Break",
+   "label": "Statistics"
+  },
+  {
+   "fieldname": "stats",
+   "fieldtype": "Table",
+   "label": "Statistics",
+   "options": "Advanced Workspace Stat"
+  },
+  {
+   "fieldname": "links_section",
+   "fieldtype": "Section Break",
+   "label": "Linked Documents"
+  },
+  {
+   "fieldname": "linked_doctypes",
+   "fieldtype": "Small Text",
+   "label": "Documents Needing Read Access (one per line)"
+  }
+ ],
+ "links": [],
+ "modified": "2026-11-12 02:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Advanced Workspace",
+ "name": "Advanced Workspace Module",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "sequence",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "label",
+ "track_changes": 1
+}
