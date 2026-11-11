@@ -41,5 +41,7 @@ export const WORDS = {
 	"الطرف": "Party",
 	"القيمة": "Amount",
 	"الحالة": "Status",
-	"منذ": "When"
+	"منذ": "When",
+	"مسودة بانتظار الاعتماد": "drafts awaiting approval",
+	"بانتظار إجراء": "need action"
 };

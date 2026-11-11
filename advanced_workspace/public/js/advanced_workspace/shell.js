@@ -165,11 +165,19 @@ function run(scope) {
 		return { cols, rows, blanks: others ? cols * rows - others : 0, odd: others % 2 === 1 };
 	};
 	const blanks = (count) => '<div class="aw-cell blank" aria-hidden="true"></div>'.repeat(count);
+	// Document cells: up to five in a row, otherwise the count of 3, 4 or 5 that leaves the
+	// fewest empty places in the last row.
+	const docColumns = (n) => {
+		if (n <= 5) return Math.max(n, 1);
+		const empty = (c) => Math.ceil(n / c) * c - n;
+		return [4, 3, 5].reduce((best, c) => (empty(c) < empty(best) ? c : best), 4);
+	};
 
 	function layout(mod) {
-		const docs = mod.items.map((item, i) => [item, i]).filter(([item]) => DOC_TYPES.includes(item.t));
-		const links = mod.items.map((item, i) => [item, i]).filter(([item]) => !DOC_TYPES.includes(item.t));
-		const hasDocs = docs.some(([item]) => item.t === "dt");
+		const items = mod.items.map((item, i) => [item, i]);
+		// documents get a cell each; trees, pages, reports and links sit in the side list
+		const docs = items.filter(([item]) => item.t === "dt");
+		const more = items.filter(([item]) => item.t !== "dt");
 		const options = home.companies.map((c) => `<option>${esc(c)}</option>`).join("");
 		const tools = `<span class="aw-bar-tools"><small>${t("من بداية السنة")}</small>${
 			home.companies.length > 1 ? `<select data-company aria-label="${t("الشركة")}">${options}</select>` : ""
@@ -184,18 +192,22 @@ function run(scope) {
 				{ length: n },
 				(_, i) => `<div class="aw-cell is-wait${i === 0 ? " hero" : ""}" aria-hidden="true"><i></i><i></i></div>`
 			).join("") + blanks(shape.blanks);
-		const chips = docs
+		const docCells = docs
 			.map(
-				([item, i]) => `<div class="aw-chip" data-doc="${i}">
-        <button class="aw-chip-open" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span></button>
-        <small data-month></small><span data-new-slot></span>
+				([item, i]) => `<div class="aw-dc" data-doc="${i}">
+        <div class="aw-dc-head">
+          <button class="aw-dc-name" data-link="${i}">${icon("doc")}<span>${esc(item.l)}</span></button>
+          <span data-new-slot></span>
+        </div>
+        <div class="aw-dc-num" data-num><b class="aw-dash">—</b></div>
+        <div class="aw-dc-notes" data-notes></div>
       </div>`
 			)
 			.join("");
-		const reports = links
+		const moreRows = more
 			.map(
 				([item, i]) =>
-					`<button class="aw-rep" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span></button>`
+					`<button class="aw-mr" data-link="${i}">${icon(KIND_ICONS[item.t])}<span>${esc(item.l)}</span><svg class="aw-go" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>`
 			)
 			.join("");
 		main.innerHTML = `
@@ -206,21 +218,28 @@ function run(scope) {
 			: ""
 	}
     ${
-		hasDocs
-			? `<div class="aw-two">
-      <section class="aw-box">
-        <header><h2>${t("ما ينتظرك")}</h2><span class="aw-count-badge" data-queue-count hidden></span></header>
-        <div data-queue><div class="aw-none">${t("جارٍ التحميل")}</div></div>
-      </section>
-      <section class="aw-box aw-recent">
-        <header><h2>${t("آخر المستندات")}</h2></header>
-        <div data-recent><div class="aw-none">${t("جارٍ التحميل")}</div></div>
-      </section>
-    </div>`
+		docs.length
+			? `<div class="aw-bar aw-bar-sub"><h2>${t("المستندات")}</h2><span class="aw-attn" data-attn hidden></span></div>
+    <section class="aw-docs" style="--dcols: ${docColumns(docs.length)}">${docCells}</section>`
 			: ""
 	}
-    ${docs.length ? `<h2 class="aw-sec-title">${t("المستندات")}</h2><div class="aw-chips">${chips}</div>` : ""}
-    ${links.length ? `<h2 class="aw-sec-title">${t("التقارير والصفحات")}</h2><div class="aw-reps">${reports}</div>` : ""}`;
+    ${
+		docs.length || more.length
+			? `<div class="aw-lower${docs.length ? "" : " only-more"}">
+      ${
+			docs.length
+				? `<section class="aw-sheet aw-recent"><header><h2>${t("آخر المستندات")}</h2></header>
+        <div data-recent><div class="aw-none">${t("جارٍ التحميل")}</div></div></section>`
+				: ""
+		}
+      ${
+			more.length
+				? `<section class="aw-sheet aw-more"><header><h2>${t("التقارير والصفحات")}</h2></header><div>${moreRows}</div></section>`
+				: ""
+		}
+    </div>`
+			: ""
+	}`;
 		const select = one("[data-company]");
 		if (select && company) select.value = company;
 		select?.addEventListener("change", (event) => {
@@ -291,10 +310,11 @@ function run(scope) {
 		);
 	}
 
-	const QUEUE = {
-		late: { dot: "late", sub: "متأخرة السداد" },
-		soon: { dot: "soon", sub: "تستحق خلال ٧ أيام" },
-		draft: { dot: "draft", sub: "مسودات بانتظار الاعتماد" },
+	// What waits, written under the document it belongs to.
+	const NOTES = {
+		late: { tone: "late", text: "متأخرة السداد" },
+		soon: { tone: "soon", text: "تستحق خلال ٧ أيام" },
+		draft: { tone: "draft", text: "مسودة بانتظار الاعتماد" },
 	};
 	const STATUS_TONE = {
 		Paid: "ok", Completed: "ok", Submitted: "ok", Closed: "ok", Delivered: "ok", "To Bill": "ok",
@@ -316,49 +336,50 @@ function run(scope) {
 
 	function paintLists(mod, data) {
 		const docs = data.docs || {};
-		all("[data-doc]").forEach((chip) => {
-			const item = mod.items[chip.dataset.doc];
-			const figures = docs[item.n];
-			if (!figures) return;
-			chip.querySelector("[data-month]").innerHTML =
-				figures.cur || figures.prev
-					? `<b dir="ltr">${figures.cur.toLocaleString("en-US")}</b> ${t("هذا الشهر")}`
-					: t("لا جديد هذا الشهر");
-			if (figures.new) {
-				chip.querySelector("[data-new-slot]").innerHTML = `<button class="aw-plus" data-new title="${t(
-					"جديد"
-				)}: ${esc(item.l)}" aria-label="${t("جديد")}: ${esc(item.l)}">${icon("plus")}</button>`;
-				chip.querySelector("[data-new]").addEventListener("click", () => frappe.new_doc(item.n));
-			}
-		});
-
 		// a server not yet restarted sends no queue: its drafts stand in for it
 		const queue =
 			data.queue ||
 			Object.entries(docs)
 				.filter(([, figures]) => figures.drafts)
-				.map(([doctype, figures]) => ({ k: "draft", dt: doctype, c: figures.drafts })) ||
-			[];
-		const queueBox = one("[data-queue]");
-		if (queueBox) {
-			const badge = one("[data-queue-count]");
+				.map(([doctype, figures]) => ({ k: "draft", dt: doctype, c: figures.drafts }));
+		const order = { late: 0, soon: 1, draft: 2 };
+
+		all("[data-doc]").forEach((cellEl) => {
+			const item = mod.items[cellEl.dataset.doc];
+			const figures = docs[item.n];
+			const num = cellEl.querySelector("[data-num]");
+			if (figures) {
+				num.innerHTML =
+					figures.cur || figures.prev
+						? `<b dir="ltr">${figures.cur.toLocaleString("en-US")}</b><small>${t("هذا الشهر")} · ${t(
+								"الشهر الماضي"
+						  )} <span dir="ltr">${figures.prev.toLocaleString("en-US")}</span></small>`
+						: `<b class="aw-dash">0</b><small>${t("لا جديد هذا الشهر")}</small>`;
+				if (figures.new) {
+					cellEl.querySelector("[data-new-slot]").innerHTML = `<button class="aw-plus" data-new title="${t(
+						"جديد"
+					)}: ${esc(item.l)}" aria-label="${t("جديد")}: ${esc(item.l)}">${icon("plus")}<span>${t("جديد")}</span></button>`;
+					cellEl.querySelector("[data-new]").addEventListener("click", () => frappe.new_doc(item.n));
+				}
+			}
+			const notes = queue.filter((row) => row.dt === item.n).sort((a, b) => order[a.k] - order[b.k]);
+			const box = cellEl.querySelector("[data-notes]");
+			box.innerHTML = notes
+				.map(
+					(row, k) => `<button class="aw-note ${NOTES[row.k].tone}" data-note="${k}">
+            <i></i><b dir="ltr">${row.c.toLocaleString("en-US")}</b><span>${t(NOTES[row.k].text)}</span>${
+							row.v ? `<em>${amount(row.v, true, data.currency)}</em>` : ""
+						}</button>`
+				)
+				.join("");
+			box.querySelectorAll("[data-note]").forEach((el) => el.addEventListener("click", () => queueRoute(notes[el.dataset.note])));
+		});
+
+		const attn = one("[data-attn]");
+		if (attn) {
 			const total = queue.reduce((sum, row) => sum + row.c, 0);
-			badge.hidden = !total;
-			badge.textContent = total.toLocaleString("en-US");
-			queueBox.innerHTML = queue.length
-				? queue
-						.map(
-							(row, i) => `<button class="aw-q" data-q="${i}">
-            <i class="aw-dot ${QUEUE[row.k].dot}"></i>
-            <b class="aw-q-count" dir="ltr">${row.c.toLocaleString("en-US")}</b>
-            <span class="aw-q-text"><span>${esc(label(mod, row.dt))}</span><small>${t(QUEUE[row.k].sub)}</small></span>
-            ${row.v ? `<span class="aw-q-amount">${amount(row.v, true, data.currency)}</span>` : ""}
-            <svg class="aw-q-go" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
-          </button>`
-						)
-						.join("")
-				: `<div class="aw-clear">${icon("check")}<span>${t("لا شيء ينتظرك الآن")}</span></div>`;
-			all("[data-q]").forEach((el) => el.addEventListener("click", () => queueRoute(queue[el.dataset.q])));
+			attn.hidden = !total;
+			attn.textContent = `${total.toLocaleString("en-US")} ${t("بانتظار إجراء")}`;
 		}
 
 		const recentBox = one("[data-recent]");
@@ -374,29 +395,26 @@ function run(scope) {
 		const state = (row) => {
 			const name = row.status || (row.ds === 2 ? "Cancelled" : row.ds === 0 ? "Draft" : "Submitted");
 			// some translations carry direction marks the font has no glyph for
-			const text = __(name).replace(/[\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, "");
-			return `<i class="aw-st ${STATUS_TONE[name] || "plain"}">${esc(text)}</i>`;
+			const text = __(name).replace(/[‎‏‪-‮⁦-⁩]/g, "");
+			return { tone: STATUS_TONE[name] || "plain", text };
 		};
 		recentBox.innerHTML = recent.length
-			? `<table class="aw-table"><thead><tr>
-          <th>${t("المستند")}</th><th>${t("الطرف")}</th><th class="num">${t("القيمة")}</th><th>${t("الحالة")}</th><th>${t("منذ")}</th>
-        </tr></thead><tbody>${recent
-			.map(
-				(row, i) => `<tr data-act="${i}" tabindex="0">
-          <td><b dir="ltr">${esc(row.name)}</b><small>${esc(label(mod, row.dt))}</small></td>
-          <td class="party">${esc(row.party || row.title || "")}</td>
-          <td class="num">${row.amount != null ? amount(row.amount, true, row.currency || data.currency) : ""}</td>
-          <td>${state(row)}</td>
-          <td class="when">${esc(when(row.created))}</td>
-        </tr>`
-			)
-			.join("")}</tbody></table>`
+			? recent
+					.map((row, i) => {
+						const s = state(row);
+						return `<button class="aw-rr" data-act="${i}">
+          <i class="aw-sdot ${s.tone}" title="${esc(s.text)}"></i>
+          <span class="aw-rr-doc"><b><span dir="ltr">${esc(row.name)}</span></b><small>${esc(label(mod, row.dt))} · ${esc(s.text)}</small></span>
+          <span class="aw-rr-party">${esc(row.party || row.title || "")}</span>
+          <span class="aw-rr-amount">${row.amount != null ? amount(row.amount, true, row.currency || data.currency) : ""}</span>
+          <span class="aw-rr-when">${esc(when(row.created))}</span>
+        </button>`;
+					})
+					.join("")
 			: `<div class="aw-none">${t("لا توجد مستندات بعد.")}</div>`;
-		all("[data-act]").forEach((el) => {
-			const go = () => frappe.set_route("Form", recent[el.dataset.act].dt, recent[el.dataset.act].name);
-			el.addEventListener("click", go);
-			el.addEventListener("keydown", (event) => event.key === "Enter" && go());
-		});
+		all("[data-act]").forEach((el) =>
+			el.addEventListener("click", () => frappe.set_route("Form", recent[el.dataset.act].dt, recent[el.dataset.act].name))
+		);
 	}
 
 	const CACHE_MS = 5 * 60 * 1000;
@@ -426,7 +444,7 @@ function run(scope) {
 			if (mine === request) paint(mod, data);
 		} catch (error) {
 			if (mine !== request) return;
-			const boxes = part === "kpis" ? ["[data-figs]"] : ["[data-queue]", "[data-recent]"];
+			const boxes = part === "kpis" ? ["[data-figs]"] : ["[data-recent]"];
 			boxes.forEach((selector) => {
 				const box = one(selector);
 				if (box) box.innerHTML = `<div class="aw-none">${t("تعذر التحميل. أعد فتح المديول.")}</div>`;
