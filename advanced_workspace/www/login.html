@@ -11,50 +11,51 @@
 	"sub": "سجّل دخولك وكمّل شغلك من حيث وقفت." if ar else "Sign in and pick up where you left off.",
 	"show": "عرض" if ar else "Show",
 } -%}
-{#- every line describes what the system already does: check the app before changing one -#}
+{#- each slide names a pain a trader knows, then what the system already does about it:
+    check the app before promising anything new -#}
 {%- set slides = [
 	{"photo": "till", "label": "نقطة البيع" if ar else "Point of sale",
-		"title": "الكاشير ما يوقف" if ar else "The till keeps selling",
-		"text": "بيع سريع بالباركود، يكمل لو فصل النت ويتزامن أول ما يرجع." if ar else "Quick barcode sales that carry on offline and sync as soon as the connection is back."},
+		"title": "النت فصل؟ البيع ما يوقف" if ar else "Internet down? Sales don't stop",
+		"text": "لا تخلّي الزبون واقف عند الكاشير. نقطة البيع تكمّل بدون نت، وأول ما يرجع ترفع كل الفواتير لحالها." if ar else "Don't leave customers waiting at the till. The point of sale keeps going offline and uploads every invoice once the connection is back."},
 	{"photo": "clothes", "label": "الملابس" if ar else "Clothing",
-		"title": "كل موديل بمقاساته وألوانه" if ar else "Every style, in every size and colour",
-		"text": "كل مقاس ولون له باركوده ورصيده، وملصقات الأسعار تطبعها بنفسك." if ar else "Each size and colour has its own barcode and stock, and you print the price tags yourself."},
+		"title": "تدوّر المقاس والزبون ينتظر؟" if ar else "Hunting for a size while the customer waits?",
+		"text": "كل موديل بمقاساته وألوانه، ولكل قطعة باركود. تعرف وش باقي من كل مقاس بثانية، وملصقات الأسعار تطبعها بنفسك." if ar else "Every style with its sizes and colours, every piece with its barcode. See what's left of each size in a second, and print price tags yourself."},
 	{"photo": "restaurant", "label": "المطاعم" if ar else "Restaurants",
-		"title": "الطلب ينطبع في المطبخ لحاله" if ar else "Orders print in the kitchen by themselves",
-		"text": "كاشير للمطاعم، وكل صنف يروح لطابعة قسمه في المطبخ أول ما ينحفظ الطلب." if ar else "A till for restaurants: each item goes to its station's printer as soon as the order is saved."},
+		"title": "وقت الزحمة، ولا طلب يضيع" if ar else "Rush hour, and no order gets lost",
+		"text": "الطلب ينطبع في المطبخ أول ما ينحفظ، وكل قسم تطلع أصنافه على طابعته. لا ورق يضيع ولا لخبطة." if ar else "Orders print in the kitchen the moment they're saved, each station on its own printer. No lost tickets, no mix-ups."},
 	{"photo": "accessories", "label": "الإكسسوارات" if ar else "Accessories",
-		"title": "قطع صغيرة، وحساب دقيق" if ar else "Small pieces, exact counts",
-		"text": "كل قطعة بباركودها وسعرها، وتدري كم باقي منها في كل فرع." if ar else "Every piece with its barcode and price, and how many are left in each branch."},
+		"title": "قطع صغيرة، وخسارتها كبيرة" if ar else "Small pieces, big losses",
+		"text": "كل قطعة بباركودها وسعرها، وتعرف كم باقي منها في كل فرع بدون ما تعدّها بيدك." if ar else "Every piece with its barcode and price, and how many are left in each branch without counting by hand."},
 	{"photo": "market", "label": "السوبرماركت" if ar else "Supermarkets",
-		"title": "الطابور يمشي" if ar else "The queue keeps moving",
-		"text": "باركود الميزان يقرأ الوزن والسعر لحاله، والعروض تنطبق على الفاتورة بدون ما تحسبها." if ar else "Scale barcodes carry the weight and the price, and offers apply to the bill without anyone working them out."},
+		"title": "الطابور طويل والزبون متضايق؟" if ar else "Long queue, annoyed customers?",
+		"text": "باركود الميزان يقرأ الوزن والسعر لحاله، والعروض تنطبق على الفاتورة بدون حسبة. والطابور يمشي." if ar else "Scale barcodes carry the weight and the price, and offers apply to the bill with no maths. The queue keeps moving."},
 	{"photo": "route", "label": "خطوط السير والمندوبين" if ar else "Routes and reps",
-		"title": "مناديبك في الشارع، وأنت بمكانك" if ar else "Your reps are on the road, and you still know",
-		"text": "طلبات وفواتير وتحصيل من عند العميل، وخط سير بزيارات متسجّلة بالموقع." if ar else "Orders, invoices and collections at the customer's door, and routes with every visit logged by location."},
+		"title": "وين مناديبك الحين؟" if ar else "Where are your reps right now?",
+		"text": "المندوب يطلب ويفوتر ويحصّل من عند العميل، وكل زيارة تتسجّل بموقعها. تعرف وش صار وأنت بمكانك." if ar else "Reps take orders, invoice and collect at the customer's door, and every visit is logged with its location. You know what happened without leaving your desk."},
 	{"photo": "people", "label": "الموارد البشرية" if ar else "Human resources",
-		"title": "فريقك، من الحضور للراتب" if ar else "Your team, from check-in to payday",
-		"text": "الحضور والإجازات والرواتب في مكان واحد، والموظف يسجّل حضوره ويطلب إجازته من جواله." if ar else "Attendance, leave and payroll in one place, and staff check in and ask for leave from their phones."},
+		"title": "آخر الشهر وهمّ الرواتب؟" if ar else "Month end, and payroll again?",
+		"text": "الحضور والإجازات والرواتب في مكان واحد، والموظف يسجّل حضوره ويطلب إجازته من جواله. ودّع الجداول والورق." if ar else "Attendance, leave and payroll in one place, and staff check in and ask for leave from their phones. Goodbye to spreadsheets and paper."},
 	{"photo": "store", "label": "المخازن" if ar else "Warehouses",
-		"title": "مخزونك بالعدد والمكان" if ar else "Every item, counted and placed",
-		"text": "الرصيد في كل مستودع والتحويل بينها، لحظة بلحظة." if ar else "Balances in every warehouse and the transfers between them, as they happen."},
+		"title": "النظام يقول موجود والرف فاضي؟" if ar else "In stock on screen, empty on the shelf?",
+		"text": "رصيد كل صنف في كل مستودع، وكل تحويل بينها مسجّل خطوة بخطوة. اللي على الشاشة هو اللي على الرف." if ar else "Every item's balance in every warehouse, and every transfer recorded step by step. What's on screen is what's on the shelf."},
 	{"photo": "make", "label": "التصنيع" if ar else "Manufacturing",
-		"title": "من الخامة للمنتج" if ar else "From raw material to finished goods",
-		"text": "قائمة مواد لكل منتج، وأوامر تشغيل تصرف الخامات وتحسب تكلفة اللي طلع." if ar else "A bill of materials for every product, and work orders that draw the materials and cost what comes out."},
+		"title": "كم كلّفك المنتج فعلاً؟" if ar else "What did that product really cost you?",
+		"text": "قائمة مواد لكل منتج، وأوامر تشغيل تصرف الخامات وتحسب التكلفة الحقيقية لكل اللي يطلع من الخط." if ar else "A bill of materials for every product, and work orders that draw the materials and work out the true cost of everything off the line."},
 	{"photo": "tailor", "label": "تفصيل الملابس" if ar else "Tailoring",
-		"title": "مقاس الزبون محفوظ، والثوب تدري وين وصل" if ar else "Every measurement kept, every piece tracked",
-		"text": "كل طلب مقسوم قطع تتابعها لين التسليم، وأجور الخياطين بالقطعة تنحسب لحالها." if ar else "Each order split into pieces you follow to delivery, and tailors' piece rates worked out for you."},
+		"title": "الزبونة تسأل: وين وصل طلبي؟" if ar else "The customer asks: where's my order?",
+		"text": "المقاسات محفوظة من أول زيارة، وكل طلب مقسوم قطع تعرف وين وصلت لين التسليم. وأجور الخياطين بالقطعة تنحسب لحالها." if ar else "Measurements kept from the first visit, every order split into pieces you can follow to delivery, and tailors' piece rates worked out for you."},
 	{"photo": "crm", "label": "إدارة العملاء CRM" if ar else "CRM",
-		"title": "ولا عميل يضيع منك" if ar else "No customer slips away",
-		"text": "كل عميل محتمل وكل صفقة في مكانها، وتعرف مين تتابع اليوم." if ar else "Every lead and every deal in its place, and you know who to follow up today."},
+		"title": "عميل سأل وما أحد رجع له؟" if ar else "A lead asked and nobody called back?",
+		"text": "كل عميل محتمل وكل صفقة في مكانها، وتعرف مين لازم تتابع اليوم. لا تخلّي فرصة تروح لغيرك." if ar else "Every lead and every deal in its place, and you know who needs a follow-up today. Don't let an opportunity go to someone else."},
 	{"photo": "chat", "label": "الواتساب" if ar else "WhatsApp",
-		"title": "شغلك يوصل على الواتساب" if ar else "Your business, on WhatsApp",
-		"text": "الفاتورة توصل عميلك على الواتساب، وتنبيهات النظام توصل لجوالك." if ar else "Invoices reach your customers on WhatsApp, and the system's alerts reach your phone."},
+		"title": "تصوّر الفاتورة وترسلها بيدك؟" if ar else "Still photographing invoices to send them?",
+		"text": "الفاتورة توصل عميلك على الواتساب PDF أول ما تعتمدها، وتنبيهات النظام المهمة توصل لجوالك." if ar else "Invoices reach your customers on WhatsApp as a PDF the moment you approve them, and the system's key alerts reach your phone."},
 ] -%}
 
 {% block head_include %}
 {{ super() }}
-<link rel="preload" as="image" href="{{ img }}{{ slides[0].photo }}-1920.webp" media="(min-width: 901px)" fetchpriority="high">
-<link rel="preload" as="image" href="{{ img }}{{ slides[0].photo }}-1000.webp" media="(max-width: 900px)" fetchpriority="high">
+<link rel="preload" as="image" href="{{ img }}{{ slides[0].photo }}-1920.webp?v={{ awl.version }}" media="(min-width: 901px)" fetchpriority="high">
+<link rel="preload" as="image" href="{{ img }}{{ slides[0].photo }}-1000.webp?v={{ awl.version }}" media="(max-width: 900px)" fetchpriority="high">
 <link rel="stylesheet" href="/assets/advanced_workspace/css/login_day.css?v={{ awl.version }}">
 {% endblock %}
 
@@ -72,7 +73,7 @@
 		<div class="awl-form" data-morning="{{ words.morning }}" data-evening="{{ words.evening }}" data-hello="{{ words.hello }}" data-sub="{{ words.sub }}">
 			{{ super() }}
 		</div>
-		<p class="awl-foot">© {{ awl.year }} {{ app_name | e }}</p>
+		<p class="awl-foot">{% if ar %}© {{ awl.year }} نظامي. جميع الحقوق محفوظة.{% else %}© {{ awl.year }} MYSYS. All rights reserved.{% endif %}</p>
 	</div>
 
 	<div class="awl-stage" aria-hidden="true">
@@ -80,8 +81,8 @@
 			{%- for slide in slides %}
 			<div class="awl-frame{% if loop.first %} is-on run{% endif %}" data-frame="{{ loop.index0 }}">
 				<img alt="" decoding="async" sizes="(max-width: 900px) 100vw, 76vw"
-					{% if loop.first %}srcset="{{ img }}{{ slide.photo }}-1000.webp 1000w, {{ img }}{{ slide.photo }}-1920.webp 1920w" src="{{ img }}{{ slide.photo }}-1920.webp" fetchpriority="high"
-					{% else %}data-srcset="{{ img }}{{ slide.photo }}-1000.webp 1000w, {{ img }}{{ slide.photo }}-1920.webp 1920w" data-src="{{ img }}{{ slide.photo }}-1920.webp"{% endif %}>
+					{% if loop.first %}srcset="{{ img }}{{ slide.photo }}-1000.webp?v={{ awl.version }} 1000w, {{ img }}{{ slide.photo }}-1920.webp?v={{ awl.version }} 1920w" src="{{ img }}{{ slide.photo }}-1920.webp?v={{ awl.version }}" fetchpriority="high"
+					{% else %}data-srcset="{{ img }}{{ slide.photo }}-1000.webp?v={{ awl.version }} 1000w, {{ img }}{{ slide.photo }}-1920.webp?v={{ awl.version }} 1920w" data-src="{{ img }}{{ slide.photo }}-1920.webp?v={{ awl.version }}"{% endif %}>
 			</div>
 			{%- endfor %}
 		</div>
