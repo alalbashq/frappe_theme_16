@@ -36,6 +36,33 @@ export function mount() {
 	run(scope);
 }
 
+// Frappe's search, and the Ctrl+K that opens it, as Frappe would have set them up. Called once
+// the desk has started: app_ready fires inside Frappe's Application constructor, while frappe.app
+// is still a placeholder that the finished application then replaces.
+// - 16.5x builds its search with the first page it draws; a desk that has drawn none (its home
+//   not found, say) threw on Ctrl+K, so it is built the same way here.
+// - 16.3x builds it with a workspace's sidebar, along with the notifications; the home is a page,
+//   so the sidebar is asked for its standard items. 16.3x's search has no open() to tell by.
+function ensureSearch() {
+	const AwesomeBar = frappe.search && frappe.search.AwesomeBar;
+	if (!frappe.app || !AwesomeBar || !(frappe.boot.desk_settings || {}).search_bar) return;
+	try {
+		if (typeof AwesomeBar.prototype.open === "function") {
+			if (frappe.app.awesome_bar) return;
+			const bar = new AwesomeBar();
+			bar.setup(".navbar-modal-search-mobile");
+			frappe.app.awesome_bar = bar;
+			return;
+		}
+		const sidebar = frappe.app.sidebar;
+		if (sidebar && typeof sidebar.add_standard_items === "function" && !sidebar.standard_items_setup) {
+			sidebar.add_standard_items();
+		}
+	} catch (error) {
+		console.error("Advanced Workspace: could not set up Frappe's search.", error);
+	}
+}
+
 // Rules for the page around the frame. Fonts are declared here, not in the shadow root,
 // because a font face only loads from the document.
 function pageStyle() {
@@ -690,8 +717,11 @@ function run(scope) {
 	function wireTop() {
 		// Frappe's own search window: its button sits in the Desk sidebar (or, on older Frappe,
 		// its navbar) behind this frame.
-		safely("search", () =>
+		safely("search", () => {
+			ensureSearch();
 			one("[data-search]").addEventListener("click", () => {
+				const bar = frappe.app && frappe.app.awesome_bar;
+				if (bar && typeof bar.open === "function") return bar.open();
 				const opener =
 					document.querySelector("#navbar-modal-search") ||
 					document.querySelector(".navbar-modal-search-mobile") ||
@@ -699,8 +729,8 @@ function run(scope) {
 				if (!opener) return;
 				if (opener.matches("input")) opener.focus();
 				opener.click();
-			})
-		);
+			});
+		});
 		safely("full screen", () =>
 			one("[data-full]").addEventListener("click", () =>
 				document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()
