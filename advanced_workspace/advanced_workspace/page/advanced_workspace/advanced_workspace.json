@@ -1,0 +1,20 @@
+{
+ "creation": "2026-11-12 20:00:00.000000",
+ "docstatus": 0,
+ "doctype": "Page",
+ "icon": "",
+ "idx": 0,
+ "modified": "2026-11-12 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Advanced Workspace",
+ "name": "advanced-workspace",
+ "owner": "Administrator",
+ "page_name": "advanced-workspace",
+ "roles": [
+  {
+   "role": "Advanced Workspace User"
+  }
+ ],
+ "standard": "Yes",
+ "title": "Advanced Workspace"
+}

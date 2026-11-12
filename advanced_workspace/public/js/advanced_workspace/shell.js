@@ -6,10 +6,15 @@ import { HTML, CSS } from "./markup";
 const HOST_ID = "advanced-workspace-host";
 const FONT_URL = "/assets/advanced_workspace/fonts/ibm-plex-sans-arabic";
 
+// The home is the app's own page, /desk/advanced-workspace. Sites from before it had a
+// Workspace record of that name, which a Frappe that ranks workspaces first still opens.
 // The route itself, not its text: "Advanced Workspace Module" holds the same words.
+export const HOME_PAGE = "advanced-workspace";
 export function isHome() {
 	const route = frappe.get_route() || [];
-	return route[0] === "Workspaces" && route[route.length - 1] === "Advanced Workspace";
+	return (
+		route[0] === HOME_PAGE || (route[0] === "Workspaces" && route[route.length - 1] === "Advanced Workspace")
+	);
 }
 
 let syncFrame = null;
@@ -47,6 +52,11 @@ function pageStyle() {
   :root { --aw-side: clamp(200px, 14vw, 260px); --aw-rail: 60px; }
   body.aw-framed .body-sidebar-container { display: none !important; }
   body.aw-framed .sidebar-toggle-btn { display: none !important; }
+  /* Frappe 16.5x's dock, the column of app icons: the frame's bar and menu stand in for it */
+  html.aw-on .dock { display: none !important; }
+  /* and its side panels (notifications), lifted out of the hidden sidebar to sit under the bar */
+  body > .sidebar-panel { position: fixed !important; top: 42px !important; bottom: 0; left: 0 !important; right: auto !important; z-index: 1030; height: auto !important; min-height: 0 !important; }
+  html[dir="ltr"] body > .sidebar-panel { left: auto !important; right: 0 !important; }
   body > .frappe-menu { z-index: 1030 !important; }
   body > .dropdown-notifications { position: fixed; top: 42px; bottom: 0; left: 0; z-index: 1030; width: 360px; max-width: 100vw; }
   body > .dropdown-notifications .notifications-list { position: absolute; inset: 0; width: 100% !important; min-width: 0 !important; height: 100% !important; min-height: 0; }
@@ -484,7 +494,8 @@ function run(scope) {
 		n === 1 ? t("1 document") : n === 2 ? t("2 documents") : `${n.toLocaleString("en-US")} ${t("documents")}`;
 
 	function recentItem(mod, row, i, currency) {
-		const name = row.status || (row.ds === 2 ? "Cancelled" : row.ds === 0 ? "Draft" : "Submitted");
+		// a document that is never submitted has no draft or submitted state to show
+		const name = row.status || (row.sub ? (row.ds === 2 ? "Cancelled" : row.ds === 0 ? "Draft" : "Submitted") : null);
 		const tone = STATUS_TONE[name] || "plain";
 		const kind = label(mod, row.dt);
 		const party = plainText(row.party || row.title || "");
@@ -505,7 +516,7 @@ function run(scope) {
 						? `<span class="aw-item-amt ${tint}"><span dir="ltr">${sign}${full(Math.abs(value))}</span>${money(row.currency || currency)}</span>`
 						: ""
 				}
-        <span class="aw-pill ${tone}">${PILL_ICON[tone]}<span>${esc(plainText(__(name)))}</span></span>
+        ${name ? `<span class="aw-pill ${tone}">${PILL_ICON[tone]}<span>${esc(plainText(__(name)))}</span></span>` : ""}
         <svg class="aw-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
       </button>`;
 	}
@@ -599,15 +610,18 @@ function run(scope) {
 	}
 
 	function goHome(mod) {
-		if (!isHome()) frappe.set_route("advanced-workspace");
+		if (!isHome()) frappe.set_route(HOME_PAGE);
 		show(mod);
 	}
 
-	// Frappe's own panel, with its tabs, reading and counts. It sits in the Desk sidebar, hidden
-	// behind this frame, so it moves to <body>; its code keeps working on the same element.
+	// Frappe's own notifications, with their tabs, reading and counts. They sit in the Desk
+	// sidebar, hidden behind this frame, so they move to <body>, where their code keeps working
+	// on the same element: a side panel on Frappe 16.5x, a dropdown before it.
 	function wireNotifications() {
 		const bell = one("[data-bell]");
 		const count = one("[data-bell-count]");
+		const panels = frappe.ui.sidebar_panels;
+		if (panels && typeof panels.toggle === "function") return wirePanel(bell, count, panels);
 		const panel = document.querySelector(".dropdown-notifications");
 		if (!panel) {
 			bell.hidden = true;
@@ -637,6 +651,29 @@ function run(scope) {
 		});
 		document.addEventListener("click", (event) => {
 			if (!event.composedPath().includes(panel)) panel.classList.add("hidden");
+		});
+	}
+
+	function followCount(count, source) {
+		const show = () => {
+			const text = source ? source.textContent.trim() : "";
+			count.textContent = text;
+			count.hidden = !text || source.classList.contains("hidden");
+		};
+		if (!source) return;
+		new MutationObserver(show).observe(source, { childList: true, characterData: true, subtree: true, attributes: true });
+		show();
+	}
+
+	function wirePanel(bell, count, panels) {
+		followCount(count, document.querySelector(".sidebar-notification .notification-count"));
+		bell.addEventListener("click", (event) => {
+			// the panel's own dismissal reads a click outside it as a close
+			event.stopPropagation();
+			const panel = panels.get && panels.get("notifications");
+			if (!panel || !panel.$panel) return;
+			if (panel.$panel[0].parentElement !== document.body) document.body.appendChild(panel.$panel[0]);
+			panels.toggle("notifications");
 		});
 	}
 
@@ -713,8 +750,55 @@ function run(scope) {
 			? frappe.ui.toolbar.route_to_user()
 			: frappe.set_route("Form", "User", frappe.session.user);
 
+	// The entries of Frappe's own sidebar menu, made with the same calls, for when that menu
+	// was never built: Frappe 16.3x builds it with a workspace's sidebar, and the home is a page.
+	function standardItems() {
+		const toolbar = frappe.ui.toolbar || {};
+		return [
+			{ name: "website", label: __("Website"), icon: "web", onClick: () => window.open(window.location.origin) },
+			{ is_divider: true },
+			frappe.ui.ThemeSwitcher && {
+				name: "theme",
+				label: __("Toggle Theme"),
+				icon: "monitor",
+				onClick: () => new frappe.ui.ThemeSwitcher().show(),
+			},
+			toolbar.setup_session_defaults &&
+				(frappe.boot.session_defaults || []).length && {
+					name: "session-defaults",
+					label: __("Session Defaults"),
+					icon: "sliders-horizontal",
+					onClick: () => toolbar.setup_session_defaults(),
+				},
+			{
+				name: "reload",
+				label: __("Reload"),
+				icon: "rotate-ccw",
+				onClick: () => (toolbar.clear_cache ? toolbar.clear_cache() : window.location.reload()),
+			},
+			{ is_divider: true },
+			{ name: "logout", label: __("Logout"), icon: "log-out", onClick: () => frappe.app.logout() },
+		].filter(Boolean);
+	}
+
 	function wireAccountMenu(avatar) {
-		// Frappe's own menu, the one at the top of its sidebar, under the avatar.
+		// Frappe 16.5x builds its user menu for any button: the same menu its dock opens.
+		const sidebar = frappe.app && frappe.app.sidebar;
+		if (sidebar && typeof sidebar.create_user_menu === "function" && frappe.ui.Dropdown) {
+			const $avatar = window.jQuery(avatar);
+			sidebar.create_user_menu({ parent: $avatar, button: $avatar, side: "bottom", align: "end" });
+			// "Manage Dock" arranges the dock, which the workspace's bar and menu stand in for
+			const dockItem = __("Manage Dock");
+			avatar.addEventListener("click", () =>
+				setTimeout(() =>
+					document.querySelectorAll('[role="menuitem"]').forEach((item) => {
+						if (item.textContent.trim() === dockItem) item.hidden = true;
+					})
+				)
+			);
+			return;
+		}
+		// Before it, the menu at the top of its sidebar, under the avatar.
 		if (typeof frappe.ui.create_menu === "function") {
 			const items = frappe.app.sidebar?.sidebar_header?.dropdown_items || [];
 			keepSubmenusBeside();
@@ -726,9 +810,7 @@ function run(scope) {
 				menu_items: [
 					{ name: "my-profile", label: "My Profile", icon: "user", onClick: toProfile },
 					{ is_divider: true },
-					...(items.length
-						? items.filter((item) => item.name !== "edit-sidebar")
-						: [{ name: "logout", label: "Logout", icon: "logout", onClick: () => frappe.app.logout() }]),
+					...(items.length ? items.filter((item) => item.name !== "edit-sidebar") : standardItems()),
 				],
 			});
 			return;

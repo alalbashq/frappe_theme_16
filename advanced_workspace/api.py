@@ -176,8 +176,9 @@ def visible_modules():
 
 
 def companies():
-	# a user who cannot read companies still gets the menu, without the company picker
-	if not frappe.has_permission("Company", "read"):
+	# a site without ERPNext has no companies, and a user who cannot read them still gets the
+	# menu: both without the company picker
+	if not frappe.db.exists("DocType", "Company") or not frappe.has_permission("Company", "read"):
 		return []
 	return frappe.get_list("Company", pluck="name", order_by="name asc", limit_page_length=50)
 

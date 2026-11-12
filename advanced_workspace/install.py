@@ -172,6 +172,10 @@ def ensure_basics():
 	if not settings.common_doctypes:
 		settings.common_doctypes = "\n".join(catalog.COMMON_READ)
 		settings.save(ignore_permissions=True)
+	# The home was a Workspace record before it was the app's own page; a Frappe that ranks
+	# workspaces first would keep opening the record, so it goes.
+	if frappe.db.exists("Workspace", {"name": "Advanced Workspace", "module": MODULE}):
+		frappe.delete_doc("Workspace", "Advanced Workspace", force=True, ignore_permissions=True, ignore_on_trash=True)
 	# Frappe sends a role's holders to its Home Page from the site root and after login
 	access.ensure_role(access.ADVANCED_ROLE)
 	frappe.db.set_value("Role", access.ADVANCED_ROLE, "home_page", START_PAGE)
