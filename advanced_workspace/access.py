@@ -1,15 +1,17 @@
 """Roles and permissions behind the workspace modules.
 
-Every module has a user role and a manager role. Its menu decides what they
-may do: the documents it lists, the reports and pages it opens, and the
-documents those need to read.
+A module's roles table names its roles and what each gets: User and Manager get
+the module's rights, decided by its menu (the documents it lists, the reports and
+pages it opens, and the documents those need to read); View Only sees the module
+with the rights it already has.
 """
 
 import frappe
 
-ADVANCED_ROLE = "مستخدم مساحة العمل المتقدمة"
+ADVANCED_ROLE = "Advanced Workspace User"
 MODULE_DT = "Advanced Workspace Module"
 ITEM_DT = "Advanced Workspace Item"
+ROLE_DT = "Advanced Workspace Role"
 SETTINGS_DT = "Advanced Workspace Settings"
 
 PERM_FIELDS = [
@@ -55,32 +57,34 @@ def apply_all():
 
 
 def apply_module(name):
-	module = frappe.db.get_value(
-		MODULE_DT, name, ["user_role", "manager_role", "read_only", "linked_doctypes"], as_dict=True
-	)
-	if not module or not module.user_role or not module.manager_role:
+	module = frappe.db.get_value(MODULE_DT, name, ["read_only", "linked_doctypes"], as_dict=True)
+	if not module:
 		return
-	roles = [module.user_role, module.manager_role]
+	levels = {}
+	for row in frappe.get_all(ROLE_DT, filters={"parent": name, "parenttype": MODULE_DT}, fields=["role", "access"]):
+		if row.access in ("User", "Manager"):
+			levels[row.role] = row.access
+	if not levels:
+		return
+	roles = list(levels)
 	for role in roles:
 		ensure_role(role)
 	common = (frappe.db.get_single_value(SETTINGS_DT, "common_doctypes") or "").split("\n")
-	for item in frappe.get_all(ITEM_DT, filters={"parent": name, "parenttype": MODULE_DT}, fields=["item_type", "target"]):
+	items = frappe.get_all(ITEM_DT, filters={"parent": name, "parenttype": MODULE_DT}, fields=["item_type", "target"])
+	for item in items:
+		if not item.target or item.item_type == "URL":
+			continue
 		if item.item_type == "Report":
 			allow_report(item.target, roles)
 		elif item.item_type == "Page":
 			allow_page(item.target, roles)
-		elif item.item_type == "Link":
-			continue
-		elif module.read_only:
-			grant(item.target, module.user_role, READ)
-			grant(item.target, module.manager_role, READ)
 		else:
-			grant(item.target, module.user_role, USER)
-			grant(item.target, module.manager_role, MANAGER)
+			for role, level in levels.items():
+				grant(item.target, role, READ if module.read_only else MANAGER if level == "Manager" else USER)
 	for doctype in (module.linked_doctypes or "").split("\n") + common:
 		if doctype.strip():
-			grant(doctype.strip(), module.user_role, READ)
-			grant(doctype.strip(), module.manager_role, READ)
+			for role in roles:
+				grant(doctype.strip(), role, READ)
 
 
 def copy_standard(parent):

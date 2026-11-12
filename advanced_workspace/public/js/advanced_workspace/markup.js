@@ -2,20 +2,20 @@
 export const HTML = `
 <div class="aw">
   <header class="aw-top">
-    <button class="aw-logo" data-go-home data-t-title="الرئيسية"><svg viewBox="0 0 24 24"><path d="M3 4l9 8 9-8M3 20l9-8 9 8M3 4v16M21 4v16"/></svg></button>
-    <button class="aw-menu-btn" data-toggle data-t-title="القائمة"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+    <button class="aw-logo" data-go-home data-t-title="Home"><svg viewBox="0 0 24 24"><path d="M3 4l9 8 9-8M3 20l9-8 9 8M3 4v16M21 4v16"/></svg></button>
+    <button class="aw-menu-btn" data-toggle data-t-title="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <button class="aw-search" data-search>
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <span data-t="بحث"></span>
+      <span data-t="Search"></span>
       <kbd>Ctrl K</kbd>
     </button>
     <div class="aw-tools">
       <button class="aw-lang" data-lang></button>
-      <button data-full data-t-title="ملء الشاشة"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
-      <button data-theme data-t-title="المظهر"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-1-2 0-3 2-1 3-1c2.5 0 4-1.500 4-3.500C21 6.500 17 3 12 3z"/><circle cx="7.500" cy="11" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="16" cy="9" r="1"/></svg></button>
-      <button data-bell data-t-title="التنبيهات"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 21h4"/></svg><span class="aw-count" data-bell-count hidden></span></button>
+      <button data-full data-t-title="Full Screen"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
+      <button data-theme data-t-title="Theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-1-2 0-3 2-1 3-1c2.5 0 4-1.500 4-3.500C21 6.500 17 3 12 3z"/><circle cx="7.500" cy="11" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="16" cy="9" r="1"/></svg></button>
+      <button data-bell data-t-title="Notifications"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 21h4"/></svg><span class="aw-count" data-bell-count hidden></span></button>
       <div class="aw-user">
-        <button class="aw-avatar" data-user-btn data-t-title="حسابي"></button>
+        <button class="aw-avatar" data-user-btn data-t-title="My Account"></button>
       </div>
     </div>
   </header>
@@ -23,10 +23,10 @@ export const HTML = `
   <div class="aw-body">
     <div class="aw-scrim" data-scrim></div>
     <aside class="aw-side" data-side>
-      <div class="aw-side-head"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><span data-t="القائمة الرئيسية"></span></div>
-      <nav data-nav data-t-title="المديولات"></nav>
+      <div class="aw-side-head"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><span data-t="Main Menu"></span></div>
+      <nav data-nav data-t-title="Modules"></nav>
     </aside>
-    <main class="aw-main" data-main><div class="aw-loading" data-t="جارٍ التحميل"></div></main>
+    <main class="aw-main" data-main><div class="aw-loading" data-t="Loading"></div></main>
   </div>
 </div>
 `;

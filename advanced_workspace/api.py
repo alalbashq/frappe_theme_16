@@ -10,9 +10,12 @@ import frappe
 from frappe import _
 from frappe.utils import add_days, add_months, flt, get_first_day, getdate, nowdate
 
-MODULE_DT = "Advanced Workspace Module"
-ADVANCED_ROLE = "مستخدم مساحة العمل المتقدمة"
-ITEM_TYPES = {"DocType": "dt", "Tree": "tree", "Report": "rp", "Page": "page", "Link": "url"}
+from advanced_workspace.access import ADVANCED_ROLE, MODULE_DT, ROLE_DT
+
+# Labels are English, as in Frappe; their Arabic is in locale/ar.po under this context, and a
+# site's own labels can be translated in Frappe's Translation list, with or without it.
+CONTEXT = "Advanced Workspace"
+ITEM_TYPES = {"DocType": "dt", "Report": "rp", "Page": "page", "URL": "url"}
 
 
 @frappe.whitelist()
@@ -49,8 +52,14 @@ def set_language(lang):
 # ---------------------------------------------------------------------- menu
 
 
-def word(arabic, english):
-	return arabic if frappe.local.lang == "ar" else (english or arabic)
+def label(text):
+	return _(text, context=CONTEXT) if text else ""
+
+
+def item_kind(item):
+	if item.item_type == "DocType" and item.doc_view == "Tree":
+		return "tree"
+	return ITEM_TYPES.get(item.item_type, "dt")
 
 
 def load_modules():
@@ -59,7 +68,7 @@ def load_modules():
 		MODULE_DT,
 		filters={"enabled": 1},
 		order_by="sequence asc",
-		fields=["name", "label", "label_en", "icon", "user_role", "manager_role", "direct_link"],
+		fields=["name", "label", "icon", "direct_link"],
 	)
 	names = [row.name for row in rows]
 	if not names:
@@ -67,17 +76,17 @@ def load_modules():
 	items = frappe.get_all(
 		"Advanced Workspace Item",
 		filters={"parent": ["in", names], "parenttype": MODULE_DT, "enabled": 1},
-		fields=["parent", "label", "label_en", "item_type", "target"],
+		fields=["parent", "label", "item_type", "target", "url", "doc_view"],
 		order_by="idx asc",
 	)
 	stats = frappe.get_all(
 		"Advanced Workspace Stat",
 		filters={"parent": ["in", names], "parenttype": MODULE_DT},
 		order_by="idx asc",
-		fields=["parent", "label", "label_en", "stat_type", "document", "sum_field", "date_field", "filters", "ledger_root"],
+		fields=["parent", "label", "stat_type", "document", "sum_field", "date_field", "filters", "ledger_root"],
 	)
-	extra = frappe.get_all(
-		"Has Role", filters={"parent": ["in", names], "parenttype": MODULE_DT}, fields=["parent", "role"]
+	module_roles = frappe.get_all(
+		ROLE_DT, filters={"parent": ["in", names], "parenttype": MODULE_DT}, fields=["parent", "role"]
 	)
 	out = []
 	for row in rows:
@@ -86,11 +95,11 @@ def load_modules():
 			if stat.parent != row.name:
 				continue
 			if stat.stat_type == "Ledger":
-				kpis.append({"l": word(stat.label, stat.label_en), "k": "gl", "root": stat.ledger_root})
+				kpis.append({"l": label(stat.label), "k": "gl", "root": stat.ledger_root})
 			else:
 				kpis.append(
 					{
-						"l": word(stat.label, stat.label_en),
+						"l": label(stat.label),
 						"k": "sum" if stat.stat_type == "Sum" else "count",
 						"dt": stat.document,
 						"f": stat.sum_field if stat.stat_type == "Sum" else None,
@@ -101,14 +110,13 @@ def load_modules():
 		out.append(
 			{
 				"key": row.name,
-				"label": word(row.label, row.label_en),
+				"label": label(row.label),
 				"icon": row.icon,
 				"direct": row.direct_link,
 				"kpis": kpis,
-				"roles": [r for r in (row.user_role, row.manager_role) if r]
-				+ [r.role for r in extra if r.parent == row.name],
+				"roles": [r.role for r in module_roles if r.parent == row.name],
 				"items": [
-					{"t": ITEM_TYPES.get(i.item_type, "dt"), "n": i.target, "l": word(i.label, i.label_en)}
+					{"t": item_kind(i), "n": i.url if i.item_type == "URL" else i.target, "l": label(i.label)}
 					for i in items
 					if i.parent == row.name
 				],
@@ -213,11 +221,11 @@ class Figures:
 
 	def measure(self, spec, start, end):
 		doctype = spec["dt"]
-		filters = dict(spec.get("w") or {})
+		filters = conditions(spec)
 		if self.company and frappe.get_meta(doctype).has_field("company"):
-			filters["company"] = self.company
+			filters.append([doctype, "company", "=", self.company])
 		if spec.get("d") and start:
-			filters[spec["d"]] = ["between", [start, end]]
+			filters.append([doctype, spec["d"], "between", [start, end]])
 		if spec.get("f"):
 			rows = frappe.get_list(doctype, filters=filters, fields=[{"SUM": spec["f"], "as": "v"}])
 		else:
@@ -316,7 +324,10 @@ class Figures:
 	def list_filters(self, spec, start, end):
 		"""What the list behind a card shows: the card's own conditions, the company,
 		and the year so far when the card is dated."""
-		filters = dict(spec.get("w") or {})
+		filters = {}
+		for doctype, field, operator, value in conditions(spec):
+			key = field if doctype == spec["dt"] else f"{doctype}.{field}"
+			filters[key] = value if operator == "=" else [operator, value]
 		if self.company and frappe.get_meta(spec["dt"]).has_field("company"):
 			filters["company"] = self.company
 		if spec.get("d"):
@@ -327,10 +338,10 @@ class Figures:
 		"""Sum or count per month from the first month on, in one grouped read that
 		keeps the user's permissions."""
 		doctype = spec["dt"]
-		filters = dict(spec.get("w") or {})
+		filters = conditions(spec)
 		if self.company and frappe.get_meta(doctype).has_field("company"):
-			filters["company"] = self.company
-		filters[spec["d"]] = ["between", [f"{first[0]}-{first[1]:02d}-01", str(today)]]
+			filters.append([doctype, "company", "=", self.company])
+		filters.append([doctype, spec["d"], "between", [f"{first[0]}-{first[1]:02d}-01", str(today)]])
 		value = {"SUM": spec["f"], "as": "v"} if spec.get("f") else {"COUNT": "name", "as": "v"}
 		rows = frappe.get_list(
 			doctype,
@@ -438,6 +449,28 @@ class Figures:
 				)
 		rows.sort(key=lambda row: row["created"], reverse=True)
 		return rows[:limit]
+
+
+def conditions(spec):
+	"""A statistic's own filters as Frappe's [doctype, field, condition, value] list. They are
+	saved that way by the filter editor; older ones were an object, {"field": value} or
+	{"field": [condition, value]}, and still read the same."""
+	saved = spec.get("w") or []
+	doctype = spec["dt"]
+	if isinstance(saved, dict):
+		return [
+			[doctype, field, value[0], value[1]]
+			if isinstance(value, list | tuple) and len(value) == 2 and isinstance(value[0], str)
+			else [doctype, field, "=", value]
+			for field, value in saved.items()
+		]
+	out = []
+	for row in saved:
+		if isinstance(row, list | tuple) and len(row) >= 4:
+			out.append(list(row[:4]))
+		elif isinstance(row, list | tuple) and len(row) == 3:
+			out.append([doctype, *row])
+	return out
 
 
 def flow(row):

@@ -6,7 +6,6 @@
  "engine": "InnoDB",
  "field_order": [
   "label",
-  "label_en",
   "stat_type",
   "document",
   "sum_field",
@@ -19,14 +18,8 @@
    "fieldname": "label",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Name in Arabic",
+   "label": "Label",
    "reqd": 1
-  },
-  {
-   "fieldname": "label_en",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Name in English"
   },
   {
    "fieldname": "stat_type",
@@ -37,37 +30,49 @@
    "reqd": 1
   },
   {
+   "depends_on": "eval:doc.stat_type != \"Ledger\"",
    "fieldname": "document",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Document"
+   "label": "Document Type",
+   "mandatory_depends_on": "eval:doc.stat_type != \"Ledger\"",
+   "options": "DocType"
   },
   {
+   "depends_on": "eval:doc.stat_type == \"Sum\"",
    "fieldname": "sum_field",
-   "fieldtype": "Data",
-   "label": "Sum Field"
+   "fieldtype": "Select",
+   "label": "Sum Of",
+   "mandatory_depends_on": "eval:doc.stat_type == \"Sum\"",
+   "options": ""
   },
   {
+   "depends_on": "eval:doc.stat_type != \"Ledger\"",
+   "description": "Leave empty for a figure with no period, such as what customers owe now.",
    "fieldname": "date_field",
-   "fieldtype": "Data",
-   "label": "Date Field"
+   "fieldtype": "Select",
+   "label": "Date Field",
+   "options": ""
   },
   {
+   "depends_on": "eval:doc.stat_type != \"Ledger\"",
    "fieldname": "filters",
    "fieldtype": "Code",
-   "label": "Filters (JSON)",
+   "label": "Filters",
    "options": "JSON"
   },
   {
+   "depends_on": "eval:doc.stat_type == \"Ledger\"",
    "fieldname": "ledger_root",
    "fieldtype": "Select",
    "label": "Ledger Line",
+   "mandatory_depends_on": "eval:doc.stat_type == \"Ledger\"",
    "options": "\nIncome\nExpense\nNet\nCash"
   }
  ],
  "istable": 1,
  "links": [],
- "modified": "2026-11-12 02:00:00.000000",
+ "modified": "2026-11-12 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "Advanced Workspace",
  "name": "Advanced Workspace Stat",

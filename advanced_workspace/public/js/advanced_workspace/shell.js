@@ -1,7 +1,6 @@
 // The workspace frame. It stays on <body> for the whole visit: Desk moves pages in and out,
 // and lists, forms, reports and trees are Frappe's own pages, placed inside this frame.
 import { ICONS, SAR } from "./icons";
-import { WORDS } from "./words";
 import { HTML, CSS } from "./markup";
 
 const HOST_ID = "advanced-workspace-host";
@@ -66,7 +65,8 @@ function pageStyle() {
 
 function run(scope) {
 	const LANG = frappe.boot.lang || "en";
-	const t = (arabic) => (LANG === "ar" ? arabic : __(WORDS[arabic] || arabic));
+	// Written in English and translated as Frappe translates: locale/ar.po, context "Advanced Workspace".
+	const t = (text) => __(text, null, "Advanced Workspace");
 	const one = (selector) => scope.querySelector(selector);
 	const all = (selector) => [...scope.querySelectorAll(selector)];
 	const esc = (value) => frappe.utils.escape_html(value == null ? "" : String(value));
@@ -83,7 +83,7 @@ function run(scope) {
 	const CHEVRON = '<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
 	const icon = (name) => `<svg viewBox="0 0 24 24">${ICONS[name] || ICONS.box}</svg>`;
 	const KIND_ICONS = { dt: "doc", tree: "tree", page: "window", rp: "chart", url: "link" };
-	const KIND_WORDS = { tree: "شجرة", page: "صفحة", rp: "تقرير", url: "رابط" };
+	const KIND_WORDS = { tree: "Tree", page: "Page", rp: "Report", url: "Link" };
 	const api = (args) => frappe.xcall("advanced_workspace.api.home", args);
 
 	let home = null;
@@ -207,9 +207,9 @@ function run(scope) {
 		const docs = items.filter(([item]) => item.t === "dt");
 		const more = items.filter(([item]) => item.t !== "dt");
 		const options = home.companies.map((c) => `<option>${esc(c)}</option>`).join("");
-		const tools = `<span class="aw-bar-tools"><small>${t("من بداية السنة")}</small>${
-			home.companies.length > 1 ? `<select data-company aria-label="${t("الشركة")}">${options}</select>` : ""
-		}<button data-refresh title="${t("تحديث")}" aria-label="${t("تحديث")}"><svg viewBox="0 0 24 24">${
+		const tools = `<span class="aw-bar-tools"><small>${t("Year to date")}</small>${
+			home.companies.length > 1 ? `<select data-company aria-label="${t("Company")}">${options}</select>` : ""
+		}<button data-refresh title="${t("Refresh")}" aria-label="${t("Refresh")}"><svg viewBox="0 0 24 24">${
 			ICONS.refresh
 		}</svg></button></span>`;
 		// Cells of the final size, so nothing moves when the figures land.
@@ -236,12 +236,12 @@ function run(scope) {
 			.map(
 				([item, i]) => `<button class="aw-tile" data-link="${i}">
         <span class="aw-tile-ico">${icon(KIND_ICONS[item.t])}</span>
-        <span class="aw-tile-text"><b>${esc(item.l)}</b><small>${t(KIND_WORDS[item.t] || "رابط")}</small></span>
+        <span class="aw-tile-text"><b>${esc(item.l)}</b><small>${t(KIND_WORDS[item.t] || "Link")}</small></span>
         <svg class="aw-go" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>`
 			)
 			.join("");
 		main.innerHTML = `
-    <div class="aw-bar"><h2>${t("نظرة عامة")}</h2>${tools}</div>
+    <div class="aw-bar"><h2>${t("Overview")}</h2>${tools}</div>
     ${
 		n
 			? `<section class="aw-figs${n === 1 ? " solo" : ""}" data-figs style="--cols: ${shape.cols}; --rows: ${shape.rows}">${cells}</section>`
@@ -249,20 +249,20 @@ function run(scope) {
 	}
     ${
 		docs.length
-			? `<div class="aw-bar aw-bar-sub"><h2>${t("المستندات")}</h2><span class="aw-attn" data-attn hidden></span></div>
+			? `<div class="aw-bar aw-bar-sub"><h2>${t("Documents")}</h2><span class="aw-attn" data-attn hidden></span></div>
     <section class="aw-docs" style="--dcols: ${docColumns(docs.length)}">${docCells}</section>`
 			: ""
 	}
     ${
 		more.length
-			? `<div class="aw-bar aw-bar-sub"><h2>${t("التقارير والصفحات")}</h2></div>
+			? `<div class="aw-bar aw-bar-sub"><h2>${t("Reports and pages")}</h2></div>
     <section class="aw-tiles" style="--tcols: ${docColumns(more.length)}">${tiles}</section>`
 			: ""
 	}
     ${
 		docs.length
 			? `<section class="aw-panel">
-      <header class="aw-panel-head"><div><h2>${t("آخر المستندات")}</h2><p data-recent-sub>${t("جارٍ التحميل")}</p></div></header>
+      <header class="aw-panel-head"><div><h2>${t("Latest documents")}</h2><p data-recent-sub>${t("Loading")}</p></div></header>
       <div class="aw-items" data-recent></div>
     </section>`
 			: ""
@@ -308,8 +308,8 @@ function run(scope) {
 						card.delta
 				  )}%</span>`;
 		const compare = dated
-			? `<p class="aw-cmp"><span>${t("هذا الشهر")} <b dir="ltr">${compact(card.cur)}</b></span><span>${t(
-					"الشهر الماضي"
+			? `<p class="aw-cmp"><span>${t("This month")} <b dir="ltr">${compact(card.cur)}</b></span><span>${t(
+					"Last month"
 			  )} <b dir="ltr">${compact(card.prev || 0)}</b></span></p>`
 			: "";
 		return `<button class="aw-cell${hero ? " hero" : ""}" data-kpi="${i}" title="${esc(card.l)}: ${full(card.v)}">
@@ -331,7 +331,7 @@ function run(scope) {
 		box.classList.toggle("odd", shape.odd);
 		box.innerHTML = cards.length
 			? cards.map((card, i) => cell(card, i, data.currency)).join("") + blanks(shape.blanks)
-			: `<div class="aw-none">${t("لا توجد إحصائيات لهذا المديول.")}</div>`;
+			: `<div class="aw-none">${t("This module has no statistics.")}</div>`;
 		all("[data-kpi]").forEach((el) =>
 			el.addEventListener("click", () => frappe.set_route(...cards[el.dataset.kpi].route))
 		);
@@ -339,9 +339,9 @@ function run(scope) {
 
 	// What waits, written under the document it belongs to.
 	const NOTES = {
-		late: { tone: "late", text: "متأخرة السداد" },
-		soon: { tone: "soon", text: "تستحق خلال ٧ أيام" },
-		draft: { tone: "draft", text: "مسودة بانتظار الاعتماد" },
+		late: { tone: "late", text: "overdue" },
+		soon: { tone: "soon", text: "due within 7 days" },
+		draft: { tone: "draft", text: "drafts awaiting approval" },
 	};
 	const STATUS_TONE = {
 		Paid: "ok", Completed: "ok", Submitted: "ok", Closed: "ok", Delivered: "ok", "To Bill": "ok",
@@ -378,14 +378,14 @@ function run(scope) {
 			if (figures) {
 				num.innerHTML =
 					figures.cur || figures.prev
-						? `<b dir="ltr">${figures.cur.toLocaleString("en-US")}</b><small>${t("هذا الشهر")} · ${t(
-								"الشهر الماضي"
+						? `<b dir="ltr">${figures.cur.toLocaleString("en-US")}</b><small>${t("This month")} · ${t(
+								"Last month"
 						  )} <span dir="ltr">${figures.prev.toLocaleString("en-US")}</span></small>`
-						: `<b class="aw-dash">0</b><small>${t("لا جديد هذا الشهر")}</small>`;
+						: `<b class="aw-dash">0</b><small>${t("Nothing new this month")}</small>`;
 				if (figures.new) {
 					cellEl.querySelector("[data-new-slot]").innerHTML = `<button class="aw-plus" data-new title="${t(
-						"جديد"
-					)}: ${esc(item.l)}" aria-label="${t("جديد")}: ${esc(item.l)}">${icon("plus")}<span>${t("جديد")}</span></button>`;
+						"New"
+					)}: ${esc(item.l)}" aria-label="${t("New")}: ${esc(item.l)}">${icon("plus")}<span>${t("New")}</span></button>`;
 					cellEl.querySelector("[data-new]").addEventListener("click", () => frappe.new_doc(item.n));
 				}
 			}
@@ -406,7 +406,7 @@ function run(scope) {
 		if (attn) {
 			const total = queue.reduce((sum, row) => sum + row.c, 0);
 			attn.hidden = !total;
-			attn.textContent = `${total.toLocaleString("en-US")} ${t("بانتظار إجراء")}`;
+			attn.textContent = `${total.toLocaleString("en-US")} ${t("need action")}`;
 		}
 
 		paintRecent(mod, data);
@@ -426,8 +426,8 @@ function run(scope) {
 		const start = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 		const days = Math.round((start(today) - start(date)) / 86400000);
 		const time = atTime.format(date);
-		if (days === 0) return `${t("اليوم")} ${time}`;
-		if (days === 1) return `${t("أمس")} ${time}`;
+		if (days === 0) return `${t("Today")} ${time}`;
+		if (days === 1) return `${t("Yesterday")} ${time}`;
 		if (days > 1 && days < 7) return `${onWeekday.format(date)} ${time}`;
 		return (date.getFullYear() === today.getFullYear() ? onDate : onDateYear).format(date);
 	}
@@ -452,7 +452,7 @@ function run(scope) {
 		plain: '<i class="dot"></i>',
 	};
 	const documentsWord = (n) =>
-		n === 1 ? t("مستند واحد") : n === 2 ? t("مستندان") : `${n.toLocaleString("en-US")} ${t("مستندات")}`;
+		n === 1 ? t("1 document") : n === 2 ? t("2 documents") : `${n.toLocaleString("en-US")} ${t("documents")}`;
 
 	function recentItem(mod, row, i, currency) {
 		const name = row.status || (row.ds === 2 ? "Cancelled" : row.ds === 0 ? "Draft" : "Submitted");
@@ -487,14 +487,14 @@ function run(scope) {
 		const recent = (data.recent || []).slice(0, RECENT_LIMIT);
 		const sub = one("[data-recent-sub]");
 		if (!recent.length) {
-			if (sub) sub.textContent = t("لا شيء بعد");
+			if (sub) sub.textContent = t("Nothing yet");
 			box.innerHTML = `<div class="aw-empty">
           <svg viewBox="0 0 24 24"><path d="M3 13l2.5-7.5A2 2 0 0 1 7.4 4h9.2a2 2 0 0 1 1.9 1.5L21 13v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5z"/><path d="M3 13h5l1.5 2.5h5L16 13h5"/></svg>
-          <b>${t("لا توجد مستندات بعد")}</b><p>${t("أول ما تسجّل مستندًا في هذا القسم يظهر هنا.")}</p></div>`;
+          <b>${t("No documents yet")}</b><p>${t("Documents made in this section show up here.")}</p></div>`;
 			box.style.removeProperty("--rows");
 			return;
 		}
-		if (sub) sub.textContent = `${documentsWord(recent.length)} · ${t("أحدثها")} ${whenText(dateOf(recent[0].created))}`;
+		if (sub) sub.textContent = `${documentsWord(recent.length)} · ${t("newest")} ${whenText(dateOf(recent[0].created))}`;
 		box.style.setProperty("--rows", Math.ceil(recent.length / 2));
 		box.innerHTML = recent.map((row, i) => recentItem(mod, row, i, data.currency)).join("");
 		box.querySelectorAll("[data-act]").forEach((el) =>
@@ -532,7 +532,7 @@ function run(scope) {
 			const boxes = part === "kpis" ? ["[data-figs]"] : ["[data-recent]"];
 			boxes.forEach((selector) => {
 				const box = one(selector);
-				if (box) box.innerHTML = `<div class="aw-none">${t("تعذر التحميل. أعد فتح المديول.")}</div>`;
+				if (box) box.innerHTML = `<div class="aw-none">${t("Could not load. Open the module again.")}</div>`;
 			});
 		}
 	}
@@ -712,7 +712,7 @@ function run(scope) {
 		try {
 			home = await api({ action: "home" });
 		} catch (error) {
-			main.innerHTML = `<div class="aw-empty">${t("تعذر تحميل مساحة العمل. أعد تحميل الصفحة.")}</div>`;
+			main.innerHTML = `<div class="aw-empty">${t("The workspace could not load. Reload the page.")}</div>`;
 			return;
 		}
 		wireTop();
@@ -723,9 +723,9 @@ function run(scope) {
 		const first = home.modules.find((m) => m.key === "accounts") || home.modules.find((m) => !m.link);
 		if (!first) {
 			main.innerHTML = `<div class="aw-empty">${t(
-				"لا توجد مديولات مخصصة لحسابك. اطلب من مدير النظام إسناد دور لك."
+				"No modules are assigned to your account. Ask your administrator for a role."
 			)}</div>`;
-			one("[data-title]").textContent = t("مساحة العمل");
+			one("[data-title]").textContent = t("Workspace");
 			return;
 		}
 		if (!one(".aw-mod.open")) one(`.aw-mod[data-key="${first.key}"]`)?.classList.add("open");

@@ -6,7 +6,6 @@
  "engine": "InnoDB",
  "field_order": [
   "label",
-  "label_en",
   "module_key",
   "sequence",
   "icon",
@@ -15,9 +14,6 @@
   "read_only",
   "direct_link",
   "access",
-  "user_role",
-  "manager_role",
-  "column_b",
   "roles",
   "items_section",
   "items",
@@ -31,14 +27,8 @@
    "fieldname": "label",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Name in Arabic",
+   "label": "Label",
    "reqd": 1
-  },
-  {
-   "fieldname": "label_en",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Name in English"
   },
   {
    "fieldname": "module_key",
@@ -88,26 +78,11 @@
    "label": "Roles"
   },
   {
-   "fieldname": "user_role",
-   "fieldtype": "Link",
-   "label": "User Role",
-   "options": "Role"
-  },
-  {
-   "fieldname": "manager_role",
-   "fieldtype": "Link",
-   "label": "Manager Role",
-   "options": "Role"
-  },
-  {
-   "fieldname": "column_b",
-   "fieldtype": "Column Break"
-  },
-  {
+   "description": "User and Manager get the module's rights on its documents; View Only sees the module with the rights it already has.",
    "fieldname": "roles",
-   "fieldtype": "Table MultiSelect",
-   "label": "Other Roles That See This Module",
-   "options": "Has Role"
+   "fieldtype": "Table",
+   "label": "Roles",
+   "options": "Advanced Workspace Role"
   },
   {
    "fieldname": "items_section",
@@ -143,7 +118,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-12 02:00:00.000000",
+ "modified": "2026-11-12 18:00:00.000000",
  "modified_by": "Administrator",
  "module": "Advanced Workspace",
  "name": "Advanced Workspace Module",

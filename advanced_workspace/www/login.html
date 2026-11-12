@@ -2,54 +2,54 @@
 {#- Behind the sign-in, the lines of work the system serves: a photograph, a line and a name for each.
     Frappe's forms and their script sit in the panel untouched. -#}
 {%- set img = "/assets/advanced_workspace/images/login/" -%}
-{#- The words live here, not in login.py: a template reloads by itself, a module waits for a restart. -#}
-{%- set ar = awl.lang == "ar" -%}
+{#- The words live here, not in login.py: a template reloads by itself, a module waits for a restart.
+    They are English, translated as Frappe translates: locale/ar.po, context "Advanced Workspace Login". -#}
 {%- set words = {
-	"morning": "صباح الخير" if ar else "Good morning",
-	"evening": "مساء الخير" if ar else "Good evening",
-	"hello": "أهلاً بك" if ar else "Welcome",
-	"sub": "سجّل دخولك وكمّل شغلك من حيث وقفت." if ar else "Sign in and pick up where you left off.",
-	"show": "عرض" if ar else "Show",
+	"morning": _("Good morning", context="Advanced Workspace Login"),
+	"evening": _("Good evening", context="Advanced Workspace Login"),
+	"hello": _("Welcome", context="Advanced Workspace Login"),
+	"sub": _("Sign in and pick up where you left off.", context="Advanced Workspace Login"),
+	"show": _("Show", context="Advanced Workspace Login"),
 } -%}
 {#- each slide names a pain a trader knows, then what the system already does about it:
     check the app before promising anything new -#}
 {%- set slides = [
-	{"photo": "till", "label": "نقطة البيع" if ar else "Point of sale",
-		"title": "النت فصل؟ البيع ما يوقف" if ar else "Internet down? Sales don't stop",
-		"text": "لا تخلّي الزبون واقف عند الكاشير. نقطة البيع تكمّل بدون نت، وأول ما يرجع ترفع كل الفواتير لحالها." if ar else "Don't leave customers waiting at the till. The point of sale keeps going offline and uploads every invoice once the connection is back."},
-	{"photo": "clothes", "label": "الملابس" if ar else "Clothing",
-		"title": "تدوّر المقاس والزبون ينتظر؟" if ar else "Hunting for a size while the customer waits?",
-		"text": "كل موديل بمقاساته وألوانه، ولكل قطعة باركود. تعرف وش باقي من كل مقاس بثانية، وملصقات الأسعار تطبعها بنفسك." if ar else "Every style with its sizes and colours, every piece with its barcode. See what's left of each size in a second, and print price tags yourself."},
-	{"photo": "restaurant", "label": "المطاعم" if ar else "Restaurants",
-		"title": "وقت الزحمة، ولا طلب يضيع" if ar else "Rush hour, and no order gets lost",
-		"text": "الطلب ينطبع في المطبخ أول ما ينحفظ، وكل قسم تطلع أصنافه على طابعته. لا ورق يضيع ولا لخبطة." if ar else "Orders print in the kitchen the moment they're saved, each station on its own printer. No lost tickets, no mix-ups."},
-	{"photo": "accessories", "label": "الإكسسوارات" if ar else "Accessories",
-		"title": "قطع صغيرة، وخسارتها كبيرة" if ar else "Small pieces, big losses",
-		"text": "كل قطعة بباركودها وسعرها، وتعرف كم باقي منها في كل فرع بدون ما تعدّها بيدك." if ar else "Every piece with its barcode and price, and how many are left in each branch without counting by hand."},
-	{"photo": "market", "label": "السوبرماركت" if ar else "Supermarkets",
-		"title": "الطابور طويل والزبون متضايق؟" if ar else "Long queue, annoyed customers?",
-		"text": "باركود الميزان يقرأ الوزن والسعر لحاله، والعروض تنطبق على الفاتورة بدون حسبة. والطابور يمشي." if ar else "Scale barcodes carry the weight and the price, and offers apply to the bill with no maths. The queue keeps moving."},
-	{"photo": "route", "label": "خطوط السير والمندوبين" if ar else "Routes and reps",
-		"title": "وين مناديبك الحين؟" if ar else "Where are your reps right now?",
-		"text": "المندوب يطلب ويفوتر ويحصّل من عند العميل، وكل زيارة تتسجّل بموقعها. تعرف وش صار وأنت بمكانك." if ar else "Reps take orders, invoice and collect at the customer's door, and every visit is logged with its location. You know what happened without leaving your desk."},
-	{"photo": "people", "label": "الموارد البشرية" if ar else "Human resources",
-		"title": "آخر الشهر وهمّ الرواتب؟" if ar else "Month end, and payroll again?",
-		"text": "الحضور والإجازات والرواتب في مكان واحد، والموظف يسجّل حضوره ويطلب إجازته من جواله. ودّع الجداول والورق." if ar else "Attendance, leave and payroll in one place, and staff check in and ask for leave from their phones. Goodbye to spreadsheets and paper."},
-	{"photo": "store", "label": "المخازن" if ar else "Warehouses",
-		"title": "النظام يقول موجود والرف فاضي؟" if ar else "In stock on screen, empty on the shelf?",
-		"text": "رصيد كل صنف في كل مستودع، وكل تحويل بينها مسجّل خطوة بخطوة. اللي على الشاشة هو اللي على الرف." if ar else "Every item's balance in every warehouse, and every transfer recorded step by step. What's on screen is what's on the shelf."},
-	{"photo": "make", "label": "التصنيع" if ar else "Manufacturing",
-		"title": "كم كلّفك المنتج فعلاً؟" if ar else "What did that product really cost you?",
-		"text": "قائمة مواد لكل منتج، وأوامر تشغيل تصرف الخامات وتحسب التكلفة الحقيقية لكل اللي يطلع من الخط." if ar else "A bill of materials for every product, and work orders that draw the materials and work out the true cost of everything off the line."},
-	{"photo": "tailor", "label": "تفصيل الملابس" if ar else "Tailoring",
-		"title": "الزبونة تسأل: وين وصل طلبي؟" if ar else "The customer asks: where's my order?",
-		"text": "المقاسات محفوظة من أول زيارة، وكل طلب مقسوم قطع تعرف وين وصلت لين التسليم. وأجور الخياطين بالقطعة تنحسب لحالها." if ar else "Measurements kept from the first visit, every order split into pieces you can follow to delivery, and tailors' piece rates worked out for you."},
-	{"photo": "crm", "label": "إدارة العملاء CRM" if ar else "CRM",
-		"title": "عميل سأل وما أحد رجع له؟" if ar else "A lead asked and nobody called back?",
-		"text": "كل عميل محتمل وكل صفقة في مكانها، وتعرف مين لازم تتابع اليوم. لا تخلّي فرصة تروح لغيرك." if ar else "Every lead and every deal in its place, and you know who needs a follow-up today. Don't let an opportunity go to someone else."},
-	{"photo": "chat", "label": "الواتساب" if ar else "WhatsApp",
-		"title": "تصوّر الفاتورة وترسلها بيدك؟" if ar else "Still photographing invoices to send them?",
-		"text": "خلّ النظام يرسلها عنك: أول ما تعتمد الفاتورة، النظام يرسلها لعميلك على الواتساب PDF، وتنبيهاته المهمة توصل لجوالك." if ar else "Let the system send it for you: the moment you approve an invoice, the system sends it to your customer on WhatsApp as a PDF, and its key alerts reach your phone."},
+	{"photo": "till", "label": _("Point of sale", context="Advanced Workspace Login"),
+		"title": _("Internet down? Sales don't stop", context="Advanced Workspace Login"),
+		"text": _("Don't leave customers waiting at the till. The point of sale keeps going offline and uploads every invoice once the connection is back.", context="Advanced Workspace Login")},
+	{"photo": "clothes", "label": _("Clothing", context="Advanced Workspace Login"),
+		"title": _("Hunting for a size while the customer waits?", context="Advanced Workspace Login"),
+		"text": _("Every style with its sizes and colours, every piece with its barcode. See what's left of each size in a second, and print price tags yourself.", context="Advanced Workspace Login")},
+	{"photo": "restaurant", "label": _("Restaurants", context="Advanced Workspace Login"),
+		"title": _("Rush hour, and no order gets lost", context="Advanced Workspace Login"),
+		"text": _("Orders print in the kitchen the moment they're saved, each station on its own printer. No lost tickets, no mix-ups.", context="Advanced Workspace Login")},
+	{"photo": "accessories", "label": _("Accessories", context="Advanced Workspace Login"),
+		"title": _("Small pieces, big losses", context="Advanced Workspace Login"),
+		"text": _("Every piece with its barcode and price, and how many are left in each branch without counting by hand.", context="Advanced Workspace Login")},
+	{"photo": "market", "label": _("Supermarkets", context="Advanced Workspace Login"),
+		"title": _("Long queue, annoyed customers?", context="Advanced Workspace Login"),
+		"text": _("Scale barcodes carry the weight and the price, and offers apply to the bill with no maths. The queue keeps moving.", context="Advanced Workspace Login")},
+	{"photo": "route", "label": _("Routes and reps", context="Advanced Workspace Login"),
+		"title": _("Where are your reps right now?", context="Advanced Workspace Login"),
+		"text": _("Reps take orders, invoice and collect at the customer's door, and every visit is logged with its location. You know what happened without leaving your desk.", context="Advanced Workspace Login")},
+	{"photo": "people", "label": _("Human resources", context="Advanced Workspace Login"),
+		"title": _("Month end, and payroll again?", context="Advanced Workspace Login"),
+		"text": _("Attendance, leave and payroll in one place, and staff check in and ask for leave from their phones. Goodbye to spreadsheets and paper.", context="Advanced Workspace Login")},
+	{"photo": "store", "label": _("Warehouses", context="Advanced Workspace Login"),
+		"title": _("In stock on screen, empty on the shelf?", context="Advanced Workspace Login"),
+		"text": _("Every item's balance in every warehouse, and every transfer recorded step by step. What's on screen is what's on the shelf.", context="Advanced Workspace Login")},
+	{"photo": "make", "label": _("Manufacturing", context="Advanced Workspace Login"),
+		"title": _("What did that product really cost you?", context="Advanced Workspace Login"),
+		"text": _("A bill of materials for every product, and work orders that draw the materials and work out the true cost of everything off the line.", context="Advanced Workspace Login")},
+	{"photo": "tailor", "label": _("Tailoring", context="Advanced Workspace Login"),
+		"title": _("The customer asks: where's my order?", context="Advanced Workspace Login"),
+		"text": _("Measurements kept from the first visit, every order split into pieces you can follow to delivery, and tailors' piece rates worked out for you.", context="Advanced Workspace Login")},
+	{"photo": "crm", "label": _("CRM", context="Advanced Workspace Login"),
+		"title": _("A lead asked and nobody called back?", context="Advanced Workspace Login"),
+		"text": _("Every lead and every deal in its place, and you know who needs a follow-up today. Don't let an opportunity go to someone else.", context="Advanced Workspace Login")},
+	{"photo": "chat", "label": _("WhatsApp", context="Advanced Workspace Login"),
+		"title": _("Still photographing invoices to send them?", context="Advanced Workspace Login"),
+		"text": _("Let the system send it for you: the moment you approve an invoice, the system sends it to your customer on WhatsApp as a PDF, and its key alerts reach your phone.", context="Advanced Workspace Login")},
 ] -%}
 
 {% block head_include %}
@@ -73,7 +73,7 @@
 		<div class="awl-form" data-morning="{{ words.morning }}" data-evening="{{ words.evening }}" data-hello="{{ words.hello }}" data-sub="{{ words.sub }}">
 			{{ super() }}
 		</div>
-		<p class="awl-foot">{% if ar %}© {{ awl.year }} نظامي. جميع الحقوق محفوظة.{% else %}© {{ awl.year }} MYSYS. All rights reserved.{% endif %}</p>
+		<p class="awl-foot">© {{ awl.year }} {{ _("MYSYS", context="Advanced Workspace Login") }}. {{ _("All rights reserved.", context="Advanced Workspace Login") }}</p>
 	</div>
 
 	<div class="awl-stage" aria-hidden="true">

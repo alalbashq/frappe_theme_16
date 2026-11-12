@@ -17,7 +17,7 @@ DOCTYPES = (
 )
 START_PAGE = "advanced-workspace-start"
 START_FILE = "advanced-workspace-start.js"
-ITEM_TYPES = {"dt": "DocType", "tree": "Tree", "rp": "Report", "page": "Page", "url": "Link"}
+ITEM_TYPES = {"dt": "DocType", "tree": "DocType", "rp": "Report", "page": "Page", "url": "URL"}
 STAT_TYPES = {"sum": "Sum", "count": "Count", "gl": "Ledger"}
 
 
@@ -99,7 +99,7 @@ def seed_modules():
 		if not items:
 			continue
 		role = module.get("role") or module.get("role_of")
-		user_role, manager_role = "مستخدم " + role, "مدير " + role
+		user_role, manager_role = f"Workspace {role} User", f"Workspace {role} Manager"
 		access.ensure_role(user_role)
 		access.ensure_role(manager_role)
 		doc = frappe.new_doc(access.MODULE_DT)
@@ -107,25 +107,25 @@ def seed_modules():
 			{
 				"module_key": module["key"],
 				"label": module["label"],
-				"label_en": catalog.ENGLISH.get(module["label"]),
 				"icon": module["icon"],
 				"sequence": (index + 1) * 10,
 				"enabled": 1,
 				"read_only": 1 if module.get("read_only_items") else 0,
 				"direct_link": 1 if module.get("link") else 0,
-				"user_role": user_role,
-				"manager_role": manager_role,
 				"linked_doctypes": "\n".join(module.get("read", [])),
 			}
 		)
+		doc.append("roles", {"role": user_role, "access": "User"})
+		doc.append("roles", {"role": manager_role, "access": "Manager"})
 		for item in items:
 			doc.append(
 				"items",
 				{
 					"label": item["l"],
-					"label_en": catalog.ENGLISH.get(item["l"]),
 					"item_type": ITEM_TYPES[item["t"]],
-					"target": item["n"],
+					"target": None if item["t"] == "url" else item["n"],
+					"url": item["n"] if item["t"] == "url" else None,
+					"doc_view": "Tree" if item["t"] == "tree" else None,
 					"enabled": 1,
 				},
 			)
@@ -136,7 +136,6 @@ def seed_modules():
 				"stats",
 				{
 					"label": stat["l"],
-					"label_en": catalog.ENGLISH.get(stat["l"]),
 					"stat_type": STAT_TYPES[stat["k"]],
 					"document": stat.get("dt"),
 					"sum_field": stat.get("f"),
@@ -147,7 +146,7 @@ def seed_modules():
 			)
 		for name in catalog.STANDARD_ROLES.get(module["key"], []):
 			if frappe.db.exists("Role", name):
-				doc.append("roles", {"role": name})
+				doc.append("roles", {"role": name, "access": "View Only"})
 		doc.flags.seeding = True
 		doc.insert(ignore_permissions=True)
 
@@ -169,30 +168,6 @@ def ensure_indexes():
 def ensure_basics():
 	"""What every site needs, safe to run on each migrate: nothing a site changed is undone."""
 	ensure_indexes()
-	# rows from before the English column get it, never overwritten
-	for table in DOCTYPES[:3]:
-		for row in frappe.get_all(table, filters={"label_en": ["in", ["", None]]}, fields=["name", "label"]):
-			if catalog.ENGLISH.get(row.label):
-				frappe.db.set_value(table, row.name, "label_en", catalog.ENGLISH[row.label])
-	for source, text in catalog.FORM_LABELS.items():
-		if not frappe.db.exists("Translation", {"language": "ar", "source_text": source}):
-			frappe.get_doc(
-				{"doctype": "Translation", "language": "ar", "source_text": source, "translated_text": text}
-			).insert(ignore_permissions=True)
-	for word, english in catalog.ROLE_ENGLISH.items():
-		for prefix, suffix in (("مستخدم ", " User"), ("مدير ", " Manager")):
-			name = prefix + word
-			if frappe.db.exists("Role", name) and not frappe.db.exists(
-				"Translation", {"language": "en", "source_text": name}
-			):
-				frappe.get_doc(
-					{
-						"doctype": "Translation",
-						"language": "en",
-						"source_text": name,
-						"translated_text": f"Workspace {english}{suffix}",
-					}
-				).insert(ignore_permissions=True)
 	settings = frappe.get_doc(access.SETTINGS_DT)
 	if not settings.common_doctypes:
 		settings.common_doctypes = "\n".join(catalog.COMMON_READ)

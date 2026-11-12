@@ -1,0 +1,1243 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: advanced_workspace\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Advanced Workspace Item"
+msgstr "عنصر القائمة"
+
+msgid "Advanced Workspace Module"
+msgstr "إعدادات القائمة"
+
+msgid "Advanced Workspace Role"
+msgstr "دور المديول"
+
+msgid "Advanced Workspace Settings"
+msgstr "إعدادات مساحة العمل"
+
+msgid "Advanced Workspace Stat"
+msgstr "إحصائية المديول"
+
+msgid "Advanced Workspace User"
+msgstr "مستخدم مساحة العمل المتقدمة"
+
+msgid "Workspace Access Manager"
+msgstr "مدير الوصول"
+
+msgid "Workspace Access User"
+msgstr "مستخدم الوصول"
+
+msgid "Workspace Accounts Manager"
+msgstr "مدير الحسابات"
+
+msgid "Workspace Accounts User"
+msgstr "مستخدم الحسابات"
+
+msgid "Workspace Assets Manager"
+msgstr "مدير الأصول"
+
+msgid "Workspace Assets User"
+msgstr "مستخدم الأصول"
+
+msgid "Workspace CRM Manager"
+msgstr "مدير علاقات العملاء"
+
+msgid "Workspace CRM User"
+msgstr "مستخدم علاقات العملاء"
+
+msgid "Workspace Finance Manager"
+msgstr "مدير المالية"
+
+msgid "Workspace Finance User"
+msgstr "مستخدم المالية"
+
+msgid "Workspace HR Manager"
+msgstr "مدير الموارد البشرية"
+
+msgid "Workspace HR User"
+msgstr "مستخدم الموارد البشرية"
+
+msgid "Workspace Manufacturing Manager"
+msgstr "مدير التصنيع"
+
+msgid "Workspace Manufacturing User"
+msgstr "مستخدم التصنيع"
+
+msgid "Workspace Payroll Manager"
+msgstr "مدير الرواتب"
+
+msgid "Workspace Payroll User"
+msgstr "مستخدم الرواتب"
+
+msgid "Workspace Point of Sale Manager"
+msgstr "مدير نقاط البيع"
+
+msgid "Workspace Point of Sale User"
+msgstr "مستخدم نقاط البيع"
+
+msgid "Workspace Projects Manager"
+msgstr "مدير المشاريع"
+
+msgid "Workspace Projects User"
+msgstr "مستخدم المشاريع"
+
+msgid "Workspace Purchasing Manager"
+msgstr "مدير المشتريات"
+
+msgid "Workspace Purchasing User"
+msgstr "مستخدم المشتريات"
+
+msgid "Workspace Quality Manager"
+msgstr "مدير الجودة"
+
+msgid "Workspace Quality User"
+msgstr "مستخدم الجودة"
+
+msgid "Workspace Sales Manager"
+msgstr "مدير المبيعات"
+
+msgid "Workspace Sales User"
+msgstr "مستخدم المبيعات"
+
+msgid "Workspace Stock Manager"
+msgstr "مدير المخازن"
+
+msgid "Workspace Stock User"
+msgstr "مستخدم المخازن"
+
+msgid "Workspace Support Manager"
+msgstr "مدير الدعم الفني"
+
+msgid "Workspace Support User"
+msgstr "مستخدم الدعم الفني"
+
+msgctxt "Advanced Workspace"
+msgid "1 document"
+msgstr "مستند واحد"
+
+msgctxt "Advanced Workspace"
+msgid "2 documents"
+msgstr "مستندان"
+
+msgctxt "Advanced Workspace"
+msgid "Access Management"
+msgstr "إدارة الوصول"
+
+msgctxt "Advanced Workspace"
+msgid "Accounts"
+msgstr "إدارة الحسابات"
+
+msgctxt "Advanced Workspace"
+msgid "Accounts Payable"
+msgstr "الحسابات الدائنة"
+
+msgctxt "Advanced Workspace"
+msgid "Accounts Receivable"
+msgstr "الحسابات المدينة"
+
+msgctxt "Advanced Workspace"
+msgid "Active Employees"
+msgstr "الموظفون النشطون"
+
+msgctxt "Advanced Workspace"
+msgid "Active Users"
+msgstr "المستخدمون النشطون"
+
+msgctxt "Advanced Workspace"
+msgid "Additional Salary"
+msgstr "راتب إضافي"
+
+msgctxt "Advanced Workspace"
+msgid "All Issues"
+msgstr "كل البلاغات"
+
+msgctxt "Advanced Workspace"
+msgid "Amount"
+msgstr "القيمة"
+
+msgctxt "Advanced Workspace"
+msgid "Apply"
+msgstr "تطبيق"
+
+msgctxt "Advanced Workspace"
+msgid "Asset Categories"
+msgstr "فئات الأصول"
+
+msgctxt "Advanced Workspace"
+msgid "Asset Movements"
+msgstr "حركة الأصول"
+
+msgctxt "Advanced Workspace"
+msgid "Assets"
+msgstr "الأصول"
+
+msgctxt "Advanced Workspace"
+msgid "Attendance"
+msgstr "الحضور"
+
+msgctxt "Advanced Workspace"
+msgid "Attendance Records"
+msgstr "سجلات الحضور"
+
+msgctxt "Advanced Workspace"
+msgid "Balance Sheet"
+msgstr "قائمة المركز المالي"
+
+msgctxt "Advanced Workspace"
+msgid "Bank Accounts"
+msgstr "الحسابات البنكية"
+
+msgctxt "Advanced Workspace"
+msgid "Bill of Materials"
+msgstr "قائمة المواد"
+
+msgctxt "Advanced Workspace"
+msgid "Bills of Materials"
+msgstr "قوائم المواد"
+
+msgctxt "Advanced Workspace"
+msgid "Budget Variance"
+msgstr "انحراف الموازنة"
+
+msgctxt "Advanced Workspace"
+msgid "Budgets"
+msgstr "الموازنات"
+
+msgctxt "Advanced Workspace"
+msgid "Cancelled"
+msgstr "ملغى"
+
+msgctxt "Advanced Workspace"
+msgid "Cash and Bank Balance"
+msgstr "رصيد النقدية والبنوك"
+
+msgctxt "Advanced Workspace"
+msgid "Cash Flow"
+msgstr "التدفقات النقدية"
+
+msgctxt "Advanced Workspace"
+msgid "Chart of Accounts"
+msgstr "الشجرة المحاسبية"
+
+msgctxt "Advanced Workspace"
+msgid "Click the table to edit the filters"
+msgstr "اضغط على الجدول لتعديل الفلاتر"
+
+msgctxt "Advanced Workspace"
+msgid "Closing Shift"
+msgstr "وردية الإغلاق"
+
+msgctxt "Advanced Workspace"
+msgid "Company"
+msgstr "الشركة"
+
+msgctxt "Advanced Workspace"
+msgid "Condition"
+msgstr "الشرط"
+
+msgctxt "Advanced Workspace"
+msgid "Cost Centers"
+msgstr "مراكز التكلفة"
+
+msgctxt "Advanced Workspace"
+msgid "Could not load. Open the module again."
+msgstr "تعذر التحميل. أعد فتح المديول."
+
+msgctxt "Advanced Workspace"
+msgid "Customer Receivables"
+msgstr "مستحقات العملاء"
+
+msgctxt "Advanced Workspace"
+msgid "Customers"
+msgstr "العملاء"
+
+msgctxt "Advanced Workspace"
+msgid "Delivery Note"
+msgstr "إذن تسليم"
+
+msgctxt "Advanced Workspace"
+msgid "Delivery Notes"
+msgstr "أذونات التسليم"
+
+msgctxt "Advanced Workspace"
+msgid "Document"
+msgstr "المستند"
+
+msgctxt "Advanced Workspace"
+msgid "Documents"
+msgstr "المستندات"
+
+msgctxt "Advanced Workspace"
+msgid "documents"
+msgstr "مستندات"
+
+msgctxt "Advanced Workspace"
+msgid "Documents made in this section show up here."
+msgstr "أول ما تسجّل مستندًا في هذا القسم يظهر هنا."
+
+msgctxt "Advanced Workspace"
+msgid "drafts"
+msgstr "مسودة"
+
+msgctxt "Advanced Workspace"
+msgid "drafts awaiting approval"
+msgstr "مسودة بانتظار الاعتماد"
+
+msgctxt "Advanced Workspace"
+msgid "due within 7 days"
+msgstr "تستحق خلال ٧ أيام"
+
+msgctxt "Advanced Workspace"
+msgid "Employees"
+msgstr "الموظفون"
+
+msgctxt "Advanced Workspace"
+msgid "Expense Claim"
+msgstr "مطالبة مصروف"
+
+msgctxt "Advanced Workspace"
+msgid "Expense Claims"
+msgstr "مطالبات المصروفات"
+
+msgctxt "Advanced Workspace"
+msgid "Field"
+msgstr "الحقل"
+
+msgctxt "Advanced Workspace"
+msgid "Filters"
+msgstr "الفلاتر"
+
+msgctxt "Advanced Workspace"
+msgid "Financial Management"
+msgstr "الإدارة المالية"
+
+msgctxt "Advanced Workspace"
+msgid "Fixed Asset Register"
+msgstr "سجل الأصول الثابتة"
+
+msgctxt "Advanced Workspace"
+msgid "Fixed Assets"
+msgstr "الأصول الثابتة"
+
+msgctxt "Advanced Workspace"
+msgid "Full Screen"
+msgstr "ملء الشاشة"
+
+msgctxt "Advanced Workspace"
+msgid "General Ledger"
+msgstr "دفتر الأستاذ العام"
+
+msgctxt "Advanced Workspace"
+msgid "Holiday Lists"
+msgstr "قوائم العطلات"
+
+msgctxt "Advanced Workspace"
+msgid "Home"
+msgstr "الرئيسية"
+
+msgctxt "Advanced Workspace"
+msgid "Human Resources"
+msgstr "الموارد البشرية"
+
+msgctxt "Advanced Workspace"
+msgid "Income Statement"
+msgstr "قائمة الدخل"
+
+msgctxt "Advanced Workspace"
+msgid "Issues"
+msgstr "البلاغات"
+
+msgctxt "Advanced Workspace"
+msgid "Items"
+msgstr "الأصناف"
+
+msgctxt "Advanced Workspace"
+msgid "Job Card"
+msgstr "بطاقة عمل"
+
+msgctxt "Advanced Workspace"
+msgid "Journal Entries"
+msgstr "القيود اليومية"
+
+msgctxt "Advanced Workspace"
+msgid "Last month"
+msgstr "الشهر الماضي"
+
+msgctxt "Advanced Workspace"
+msgid "Latest documents"
+msgstr "آخر المستندات"
+
+msgctxt "Advanced Workspace"
+msgid "Lead Details"
+msgstr "تفاصيل العملاء المحتملين"
+
+msgctxt "Advanced Workspace"
+msgid "Leads"
+msgstr "العملاء المحتملون"
+
+msgctxt "Advanced Workspace"
+msgid "Leads and Opportunities"
+msgstr "إدارة العملاء المحتملين"
+
+msgctxt "Advanced Workspace"
+msgid "Leave Application"
+msgstr "طلب إجازة"
+
+msgctxt "Advanced Workspace"
+msgid "Leave Applications"
+msgstr "طلبات الإجازة"
+
+msgctxt "Advanced Workspace"
+msgid "Leave Balances"
+msgstr "أرصدة الإجازات"
+
+msgctxt "Advanced Workspace"
+msgid "Link"
+msgstr "رابط"
+
+msgctxt "Advanced Workspace"
+msgid "Loading"
+msgstr "جارٍ التحميل"
+
+msgctxt "Advanced Workspace"
+msgid "Main Menu"
+msgstr "القائمة الرئيسية"
+
+msgctxt "Advanced Workspace"
+msgid "Manufacturing"
+msgstr "التصنيع"
+
+msgctxt "Advanced Workspace"
+msgid "Material Request"
+msgstr "طلب مواد"
+
+msgctxt "Advanced Workspace"
+msgid "Material Requests"
+msgstr "طلبات المواد"
+
+msgctxt "Advanced Workspace"
+msgid "Menu"
+msgstr "القائمة"
+
+msgctxt "Advanced Workspace"
+msgid "Menu Settings"
+msgstr "إعدادات القائمة"
+
+msgctxt "Advanced Workspace"
+msgid "Modules"
+msgstr "المديولات"
+
+msgctxt "Advanced Workspace"
+msgid "Monthly Attendance"
+msgstr "كشف الحضور الشهري"
+
+msgctxt "Advanced Workspace"
+msgid "My Account"
+msgstr "حسابي"
+
+msgctxt "Advanced Workspace"
+msgid "need action"
+msgstr "بانتظار إجراء"
+
+msgctxt "Advanced Workspace"
+msgid "Net Pay"
+msgstr "صافي الرواتب"
+
+msgctxt "Advanced Workspace"
+msgid "Net Profit"
+msgstr "صافي الربح"
+
+msgctxt "Advanced Workspace"
+msgid "New"
+msgstr "جديد"
+
+msgctxt "Advanced Workspace"
+msgid "newest"
+msgstr "أحدثها"
+
+msgctxt "Advanced Workspace"
+msgid "No documents yet"
+msgstr "لا توجد مستندات بعد"
+
+msgctxt "Advanced Workspace"
+msgid "No documents yet."
+msgstr "لا توجد مستندات بعد."
+
+msgctxt "Advanced Workspace"
+msgid "No filters. Click to add them."
+msgstr "بدون فلاتر. اضغط لإضافتها"
+
+msgctxt "Advanced Workspace"
+msgid "No modules are assigned to your account. Ask your administrator for a role."
+msgstr "لا توجد مديولات مخصصة لحسابك. اطلب من مدير النظام إسناد دور لك."
+
+msgctxt "Advanced Workspace"
+msgid "Non Conformance"
+msgstr "عدم المطابقة"
+
+msgctxt "Advanced Workspace"
+msgid "Nothing is waiting for you"
+msgstr "لا شيء ينتظرك الآن"
+
+msgctxt "Advanced Workspace"
+msgid "Nothing new this month"
+msgstr "لا جديد هذا الشهر"
+
+msgctxt "Advanced Workspace"
+msgid "Nothing yet"
+msgstr "لا شيء بعد"
+
+msgctxt "Advanced Workspace"
+msgid "Notifications"
+msgstr "التنبيهات"
+
+msgctxt "Advanced Workspace"
+msgid "Open Issues"
+msgstr "البلاغات المفتوحة"
+
+msgctxt "Advanced Workspace"
+msgid "Open Point of Sale"
+msgstr "فتح نقطة البيع"
+
+msgctxt "Advanced Workspace"
+msgid "Open Projects"
+msgstr "المشاريع المفتوحة"
+
+msgctxt "Advanced Workspace"
+msgid "Open Tasks"
+msgstr "المهام المفتوحة"
+
+msgctxt "Advanced Workspace"
+msgid "Opening Shift"
+msgstr "وردية الفتح"
+
+msgctxt "Advanced Workspace"
+msgid "Opportunities"
+msgstr "الفرص"
+
+msgctxt "Advanced Workspace"
+msgid "overdue"
+msgstr "متأخرة السداد"
+
+msgctxt "Advanced Workspace"
+msgid "Overview"
+msgstr "نظرة عامة"
+
+msgctxt "Advanced Workspace"
+msgid "Page"
+msgstr "صفحة"
+
+msgctxt "Advanced Workspace"
+msgid "Party"
+msgstr "الطرف"
+
+msgctxt "Advanced Workspace"
+msgid "Payment Entries"
+msgstr "سندات الصرف والقبض"
+
+msgctxt "Advanced Workspace"
+msgid "Payment Entry"
+msgstr "سند نقدي"
+
+msgctxt "Advanced Workspace"
+msgid "Payroll"
+msgstr "الرواتب"
+
+msgctxt "Advanced Workspace"
+msgid "Payroll Entry"
+msgstr "مسير الرواتب"
+
+msgctxt "Advanced Workspace"
+msgid "Point of Sale"
+msgstr "نقاط البيع"
+
+msgctxt "Advanced Workspace"
+msgid "POS Invoice"
+msgstr "فاتورة نقطة البيع"
+
+msgctxt "Advanced Workspace"
+msgid "POS Invoices"
+msgstr "فواتير نقاط البيع"
+
+msgctxt "Advanced Workspace"
+msgid "POS Profiles"
+msgstr "ملفات نقاط البيع"
+
+msgctxt "Advanced Workspace"
+msgid "Production Analytics"
+msgstr "تحليل الإنتاج"
+
+msgctxt "Advanced Workspace"
+msgid "Production Plan"
+msgstr "خطة الإنتاج"
+
+msgctxt "Advanced Workspace"
+msgid "Project Management"
+msgstr "إدارة المشاريع"
+
+msgctxt "Advanced Workspace"
+msgid "Project Summary"
+msgstr "ملخص المشاريع"
+
+msgctxt "Advanced Workspace"
+msgid "Projects"
+msgstr "المشاريع"
+
+msgctxt "Advanced Workspace"
+msgid "Purchase Analytics"
+msgstr "تحليل المشتريات"
+
+msgctxt "Advanced Workspace"
+msgid "Purchase Invoice"
+msgstr "فاتورة مشتريات"
+
+msgctxt "Advanced Workspace"
+msgid "Purchase Invoices"
+msgstr "فواتير المشتريات"
+
+msgctxt "Advanced Workspace"
+msgid "Purchase Order"
+msgstr "أمر شراء"
+
+msgctxt "Advanced Workspace"
+msgid "Purchase Orders"
+msgstr "أوامر الشراء"
+
+msgctxt "Advanced Workspace"
+msgid "Purchase Receipt"
+msgstr "إيصال استلام"
+
+msgctxt "Advanced Workspace"
+msgid "Purchase Receipts"
+msgstr "إيصالات الاستلام"
+
+msgctxt "Advanced Workspace"
+msgid "Purchase Register"
+msgstr "سجل المشتريات"
+
+msgctxt "Advanced Workspace"
+msgid "Purchasing"
+msgstr "إدارة المشتريات"
+
+msgctxt "Advanced Workspace"
+msgid "Quality"
+msgstr "الجودة"
+
+msgctxt "Advanced Workspace"
+msgid "Quality Inspection"
+msgstr "فحص الجودة"
+
+msgctxt "Advanced Workspace"
+msgid "Quality Inspections"
+msgstr "فحوصات الجودة"
+
+msgctxt "Advanced Workspace"
+msgid "Quotation"
+msgstr "عرض سعر"
+
+msgctxt "Advanced Workspace"
+msgid "Quotations"
+msgstr "عروض الأسعار"
+
+msgctxt "Advanced Workspace"
+msgid "Refresh"
+msgstr "تحديث"
+
+msgctxt "Advanced Workspace"
+msgid "Report"
+msgstr "تقرير"
+
+msgctxt "Advanced Workspace"
+msgid "Reports and pages"
+msgstr "التقارير والصفحات"
+
+msgctxt "Advanced Workspace"
+msgid "Role Profiles"
+msgstr "ملفات الأدوار"
+
+msgctxt "Advanced Workspace"
+msgid "Salary Assignment"
+msgstr "تعيين هيكل الراتب"
+
+msgctxt "Advanced Workspace"
+msgid "Salary Register"
+msgstr "سجل الرواتب"
+
+msgctxt "Advanced Workspace"
+msgid "Salary Slip"
+msgstr "قسيمة الراتب"
+
+msgctxt "Advanced Workspace"
+msgid "Salary Slips"
+msgstr "قسائم الرواتب"
+
+msgctxt "Advanced Workspace"
+msgid "Salary Structure"
+msgstr "هيكل الراتب"
+
+msgctxt "Advanced Workspace"
+msgid "Sales"
+msgstr "إدارة المبيعات"
+
+msgctxt "Advanced Workspace"
+msgid "Sales Analytics"
+msgstr "تحليل المبيعات"
+
+msgctxt "Advanced Workspace"
+msgid "Sales Invoice"
+msgstr "فاتورة مبيعات"
+
+msgctxt "Advanced Workspace"
+msgid "Sales Invoices"
+msgstr "فواتير المبيعات"
+
+msgctxt "Advanced Workspace"
+msgid "Sales Order"
+msgstr "أمر بيع"
+
+msgctxt "Advanced Workspace"
+msgid "Sales Orders"
+msgstr "أوامر البيع"
+
+msgctxt "Advanced Workspace"
+msgid "Sales Register"
+msgstr "سجل المبيعات"
+
+msgctxt "Advanced Workspace"
+msgid "Saved"
+msgstr "محفوظ"
+
+msgctxt "Advanced Workspace"
+msgid "Search"
+msgstr "بحث"
+
+msgctxt "Advanced Workspace"
+msgid "Set the document type first"
+msgstr "اختر نوع المستند أولاً"
+
+msgctxt "Advanced Workspace"
+msgid "Shift Closing"
+msgstr "إغلاق الوردية"
+
+msgctxt "Advanced Workspace"
+msgid "Shift Opening"
+msgstr "فتح الوردية"
+
+msgctxt "Advanced Workspace"
+msgid "Statistic Filters"
+msgstr "فلاتر الإحصائية"
+
+msgctxt "Advanced Workspace"
+msgid "Statistics"
+msgstr "الإحصائيات"
+
+msgctxt "Advanced Workspace"
+msgid "Status"
+msgstr "الحالة"
+
+msgctxt "Advanced Workspace"
+msgid "Stock"
+msgstr "الرصيد المخزني"
+
+msgctxt "Advanced Workspace"
+msgid "Stock Balance"
+msgstr "رصيد المخزون"
+
+msgctxt "Advanced Workspace"
+msgid "Stock Entries"
+msgstr "الحركات المخزنية"
+
+msgctxt "Advanced Workspace"
+msgid "Stock Entry"
+msgstr "حركة مخزنية"
+
+msgctxt "Advanced Workspace"
+msgid "Stock Ledger"
+msgstr "دفتر المخزون"
+
+msgctxt "Advanced Workspace"
+msgid "Stock Reconciliation"
+msgstr "تسوية المخزون"
+
+msgctxt "Advanced Workspace"
+msgid "Stock Summary"
+msgstr "قائمة مختصرة للمخزون"
+
+msgctxt "Advanced Workspace"
+msgid "Submitted"
+msgstr "معتمد"
+
+msgctxt "Advanced Workspace"
+msgid "Supplier Payables"
+msgstr "مستحقات الموردين"
+
+msgctxt "Advanced Workspace"
+msgid "Suppliers"
+msgstr "الموردون"
+
+msgctxt "Advanced Workspace"
+msgid "Support"
+msgstr "الدعم الفني"
+
+msgctxt "Advanced Workspace"
+msgid "Tasks"
+msgstr "المهام"
+
+msgctxt "Advanced Workspace"
+msgid "The workspace could not load. Reload the page."
+msgstr "تعذر تحميل مساحة العمل. أعد تحميل الصفحة."
+
+msgctxt "Advanced Workspace"
+msgid "Theme"
+msgstr "المظهر"
+
+msgctxt "Advanced Workspace"
+msgid "This module has no statistics."
+msgstr "لا توجد إحصائيات لهذا المديول."
+
+msgctxt "Advanced Workspace"
+msgid "This month"
+msgstr "هذا الشهر"
+
+msgctxt "Advanced Workspace"
+msgid "Timesheets"
+msgstr "سجل ساعات العمل"
+
+msgctxt "Advanced Workspace"
+msgid "Today"
+msgstr "اليوم"
+
+msgctxt "Advanced Workspace"
+msgid "Total Expenses"
+msgstr "إجمالي النفقات"
+
+msgctxt "Advanced Workspace"
+msgid "Total Income"
+msgstr "إجمالي الإيرادات"
+
+msgctxt "Advanced Workspace"
+msgid "Total Payments Made"
+msgstr "إجمالي المدفوعات الصادرة"
+
+msgctxt "Advanced Workspace"
+msgid "Total Payments Received"
+msgstr "إجمالي المدفوعات الواردة"
+
+msgctxt "Advanced Workspace"
+msgid "Total Purchase Invoices"
+msgstr "إجمالي الفواتير الواردة"
+
+msgctxt "Advanced Workspace"
+msgid "Total Sales Invoices"
+msgstr "إجمالي الفواتير الصادرة"
+
+msgctxt "Advanced Workspace"
+msgid "Tree"
+msgstr "شجرة"
+
+msgctxt "Advanced Workspace"
+msgid "Trial Balance"
+msgstr "ميزان المراجعة"
+
+msgctxt "Advanced Workspace"
+msgid "User Permissions"
+msgstr "صلاحيات المستخدمين"
+
+msgctxt "Advanced Workspace"
+msgid "Users"
+msgstr "المستخدمون"
+
+msgctxt "Advanced Workspace"
+msgid "Value"
+msgstr "القيمة"
+
+msgctxt "Advanced Workspace"
+msgid "Waiting for you"
+msgstr "ما ينتظرك"
+
+msgctxt "Advanced Workspace"
+msgid "Warehouses"
+msgstr "المستودعات"
+
+msgctxt "Advanced Workspace"
+msgid "Warranty Claims"
+msgstr "مطالبات الضمان"
+
+msgctxt "Advanced Workspace"
+msgid "When"
+msgstr "منذ"
+
+msgctxt "Advanced Workspace"
+msgid "Work Order"
+msgstr "أمر عمل"
+
+msgctxt "Advanced Workspace"
+msgid "Work Orders"
+msgstr "أوامر العمل"
+
+msgctxt "Advanced Workspace"
+msgid "Workspace"
+msgstr "مساحة العمل"
+
+msgctxt "Advanced Workspace"
+msgid "Year to date"
+msgstr "من بداية السنة"
+
+msgctxt "Advanced Workspace"
+msgid "Yesterday"
+msgstr "أمس"
+
+msgctxt "Advanced Workspace Item"
+msgid "DocType"
+msgstr "مستند"
+
+msgctxt "Advanced Workspace Item"
+msgid "DocType View"
+msgstr "طريقة العرض"
+
+msgctxt "Advanced Workspace Item"
+msgid "Enabled"
+msgstr "مفعل"
+
+msgctxt "Advanced Workspace Item"
+msgid "Label"
+msgstr "الاسم"
+
+msgctxt "Advanced Workspace Item"
+msgid "Link To"
+msgstr "مرتبط بـ"
+
+msgctxt "Advanced Workspace Item"
+msgid "List"
+msgstr "قائمة"
+
+msgctxt "Advanced Workspace Item"
+msgid "Page"
+msgstr "صفحة"
+
+msgctxt "Advanced Workspace Item"
+msgid "Report"
+msgstr "تقرير"
+
+msgctxt "Advanced Workspace Item"
+msgid "Tree"
+msgstr "شجرة"
+
+msgctxt "Advanced Workspace Item"
+msgid "Type"
+msgstr "النوع"
+
+msgctxt "Advanced Workspace Item"
+msgid "URL"
+msgstr "الرابط"
+
+msgctxt "Advanced Workspace Login"
+msgid "A bill of materials for every product, and work orders that draw the materials and work out the true cost of everything off the line."
+msgstr "قائمة مواد لكل منتج، وأوامر تشغيل تصرف الخامات وتحسب التكلفة الحقيقية لكل اللي يطلع من الخط."
+
+msgctxt "Advanced Workspace Login"
+msgid "A lead asked and nobody called back?"
+msgstr "عميل سأل وما أحد رجع له؟"
+
+msgctxt "Advanced Workspace Login"
+msgid "Accessories"
+msgstr "الإكسسوارات"
+
+msgctxt "Advanced Workspace Login"
+msgid "All rights reserved."
+msgstr "جميع الحقوق محفوظة."
+
+msgctxt "Advanced Workspace Login"
+msgid "Attendance, leave and payroll in one place, and staff check in and ask for leave from their phones. Goodbye to spreadsheets and paper."
+msgstr "الحضور والإجازات والرواتب في مكان واحد، والموظف يسجّل حضوره ويطلب إجازته من جواله. ودّع الجداول والورق."
+
+msgctxt "Advanced Workspace Login"
+msgid "Clothing"
+msgstr "الملابس"
+
+msgctxt "Advanced Workspace Login"
+msgid "CRM"
+msgstr "إدارة العملاء CRM"
+
+msgctxt "Advanced Workspace Login"
+msgid "Don't leave customers waiting at the till. The point of sale keeps going offline and uploads every invoice once the connection is back."
+msgstr "لا تخلّي الزبون واقف عند الكاشير. نقطة البيع تكمّل بدون نت، وأول ما يرجع ترفع كل الفواتير لحالها."
+
+msgctxt "Advanced Workspace Login"
+msgid "Every item's balance in every warehouse, and every transfer recorded step by step. What's on screen is what's on the shelf."
+msgstr "رصيد كل صنف في كل مستودع، وكل تحويل بينها مسجّل خطوة بخطوة. اللي على الشاشة هو اللي على الرف."
+
+msgctxt "Advanced Workspace Login"
+msgid "Every lead and every deal in its place, and you know who needs a follow-up today. Don't let an opportunity go to someone else."
+msgstr "كل عميل محتمل وكل صفقة في مكانها، وتعرف مين لازم تتابع اليوم. لا تخلّي فرصة تروح لغيرك."
+
+msgctxt "Advanced Workspace Login"
+msgid "Every piece with its barcode and price, and how many are left in each branch without counting by hand."
+msgstr "كل قطعة بباركودها وسعرها، وتعرف كم باقي منها في كل فرع بدون ما تعدّها بيدك."
+
+msgctxt "Advanced Workspace Login"
+msgid "Every style with its sizes and colours, every piece with its barcode. See what's left of each size in a second, and print price tags yourself."
+msgstr "كل موديل بمقاساته وألوانه، ولكل قطعة باركود. تعرف وش باقي من كل مقاس بثانية، وملصقات الأسعار تطبعها بنفسك."
+
+msgctxt "Advanced Workspace Login"
+msgid "Good evening"
+msgstr "مساء الخير"
+
+msgctxt "Advanced Workspace Login"
+msgid "Good morning"
+msgstr "صباح الخير"
+
+msgctxt "Advanced Workspace Login"
+msgid "Human resources"
+msgstr "الموارد البشرية"
+
+msgctxt "Advanced Workspace Login"
+msgid "Hunting for a size while the customer waits?"
+msgstr "تدوّر المقاس والزبون ينتظر؟"
+
+msgctxt "Advanced Workspace Login"
+msgid "In stock on screen, empty on the shelf?"
+msgstr "النظام يقول موجود والرف فاضي؟"
+
+msgctxt "Advanced Workspace Login"
+msgid "Internet down? Sales don't stop"
+msgstr "النت فصل؟ البيع ما يوقف"
+
+msgctxt "Advanced Workspace Login"
+msgid "Let the system send it for you: the moment you approve an invoice, the system sends it to your customer on WhatsApp as a PDF, and its key alerts reach your phone."
+msgstr "خلّ النظام يرسلها عنك: أول ما تعتمد الفاتورة، النظام يرسلها لعميلك على الواتساب PDF، وتنبيهاته المهمة توصل لجوالك."
+
+msgctxt "Advanced Workspace Login"
+msgid "Long queue, annoyed customers?"
+msgstr "الطابور طويل والزبون متضايق؟"
+
+msgctxt "Advanced Workspace Login"
+msgid "Manufacturing"
+msgstr "التصنيع"
+
+msgctxt "Advanced Workspace Login"
+msgid "Measurements kept from the first visit, every order split into pieces you can follow to delivery, and tailors' piece rates worked out for you."
+msgstr "المقاسات محفوظة من أول زيارة، وكل طلب مقسوم قطع تعرف وين وصلت لين التسليم. وأجور الخياطين بالقطعة تنحسب لحالها."
+
+msgctxt "Advanced Workspace Login"
+msgid "Month end, and payroll again?"
+msgstr "آخر الشهر وهمّ الرواتب؟"
+
+msgctxt "Advanced Workspace Login"
+msgid "MYSYS"
+msgstr "نظامي"
+
+msgctxt "Advanced Workspace Login"
+msgid "Orders print in the kitchen the moment they're saved, each station on its own printer. No lost tickets, no mix-ups."
+msgstr "الطلب ينطبع في المطبخ أول ما ينحفظ، وكل قسم تطلع أصنافه على طابعته. لا ورق يضيع ولا لخبطة."
+
+msgctxt "Advanced Workspace Login"
+msgid "Point of sale"
+msgstr "نقطة البيع"
+
+msgctxt "Advanced Workspace Login"
+msgid "Reps take orders, invoice and collect at the customer's door, and every visit is logged with its location. You know what happened without leaving your desk."
+msgstr "المندوب يطلب ويفوتر ويحصّل من عند العميل، وكل زيارة تتسجّل بموقعها. تعرف وش صار وأنت بمكانك."
+
+msgctxt "Advanced Workspace Login"
+msgid "Restaurants"
+msgstr "المطاعم"
+
+msgctxt "Advanced Workspace Login"
+msgid "Routes and reps"
+msgstr "خطوط السير والمندوبين"
+
+msgctxt "Advanced Workspace Login"
+msgid "Rush hour, and no order gets lost"
+msgstr "وقت الزحمة، ولا طلب يضيع"
+
+msgctxt "Advanced Workspace Login"
+msgid "Scale barcodes carry the weight and the price, and offers apply to the bill with no maths. The queue keeps moving."
+msgstr "باركود الميزان يقرأ الوزن والسعر لحاله، والعروض تنطبق على الفاتورة بدون حسبة. والطابور يمشي."
+
+msgctxt "Advanced Workspace Login"
+msgid "Show"
+msgstr "عرض"
+
+msgctxt "Advanced Workspace Login"
+msgid "Sign in and pick up where you left off."
+msgstr "سجّل دخولك وكمّل شغلك من حيث وقفت."
+
+msgctxt "Advanced Workspace Login"
+msgid "Small pieces, big losses"
+msgstr "قطع صغيرة، وخسارتها كبيرة"
+
+msgctxt "Advanced Workspace Login"
+msgid "Still photographing invoices to send them?"
+msgstr "تصوّر الفاتورة وترسلها بيدك؟"
+
+msgctxt "Advanced Workspace Login"
+msgid "Supermarkets"
+msgstr "السوبرماركت"
+
+msgctxt "Advanced Workspace Login"
+msgid "Tailoring"
+msgstr "تفصيل الملابس"
+
+msgctxt "Advanced Workspace Login"
+msgid "The customer asks: where's my order?"
+msgstr "الزبونة تسأل: وين وصل طلبي؟"
+
+msgctxt "Advanced Workspace Login"
+msgid "Warehouses"
+msgstr "المخازن"
+
+msgctxt "Advanced Workspace Login"
+msgid "Welcome"
+msgstr "أهلاً بك"
+
+msgctxt "Advanced Workspace Login"
+msgid "What did that product really cost you?"
+msgstr "كم كلّفك المنتج فعلاً؟"
+
+msgctxt "Advanced Workspace Login"
+msgid "WhatsApp"
+msgstr "الواتساب"
+
+msgctxt "Advanced Workspace Login"
+msgid "Where are your reps right now?"
+msgstr "وين مناديبك الحين؟"
+
+msgctxt "Advanced Workspace Module"
+msgid "Documents Needing Read Access (one per line)"
+msgstr "مستندات تحتاج صلاحية قراءة (سطر لكل مستند)"
+
+msgctxt "Advanced Workspace Module"
+msgid "Enabled"
+msgstr "مفعل"
+
+msgctxt "Advanced Workspace Module"
+msgid "Icon"
+msgstr "الأيقونة"
+
+msgctxt "Advanced Workspace Module"
+msgid "Key"
+msgstr "المعرّف"
+
+msgctxt "Advanced Workspace Module"
+msgid "Label"
+msgstr "الاسم"
+
+msgctxt "Advanced Workspace Module"
+msgid "Linked Documents"
+msgstr "مستندات مرتبطة"
+
+msgctxt "Advanced Workspace Module"
+msgid "Menu Items"
+msgstr "عناصر القائمة"
+
+msgctxt "Advanced Workspace Module"
+msgid "Opens First Item Directly"
+msgstr "يفتح العنصر الأول مباشرة"
+
+msgctxt "Advanced Workspace Module"
+msgid "Read Only for Module Roles"
+msgstr "قراءة فقط لأدوار المديول"
+
+msgctxt "Advanced Workspace Module"
+msgid "Roles"
+msgstr "الأدوار"
+
+msgctxt "Advanced Workspace Module"
+msgid "Sequence"
+msgstr "الترتيب"
+
+msgctxt "Advanced Workspace Module"
+msgid "Statistics"
+msgstr "الإحصائيات"
+
+msgctxt "Advanced Workspace Module"
+msgid "User and Manager get the module's rights on its documents; View Only sees the module with the rights it already has."
+msgstr "المستخدم والمدير يأخذان صلاحيات المديول على مستنداته؛ وعرض فقط يرى المديول بصلاحياته الحالية."
+
+msgctxt "Advanced Workspace Role"
+msgid "Access"
+msgstr "الصلاحية"
+
+msgctxt "Advanced Workspace Role"
+msgid "Manager"
+msgstr "مدير"
+
+msgctxt "Advanced Workspace Role"
+msgid "Role"
+msgstr "الدور"
+
+msgctxt "Advanced Workspace Role"
+msgid "User"
+msgstr "مستخدم"
+
+msgctxt "Advanced Workspace Role"
+msgid "View Only"
+msgstr "عرض فقط"
+
+msgctxt "Advanced Workspace Settings"
+msgid "Documents Every Role Reads (one per line)"
+msgstr "مستندات يقرؤها كل دور (سطر لكل مستند)"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Calculation"
+msgstr "الحساب"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Cash"
+msgstr "النقدية والبنوك"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Count"
+msgstr "عدد"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Date Field"
+msgstr "حقل التاريخ"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Document Type"
+msgstr "نوع المستند"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Expense"
+msgstr "المصروفات"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Filters"
+msgstr "الفلاتر"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Income"
+msgstr "الإيرادات"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Label"
+msgstr "الاسم"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Leave empty for a figure with no period, such as what customers owe now."
+msgstr "اتركه فارغًا لرقم بلا فترة، مثل ما على العملاء الآن."
+
+msgctxt "Advanced Workspace Stat"
+msgid "Ledger"
+msgstr "الأستاذ العام"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Ledger Line"
+msgstr "بند الأستاذ العام"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Net"
+msgstr "صافي الربح"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Sum"
+msgstr "مجموع"
+
+msgctxt "Advanced Workspace Stat"
+msgid "Sum Of"
+msgstr "مجموع حقل"
