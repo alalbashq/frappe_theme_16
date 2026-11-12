@@ -5,6 +5,7 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "details_tab",
   "label",
   "module_key",
   "sequence",
@@ -13,16 +14,21 @@
   "enabled",
   "read_only",
   "direct_link",
-  "access",
-  "roles",
-  "items_section",
+  "items_tab",
   "items",
-  "stats_section",
+  "stats_tab",
   "stats",
+  "access_tab",
+  "roles",
   "links_section",
   "linked_doctypes"
  ],
  "fields": [
+  {
+   "fieldname": "details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Details"
+  },
   {
    "fieldname": "label",
    "fieldtype": "Data",
@@ -73,20 +79,8 @@
    "label": "Opens First Item Directly"
   },
   {
-   "fieldname": "access",
-   "fieldtype": "Section Break",
-   "label": "Roles"
-  },
-  {
-   "description": "User and Manager get the module's rights on its documents; View Only sees the module with the rights it already has.",
-   "fieldname": "roles",
-   "fieldtype": "Table",
-   "label": "Roles",
-   "options": "Advanced Workspace Role"
-  },
-  {
-   "fieldname": "items_section",
-   "fieldtype": "Section Break",
+   "fieldname": "items_tab",
+   "fieldtype": "Tab Break",
    "label": "Menu Items"
   },
   {
@@ -96,8 +90,8 @@
    "options": "Advanced Workspace Item"
   },
   {
-   "fieldname": "stats_section",
-   "fieldtype": "Section Break",
+   "fieldname": "stats_tab",
+   "fieldtype": "Tab Break",
    "label": "Statistics"
   },
   {
@@ -105,6 +99,18 @@
    "fieldtype": "Table",
    "label": "Statistics",
    "options": "Advanced Workspace Stat"
+  },
+  {
+   "fieldname": "access_tab",
+   "fieldtype": "Tab Break",
+   "label": "Access"
+  },
+  {
+   "description": "User and Manager get the module's rights on its documents; View Only sees the module with the rights it already has.",
+   "fieldname": "roles",
+   "fieldtype": "Table",
+   "label": "Roles",
+   "options": "Advanced Workspace Role"
   },
   {
    "fieldname": "links_section",
@@ -118,7 +124,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-12 18:00:00.000000",
+ "modified": "2026-11-12 18:45:00.000000",
  "modified_by": "Administrator",
  "module": "Advanced Workspace",
  "name": "Advanced Workspace Module",

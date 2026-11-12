@@ -1241,3 +1241,11 @@ msgstr "مجموع"
 msgctxt "Advanced Workspace Stat"
 msgid "Sum Of"
 msgstr "مجموع حقل"
+
+msgctxt "Advanced Workspace Module"
+msgid "Details"
+msgstr "التفاصيل"
+
+msgctxt "Advanced Workspace Module"
+msgid "Access"
+msgstr "الصلاحيات"
