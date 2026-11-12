@@ -640,26 +640,50 @@ function run(scope) {
 		});
 	}
 
+	// Each part of the bar is wired on its own: a Frappe version without one of the things it
+	// uses (an older one has no frappe.ui.create_menu, for one) loses that part, not the workspace.
+	function safely(part, wire) {
+		try {
+			wire();
+		} catch (error) {
+			console.error(`Advanced Workspace: ${part} is unavailable on this Frappe version.`, error);
+		}
+	}
+
 	function wireTop() {
-		// Frappe's own search window: its button sits in the Desk sidebar behind this frame.
-		one("[data-search]").addEventListener("click", () => {
-			const opener =
-				document.querySelector("#navbar-modal-search") ||
-				document.querySelector(".navbar-modal-search-mobile");
-			if (opener) opener.click();
-		});
-		one("[data-full]").addEventListener("click", () =>
-			document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()
+		// Frappe's own search window: its button sits in the Desk sidebar (or, on older Frappe,
+		// its navbar) behind this frame.
+		safely("search", () =>
+			one("[data-search]").addEventListener("click", () => {
+				const opener =
+					document.querySelector("#navbar-modal-search") ||
+					document.querySelector(".navbar-modal-search-mobile") ||
+					document.querySelector("#navbar-search");
+				if (!opener) return;
+				if (opener.matches("input")) opener.focus();
+				opener.click();
+			})
 		);
-		one("[data-theme]").addEventListener("click", () => new frappe.ui.ThemeSwitcher().show());
-		wireNotifications();
-		const language = one("[data-lang]");
-		const target = LANG === "ar" ? "en" : "ar";
-		language.textContent = target === "ar" ? "العربية" : "English";
-		language.addEventListener("click", async () => {
-			language.disabled = true;
-			await api({ action: "language", lang: target });
-			window.location.reload();
+		safely("full screen", () =>
+			one("[data-full]").addEventListener("click", () =>
+				document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()
+			)
+		);
+		safely("theme", () => {
+			const theme = one("[data-theme]");
+			if (!frappe.ui.ThemeSwitcher) return (theme.hidden = true);
+			theme.addEventListener("click", () => new frappe.ui.ThemeSwitcher().show());
+		});
+		safely("notifications", wireNotifications);
+		safely("language", () => {
+			const language = one("[data-lang]");
+			const target = LANG === "ar" ? "en" : "ar";
+			language.textContent = target === "ar" ? "العربية" : "English";
+			language.addEventListener("click", async () => {
+				language.disabled = true;
+				await api({ action: "language", lang: target });
+				window.location.reload();
+			});
 		});
 		one("[data-go-home]").addEventListener("click", () => {
 			const first = home.modules.find((m) => m.key === "accounts") || home.modules.find((m) => !m.link);
@@ -681,26 +705,76 @@ function run(scope) {
 		avatar.innerHTML = home.image
 			? `<img src="${esc(home.image)}" alt="">`
 			: esc(frappe.get_abbr(home.full_name || frappe.session.user));
+		safely("account menu", () => wireAccountMenu(avatar));
+	}
+
+	const toProfile = () =>
+		frappe.ui.toolbar && frappe.ui.toolbar.route_to_user
+			? frappe.ui.toolbar.route_to_user()
+			: frappe.set_route("Form", "User", frappe.session.user);
+
+	function wireAccountMenu(avatar) {
 		// Frappe's own menu, the one at the top of its sidebar, under the avatar.
-		const items = frappe.app.sidebar?.sidebar_header?.dropdown_items || [];
-		keepSubmenusBeside();
-		frappe.ui.create_menu({
-			aw_root: true,
-			parent: window.jQuery(avatar),
-			// Measures from the avatar's far edge, so the menu stays on screen either way round.
-			open_on_left: true,
-			menu_items: [
-				{
-					name: "my-profile",
-					label: "My Profile",
-					icon: "user",
-					onClick: () => frappe.ui.toolbar.route_to_user(),
-				},
-				{ is_divider: true },
-				...(items.length
-					? items.filter((item) => item.name !== "edit-sidebar")
-					: [{ name: "logout", label: "Logout", icon: "logout", onClick: () => frappe.app.logout() }]),
-			],
+		if (typeof frappe.ui.create_menu === "function") {
+			const items = frappe.app.sidebar?.sidebar_header?.dropdown_items || [];
+			keepSubmenusBeside();
+			frappe.ui.create_menu({
+				aw_root: true,
+				parent: window.jQuery(avatar),
+				// Measures from the avatar's far edge, so the menu stays on screen either way round.
+				open_on_left: true,
+				menu_items: [
+					{ name: "my-profile", label: "My Profile", icon: "user", onClick: toProfile },
+					{ is_divider: true },
+					...(items.length
+						? items.filter((item) => item.name !== "edit-sidebar")
+						: [{ name: "logout", label: "Logout", icon: "logout", onClick: () => frappe.app.logout() }]),
+				],
+			});
+			return;
+		}
+		// An older Frappe has no such menu: a small one of the workspace's own, with Frappe's words.
+		const entries = [
+			{ label: __("My Settings"), run: toProfile },
+			frappe.ui.ThemeSwitcher && { label: __("Toggle Theme"), run: () => new frappe.ui.ThemeSwitcher().show() },
+			{
+				label: __("Reload"),
+				run: () => (frappe.ui.toolbar && frappe.ui.toolbar.clear_cache ? frappe.ui.toolbar.clear_cache() : window.location.reload()),
+			},
+			null,
+			{ label: __("Log out"), run: () => frappe.app.logout() },
+		];
+		const menu = document.createElement("div");
+		menu.className = "aw-menu";
+		menu.setAttribute("role", "menu");
+		menu.hidden = true;
+		entries.forEach((entry) => {
+			if (entry === null) {
+				menu.appendChild(Object.assign(document.createElement("hr"), { className: "aw-menu-line" }));
+				return;
+			}
+			if (!entry) return;
+			const button = document.createElement("button");
+			button.type = "button";
+			button.setAttribute("role", "menuitem");
+			button.textContent = entry.label;
+			button.addEventListener("click", () => {
+				menu.hidden = true;
+				entry.run();
+			});
+			menu.appendChild(button);
+		});
+		avatar.parentElement.appendChild(menu);
+		avatar.setAttribute("aria-haspopup", "menu");
+		avatar.addEventListener("click", (event) => {
+			event.stopPropagation();
+			menu.hidden = !menu.hidden;
+		});
+		document.addEventListener("click", (event) => {
+			if (!event.composedPath().includes(menu)) menu.hidden = true;
+		});
+		document.addEventListener("keydown", (event) => {
+			if (event.key === "Escape") menu.hidden = true;
 		});
 	}
 
