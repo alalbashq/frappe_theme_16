@@ -55,6 +55,33 @@ function pageStyle() {
   body.aw-framed.aw-no-side .main-section { inset: 42px var(--aw-rail) 0 0; }
   html[dir="ltr"] body.aw-framed.aw-no-side .main-section { inset: 42px 0 0 var(--aw-rail); }
   html[dir="ltr"] body > .dropdown-notifications { left: auto; right: 0; }
+  /* Frappe's dark theme: the workspace takes Frappe's own surfaces, lines and inks, so it
+     sits with Frappe's dark pages; the light values are the fallbacks inside its styles. */
+  html[data-theme="dark"] #advanced-workspace-host {
+    --aw-page: var(--bg-color);
+    --aw-panel: var(--card-bg);
+    --aw-hover: var(--fg-hover-color);
+    --aw-tint: var(--subtle-fg);
+    --aw-line: var(--border-color);
+    --aw-line-strong: var(--dark-border-color);
+    --aw-ink: var(--heading-color);
+    --aw-text: var(--text-color);
+    --aw-muted: var(--text-muted);
+    --aw-faint: var(--text-light);
+    --aw-brand: #5fc4b5;
+    --aw-brand-solid: #1d7a6e;
+    --aw-chrome: #0f2f2b;
+    --aw-ok-bg: var(--surface-green-1, #0b2e1c);
+    --aw-ok: var(--ink-green-3, #58c08e);
+    --aw-warn-bg: var(--surface-amber-1, #371e06);
+    --aw-warn: var(--ink-amber-3, #e79913);
+    --aw-bad-bg: var(--surface-red-1, #361515);
+    --aw-bad: var(--ink-red-4, #fc7474);
+    --aw-info-bg: var(--surface-blue-1, #0e2037);
+    --aw-info: var(--ink-blue-3, #5aaef2);
+    --aw-pill: var(--surface-gray-2, #2b2b2b);
+    color-scheme: dark;
+  }
   @media (max-width: 1023px) {
     body.aw-framed .main-section, html[dir="ltr"] body.aw-framed .main-section,
     body.aw-framed.aw-no-side .main-section, html[dir="ltr"] body.aw-framed.aw-no-side .main-section { inset: 42px 0 0 0; }
