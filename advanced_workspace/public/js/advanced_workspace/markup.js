@@ -24,7 +24,7 @@ export const HTML = `
     <div class="aw-scrim" data-scrim></div>
     <aside class="aw-side" data-side>
       <div class="aw-side-head"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><span data-t="Main Menu"></span></div>
-      <nav data-nav data-t-title="Modules"></nav>
+      <nav data-nav data-t-label="Modules"></nav>
     </aside>
     <main class="aw-main" data-main><div class="aw-loading" data-t="Loading"></div></main>
   </div>
@@ -89,7 +89,7 @@ export const CSS = `
   .aw.is-closed .aw-mod-btn svg { width: 19px; height: 19px; }
   .aw.is-closed .aw-sub, .aw.is-closed .aw-mod.open .aw-sub { display: none; position: fixed; z-index: 30; top: var(--fly-top, 60px); inset-inline-start: calc(var(--aw-rail, 60px) + 6px); min-width: 230px; max-width: 300px; max-height: var(--fly-max, calc(100vh - var(--fly-top, 60px) - 12px)); overflow-y: auto; padding: 6px; border-radius: 10px; background: #fff; color: #24303a; box-shadow: 0 14px 34px rgba(0, 40, 36, .22), 0 0 0 1px rgba(0, 40, 36, .07); }
   .aw.is-closed .aw-sub::before { content: ""; position: fixed; top: var(--fly-bridge, var(--fly-top, 60px)); inset-inline-start: var(--aw-rail, 60px); width: 8px; height: 42px; }
-  .aw.is-closed .aw-mod:hover .aw-sub, .aw.is-closed .aw-mod:focus-within .aw-sub { display: block; }
+  .aw.is-closed .aw-mod:hover .aw-sub, .aw.is-closed .aw-mod:has(:focus-visible) .aw-sub { display: block; }
   .aw.is-closed .aw-fly-title { display: block; padding: 7px 9px 8px; margin-bottom: 4px; border-bottom: 1px solid #eef1f0; font-size: 13.5px; font-weight: 700; color: #14201f; white-space: nowrap; }
   .aw.is-closed .aw-fly-title:last-child { margin-bottom: 0; border-bottom: 0; }
   .aw.is-closed .aw-sub button { padding: 7px 9px; border-radius: 6px; color: #33414a; font-size: 13px; }
