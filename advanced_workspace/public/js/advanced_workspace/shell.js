@@ -45,7 +45,7 @@ function pageStyle() {
 	style.textContent = `
   ${faces}
   html.aw-on { --font-stack: "IBM Plex Sans Arabic", "InterVariable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-  :root { --aw-side: clamp(200px, 14vw, 260px); }
+  :root { --aw-side: clamp(200px, 14vw, 260px); --aw-rail: 60px; }
   body.aw-framed .body-sidebar-container { display: none !important; }
   body.aw-framed .sidebar-toggle-btn { display: none !important; }
   body > .frappe-menu { z-index: 1030 !important; }
@@ -53,9 +53,13 @@ function pageStyle() {
   body > .dropdown-notifications .notifications-list { position: absolute; inset: 0; width: 100% !important; min-width: 0 !important; height: 100% !important; min-height: 0; }
   body.aw-framed .main-section { position: fixed !important; inset: 42px var(--aw-side) 0 0; width: auto !important; height: auto !important; }
   html[dir="ltr"] body.aw-framed .main-section { inset: 42px 0 0 var(--aw-side); }
-  body.aw-framed.aw-no-side .main-section { inset: 42px 0 0 0; }
+  body.aw-framed.aw-no-side .main-section { inset: 42px var(--aw-rail) 0 0; }
+  html[dir="ltr"] body.aw-framed.aw-no-side .main-section { inset: 42px 0 0 var(--aw-rail); }
   html[dir="ltr"] body > .dropdown-notifications { left: auto; right: 0; }
-  @media (max-width: 1023px) { body.aw-framed .main-section, html[dir="ltr"] body.aw-framed .main-section { inset: 42px 0 0 0; } }
+  @media (max-width: 1023px) {
+    body.aw-framed .main-section, html[dir="ltr"] body.aw-framed .main-section,
+    body.aw-framed.aw-no-side .main-section, html[dir="ltr"] body.aw-framed.aw-no-side .main-section { inset: 42px 0 0 0; }
+  }
 `;
 	return style;
 }
@@ -118,10 +122,12 @@ function run(scope) {
 			.map(
 				(mod) => `
     <div class="aw-mod" data-key="${esc(mod.key)}">
-      <button class="aw-mod-btn" aria-expanded="false">${icon(mod.icon)}<span>${esc(mod.label)}</span>${
+      <button class="aw-mod-btn" aria-expanded="false" title="${esc(mod.label)}">${icon(mod.icon)}<span>${esc(mod.label)}</span>${
 					mod.items.length ? CHEVRON : ""
 				}</button>
-      <div class="aw-sub">${mod.items.map((item, i) => `<button data-i="${i}">${esc(item.l)}</button>`).join("")}</div>
+      <div class="aw-sub"><b class="aw-fly-title">${esc(mod.label)}</b>${mod.items
+				.map((item, i) => `<button data-i="${i}">${esc(item.l)}</button>`)
+				.join("")}</div>
     </div>`
 			)
 			.join("");
@@ -142,6 +148,14 @@ function run(scope) {
 			row.querySelectorAll("[data-i]").forEach((btn) =>
 				btn.addEventListener("click", () => open(mod.items[btn.dataset.i]))
 			);
+			// On the closed rail the list opens beside the icon, level with it.
+			const level = () => {
+				if (!app.classList.contains("is-closed") || window.innerWidth <= DRAWER_WIDTH) return;
+				const top = row.querySelector(".aw-mod-btn").getBoundingClientRect().top;
+				row.querySelector(".aw-sub").style.setProperty("--fly-top", `${Math.round(top)}px`);
+			};
+			row.addEventListener("mouseenter", level);
+			row.addEventListener("focusin", level);
 		});
 	}
 
@@ -610,9 +624,16 @@ function run(scope) {
 			if (first) goHome(first);
 		});
 		one("[data-scrim]").addEventListener("click", closeDrawer);
+		const setClosed = (closed) => {
+			app.classList.toggle("is-closed", closed);
+			document.body.classList.toggle("aw-no-side", closed);
+		};
+		if (localStorage.getItem("advanced_workspace_side") === "rail") setClosed(true);
 		one("[data-toggle]").addEventListener("click", () => {
 			if (window.innerWidth <= DRAWER_WIDTH) return app.classList.toggle("is-open");
-			document.body.classList.toggle("aw-no-side", app.classList.toggle("is-closed"));
+			const closed = !app.classList.contains("is-closed");
+			setClosed(closed);
+			localStorage.setItem("advanced_workspace_side", closed ? "rail" : "full");
 		});
 		const avatar = one("[data-user-btn]");
 		avatar.innerHTML = home.image
@@ -620,7 +641,9 @@ function run(scope) {
 			: esc(frappe.get_abbr(home.full_name || frappe.session.user));
 		// Frappe's own menu, the one at the top of its sidebar, under the avatar.
 		const items = frappe.app.sidebar?.sidebar_header?.dropdown_items || [];
+		keepSubmenusBeside();
 		frappe.ui.create_menu({
+			aw_root: true,
 			parent: window.jQuery(avatar),
 			// Measures from the avatar's far edge, so the menu stays on screen either way round.
 			open_on_left: true,
@@ -637,6 +660,39 @@ function run(scope) {
 					: [{ name: "logout", label: "Logout", icon: "logout", onClick: () => frappe.app.logout() }]),
 			],
 		});
+	}
+
+	// Frappe opens a submenu on the side the language reads towards. This menu hangs at the
+	// screen's edge, so that side has no room, and Frappe then pins the submenu on top of its
+	// parent. For this menu only, open each submenu beside its parent on a side with room.
+	function keepSubmenusBeside() {
+		const Menu = frappe.ui.menu;
+		if (!Menu || Menu.prototype.awBeside) return;
+		const ours = (menu) => {
+			let root = menu;
+			while (root && root.opts && root.opts.parent_menu) root = frappe.menu_map[root.opts.parent_menu];
+			return Boolean(root && root.opts && root.opts.aw_root);
+		};
+		const show = Menu.prototype.show;
+		Menu.prototype.show = function (...args) {
+			show.apply(this, args);
+			if (!this.opts || !this.opts.nested || !this.opts.parent_menu || !ours(this)) return;
+			const el = this.template.get(0);
+			const parent = frappe.menu_map[this.opts.parent_menu].template.get(0).getBoundingClientRect();
+			const width = el.offsetWidth;
+			const gap = 4;
+			const edge = 8;
+			const fits = (x) => x >= edge && x + width <= window.innerWidth - edge;
+			const toward = frappe.utils.is_rtl() ? parent.left - width - gap : parent.right + gap;
+			const away = frappe.utils.is_rtl() ? parent.right + gap : parent.left - width - gap;
+			const left = fits(toward) ? toward : fits(away) ? away : Math.max(edge, window.innerWidth - width - edge);
+			el.style.left = `${Math.round(left)}px`;
+			const top = parseFloat(el.style.top) || 0;
+			if (top + el.offsetHeight > window.innerHeight - edge) {
+				el.style.top = `${Math.max(edge, window.innerHeight - el.offsetHeight - edge)}px`;
+			}
+		};
+		Menu.prototype.awBeside = true;
 	}
 
 	(async () => {
