@@ -122,7 +122,7 @@ function run(scope) {
 			.map(
 				(mod) => `
     <div class="aw-mod" data-key="${esc(mod.key)}">
-      <button class="aw-mod-btn" aria-expanded="false" title="${esc(mod.label)}">${icon(mod.icon)}<span>${esc(mod.label)}</span>${
+      <button class="aw-mod-btn" aria-expanded="false" aria-label="${esc(mod.label)}">${icon(mod.icon)}<span>${esc(mod.label)}</span>${
 					mod.items.length ? CHEVRON : ""
 				}</button>
       <div class="aw-sub"><b class="aw-fly-title">${esc(mod.label)}</b>${mod.items
@@ -148,11 +148,24 @@ function run(scope) {
 			row.querySelectorAll("[data-i]").forEach((btn) =>
 				btn.addEventListener("click", () => open(mod.items[btn.dataset.i]))
 			);
-			// On the closed rail the list opens beside the icon, level with it.
+			// On the closed rail the list opens beside the icon, level with it; near the bottom of
+			// the screen it rises as far as it must to fit, and scrolls only when the screen is too short.
 			const level = () => {
 				if (!app.classList.contains("is-closed") || window.innerWidth <= DRAWER_WIDTH) return;
-				const top = row.querySelector(".aw-mod-btn").getBoundingClientRect().top;
-				row.querySelector(".aw-sub").style.setProperty("--fly-top", `${Math.round(top)}px`);
+				const sub = row.querySelector(".aw-sub");
+				const top = Math.round(row.querySelector(".aw-mod-btn").getBoundingClientRect().top);
+				sub.style.setProperty("--fly-bridge", `${top}px`);
+				const place = () => {
+					const margin = 12;
+					const ceiling = 52;
+					const tall = sub.scrollHeight;
+					const room = window.innerHeight - margin - ceiling;
+					const start = tall > room ? ceiling : Math.min(top, window.innerHeight - margin - tall);
+					sub.style.setProperty("--fly-top", `${Math.max(ceiling, start)}px`);
+					sub.style.setProperty("--fly-max", `${Math.min(tall, room)}px`);
+				};
+				place();
+				requestAnimationFrame(place);
 			};
 			row.addEventListener("mouseenter", level);
 			row.addEventListener("focusin", level);
