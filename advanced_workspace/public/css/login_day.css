@@ -73,20 +73,25 @@ body[data-path="login"] .awl-form .page-card .page-card-body .forgot-password-me
 body[data-path="login"] .awl-form .sign-up-message a:hover { text-decoration: underline; text-underline-offset: 3px; }
 body[data-path="login"] .awl-form .sign-up-message { margin-top: 20px; font-size: 13px; color: var(--awl-muted); }
 body[data-path="login"] .awl-form .page-card .page-card-actions { margin-top: 10px; gap: 10px; }
+/* the main button: .btn-login before Frappe 16.5x, its Espresso .es-button[data-variant=solid] after */
 body[data-path="login"] .awl-form .page-card .page-card-actions .btn-login,
 body[data-path="login"] .awl-form .page-card .page-card-actions .btn-signup:not(:disabled),
-body[data-path="login"] .awl-form .page-card .page-card-actions .btn-primary {
+body[data-path="login"] .awl-form .page-card .page-card-actions .btn-primary,
+body[data-path="login"] .awl-form .page-card .page-card-actions .es-button[data-variant="solid"] {
 	position: relative; height: 52px; border: 0; border-radius: 12px; background: var(--awl-teal); color: #fff;
 	font-family: var(--font-stack); font-size: 16px; font-weight: 700; letter-spacing: 0;
 	box-shadow: 0 14px 28px -16px rgba(0, 87, 81, 0.9);
 	transition: background-color 0.2s var(--awl-ease), transform 0.2s var(--awl-ease), box-shadow 0.2s var(--awl-ease);
 }
 body[data-path="login"] .awl-form .page-card .page-card-actions .btn-login:hover,
-body[data-path="login"] .awl-form .page-card .page-card-actions .btn-login:focus-visible {
+body[data-path="login"] .awl-form .page-card .page-card-actions .btn-login:focus-visible,
+body[data-path="login"] .awl-form .page-card .page-card-actions .es-button[data-variant="solid"]:hover,
+body[data-path="login"] .awl-form .page-card .page-card-actions .es-button[data-variant="solid"]:focus-visible {
 	background: var(--awl-teal-dark); transform: translateY(-1px); box-shadow: 0 18px 30px -16px rgba(0, 87, 81, 0.95);
 }
-body[data-path="login"] .awl-form .page-card .page-card-actions .btn-login:active { transform: none; }
-body[data-path="login"] .awl-form .page-card .page-card-actions .btn-login-option { height: 46px; border-radius: 12px; font-family: var(--font-stack); }
+body[data-path="login"] .awl-form .page-card .page-card-actions .btn-login:active,
+body[data-path="login"] .awl-form .page-card .page-card-actions .es-button[data-variant="solid"]:active { transform: none; }
+body[data-path="login"] .awl-form .page-card .page-card-actions .btn-login-option { display: inline-flex; align-items: center; justify-content: center; height: 46px; border-radius: 12px; font-family: var(--font-stack); }
 body[data-path="login"] .awl-panel a:focus-visible,
 body[data-path="login"] .awl-panel button:focus-visible { outline: 2px solid var(--awl-teal); outline-offset: 2px; }
 

@@ -1249,3 +1249,7 @@ msgstr "التفاصيل"
 msgctxt "Advanced Workspace Module"
 msgid "Access"
 msgstr "الصلاحيات"
+
+# Frappe 16.5x's sign-in link, which its own catalogue leaves empty
+msgid "Forgot password?"
+msgstr "نسيت كلمة المرور؟"
