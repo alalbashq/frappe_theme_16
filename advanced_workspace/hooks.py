@@ -13,6 +13,7 @@ boot_session = "advanced_workspace.boot.boot_session"
 
 before_install = "advanced_workspace.install.before_install"
 after_install = "advanced_workspace.install.after_install"
+before_migrate = "advanced_workspace.install.before_migrate"
 after_migrate = "advanced_workspace.install.after_migrate"
 
 doc_events = {

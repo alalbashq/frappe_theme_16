@@ -1,6 +1,7 @@
 """Install, migrate, and take over sites that ran the earlier Package version."""
 
 import json
+import os
 
 import frappe
 from frappe.installer import update_site_config
@@ -8,6 +9,7 @@ from frappe.installer import update_site_config
 from advanced_workspace import access, catalog
 
 MODULE = "Advanced Workspace"
+LAYOUT_MODULE = "Form Layout"
 PACKAGE = "advanced-workspace"
 DOCTYPES = (
 	"Advanced Workspace Module",
@@ -33,8 +35,41 @@ def after_install():
 	access.apply_all()
 
 
+def before_migrate():
+	ensure_layout_module()
+
+
 def after_migrate():
 	ensure_basics()
+	apply_form_layouts()
+
+
+# ---------------------------------------------------------------------- form layouts
+
+
+def ensure_layout_module():
+	"""Form Layout holds no DocTypes, so only an install makes its Module Def; a site that had the
+	app before it gets one here, ahead of the customizations sync that links to it."""
+	if not frappe.db.exists("Module Def", LAYOUT_MODULE):
+		frappe.get_doc(
+			{"doctype": "Module Def", "module_name": LAYOUT_MODULE, "app_name": "advanced_workspace"}
+		).insert(ignore_permissions=True)
+
+
+def apply_form_layouts():
+	"""Lays the Form Layout files over their forms once more, after every app has synced its own.
+
+	Frappe syncs each app's customizations in install order, so another app's field order for the
+	same form (MYSYS POS has one for Sales Invoice) would win on a site that installed it later.
+	"""
+	from frappe.modules.utils import sync_customizations_for_doctype
+
+	folder = frappe.get_app_path("advanced_workspace", "form_layout", "custom")
+	for name in sorted(os.listdir(folder)):
+		if name.endswith(".json"):
+			with open(os.path.join(folder, name), encoding="utf-8") as f:
+				sync_customizations_for_doctype(json.load(f), folder, name)
+	frappe.db.commit()
 
 
 # ---------------------------------------------------------------------- the Package version
