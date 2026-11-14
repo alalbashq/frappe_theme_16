@@ -56,6 +56,14 @@ def label(text):
 	return _(text, context=CONTEXT) if text else ""
 
 
+def label_names(text):
+	"""A label in each language the workspace speaks, the user's own first: Frappe's search
+	finds a menu entry by any of them, whatever the language of the desk."""
+	if not text:
+		return []
+	return list(dict.fromkeys([label(text), _(text, lang="ar", context=CONTEXT), _(text, lang="en", context=CONTEXT), text]))
+
+
 def item_kind(item):
 	if item.item_type == "DocType" and item.doc_view == "Tree":
 		return "tree"
@@ -111,12 +119,18 @@ def load_modules():
 			{
 				"key": row.name,
 				"label": label(row.label),
+				"names": label_names(row.label),
 				"icon": row.icon,
 				"direct": row.direct_link,
 				"kpis": kpis,
 				"roles": [r.role for r in module_roles if r.parent == row.name],
 				"items": [
-					{"t": item_kind(i), "n": i.url if i.item_type == "URL" else i.target, "l": label(i.label)}
+					{
+						"t": item_kind(i),
+						"n": i.url if i.item_type == "URL" else i.target,
+						"l": label(i.label),
+						"names": label_names(i.label),
+					}
 					for i in items
 					if i.parent == row.name
 				],
@@ -161,12 +175,22 @@ def visible_modules():
 		if not items:
 			continue
 		if module["direct"]:
-			out.append({"key": module["key"], "label": module["label"], "icon": module["icon"], "link": items[0], "items": []})
+			out.append(
+				{
+					"key": module["key"],
+					"label": module["label"],
+					"names": module["names"],
+					"icon": module["icon"],
+					"link": items[0],
+					"items": [],
+				}
+			)
 		else:
 			out.append(
 				{
 					"key": module["key"],
 					"label": module["label"],
+					"names": module["names"],
 					"icon": module["icon"],
 					"items": items,
 					"n": len(module["kpis"]),

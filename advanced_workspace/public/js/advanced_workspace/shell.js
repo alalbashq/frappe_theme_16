@@ -780,6 +780,53 @@ function run(scope) {
 			? frappe.ui.toolbar.route_to_user()
 			: frappe.set_route("Form", "User", frappe.session.user);
 
+	// The workspace's menu in Frappe's search (Ctrl+K): every module and every entry in it, found
+	// by any part of its name in Arabic or English, whatever the language of the desk. Frappe's
+	// searchable functions match from the start of a name only, so the menu joins the results of
+	// get_executables, scored by Frappe's own fuzzy match like every other result there.
+	function wireMenuSearch() {
+		const utils = frappe.search && frappe.search.utils;
+		if (!utils || typeof utils.get_executables !== "function" || typeof utils.fuzzy_search !== "function") return;
+		const entries = [];
+		const listed = new Set();
+		home.modules.forEach((mod) => {
+			entries.push({ names: mod.names || [mod.label], shown: mod.label, where: "", run: () => goHome(mod) });
+			mod.items.forEach((item) => {
+				// a document in several modules opens the same list: one result, under its first module
+				const target = `${item.t}:${item.n}`;
+				if (listed.has(target)) return;
+				listed.add(target);
+				entries.push({ names: item.names || [item.l], shown: item.l, where: mod.label, run: () => open(item) });
+			});
+		});
+		const escape = (text) => frappe.utils.escape_html(String(text));
+		const original = utils.awMenuOriginal || utils.get_executables;
+		utils.awMenuOriginal = original;
+		utils.get_executables = function (keywords) {
+			const results = original.call(this, keywords);
+			const typed = (keywords || "").trim();
+			if (typed.length < 2) return results;
+			entries.forEach((entry) => {
+				let best = null;
+				entry.names.forEach((name) => {
+					const found = utils.fuzzy_search(typed, name, true);
+					if (found && found.score && (!best || found.score > best.score)) best = { ...found, name };
+				});
+				if (!best) return;
+				const also = best.name !== entry.shown ? ` <span class="text-muted">(${escape(entry.shown)})</span>` : "";
+				const where = entry.where ? ` <span class="text-muted">· ${escape(entry.where)}</span>` : "";
+				results.push({
+					type: "Executable",
+					value: best.marked_string + also + where,
+					index: best.score,
+					match: best.name,
+					onclick: entry.run,
+				});
+			});
+			return results;
+		};
+	}
+
 	// The entries of Frappe's own sidebar menu, made with the same calls, for when that menu
 	// was never built: Frappe 16.3x builds it with a workspace's sidebar, and the home is a page.
 	function standardItems() {
@@ -932,6 +979,7 @@ function run(scope) {
 		}
 		wireTop();
 		buildNav();
+		safely("menu search", wireMenuSearch);
 		syncFrame = sync;
 		frappe.router.on("change", sync);
 		sync();
