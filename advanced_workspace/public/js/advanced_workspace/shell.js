@@ -36,6 +36,21 @@ export function mount() {
 	run(scope);
 }
 
+// With the user's Search Bar off, Frappe builds no search, yet 16.5x's Ctrl+K still opens it
+// and throws. The shortcut is left to Frappe whenever a search exists, and does nothing otherwise.
+function quietShortcut() {
+	const open = frappe.search && frappe.search.open_awesomebar_from_global_search_shortcut;
+	const AwesomeBar = frappe.search && frappe.search.AwesomeBar;
+	if (!open || open.awQuiet || !AwesomeBar || typeof AwesomeBar.prototype.open !== "function") return;
+	const quiet = function (event) {
+		if (frappe.app && frappe.app.awesome_bar) return open.apply(this, arguments);
+		if (event && event.preventDefault) event.preventDefault();
+		return false;
+	};
+	quiet.awQuiet = true;
+	frappe.search.open_awesomebar_from_global_search_shortcut = quiet;
+}
+
 // Frappe's search, and the Ctrl+K that opens it, as Frappe would have set them up. Called once
 // the desk has started: app_ready fires inside Frappe's Application constructor, while frappe.app
 // is still a placeholder that the finished application then replaces.
@@ -718,6 +733,13 @@ function run(scope) {
 		// Frappe's own search window: its button sits in the Desk sidebar (or, on older Frappe,
 		// its navbar) behind this frame.
 		safely("search", () => {
+			// A user whose Search Bar is off in their settings has no Frappe search, so the bar
+			// shows none either; and Frappe 16.5x's Ctrl+K, which would throw, is quieted.
+			if (frappe.boot.desk_settings && !frappe.boot.desk_settings.search_bar) {
+				one("[data-search]").style.display = "none";
+				quietShortcut();
+				return;
+			}
 			ensureSearch();
 			one("[data-search]").addEventListener("click", () => {
 				const bar = frappe.app && frappe.app.awesome_bar;
