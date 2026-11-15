@@ -114,6 +114,16 @@ function pageStyle() {
   html[dir="ltr"] body.aw-framed .main-section { inset: 42px 0 0 var(--aw-side); }
   body.aw-framed.aw-no-side .main-section { inset: 42px var(--aw-rail) 0 0; }
   html[dir="ltr"] body.aw-framed.aw-no-side .main-section { inset: 42px 0 0 var(--aw-rail); }
+  /* Frappe centres a table row's edit window on the whole screen, which put its start under the
+     menu; in the frame it is centred on the page beside the menu (or rail) and opens below the bar */
+  @media (min-width: 1024px) {
+    body.aw-framed { --aw-start: var(--aw-side); }
+    body.aw-framed.aw-no-side { --aw-start: var(--aw-rail); }
+    body.aw-framed .grid-row-open .form-in-grid {
+      inset-inline: var(--aw-start) 0; transform: none;
+      width: calc((100% - var(--aw-start)) * 0.8); top: calc(42px + 3vh);
+    }
+  }
   html[dir="ltr"] body > .dropdown-notifications { left: auto; right: 0; }
   /* Frappe's dark theme: the workspace takes Frappe's own surfaces, lines and inks, so it
      sits with Frappe's dark pages; the light values are the fallbacks inside its styles. */
