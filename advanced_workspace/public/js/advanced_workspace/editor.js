@@ -11,6 +11,8 @@
 // view, a module's label and icon, as stored, so the edit dialog opens on them. A label is
 // stored as typed, or as the English name of what the item opens, and shown translated.
 
+import { ITEM_ICONS } from "./icons";
+
 const MODULE_DT = "Advanced Workspace Module";
 const ITEM_TYPES = ["DocType", "Report", "Page", "URL"];
 const KIND_ICON = { dt: "doc", tree: "tree", rp: "chart", page: "window", url: "link" };
@@ -19,6 +21,9 @@ const kindOf = (spec) =>
 	spec.item_type === "DocType" && spec.doc_view === "Tree"
 		? "tree"
 		: { DocType: "dt", Report: "rp", Page: "page", URL: "url" }[spec.item_type] || "dt";
+
+// an item's own icon, else the icon of what it opens, else one for its kind
+const iconOf = (spec) => spec.icon || ITEM_ICONS[spec.target] || KIND_ICON[kindOf(spec)] || "doc";
 
 export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 	const menu = await frappe.xcall("advanced_workspace.api.menu_for_editing");
@@ -35,7 +40,7 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 	const itemHtml = (item, fresh) => `
     <div class="aw-edit-item${fresh ? " is-new" : ""}${item?.hidden ? " is-hidden" : ""}" ${fresh ? "" : `data-row="${esc(item.row)}"`} ${hiddenAttrs(item?.hidden)} data-spec="${esc(JSON.stringify(fresh || item.raw))}">
       <span class="aw-grip" data-drag="item" tabindex="0" role="button" aria-label="${esc(t("Drag to reorder"))}">${icon("grip")}</span>
-      <span class="aw-edit-kind">${icon(KIND_ICON[fresh ? kindOf(fresh) : item.t] || "doc")}</span>
+      <span class="aw-edit-kind">${icon(iconOf(fresh || item.raw))}</span>
       <span class="name">${esc(fresh ? shown(fresh) : item.l)}</span>${hiddenTag}
       <button class="aw-edit-x" data-edit-item aria-label="${esc(t("Edit"))}" title="${esc(t("Edit"))}">${icon("pencil")}</button>${hideButton("aw-edit-x", item?.hidden)}
       <button class="aw-edit-x" data-remove aria-label="${esc(t("Remove"))}" title="${esc(t("Remove"))}">${icon("x")}</button>
@@ -120,6 +125,43 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 	});
 
 	// ------------------------------------------------------------------ the dialogs
+	// Icons are picked by sight: a grid of the menu's icons in the dialog, the chosen one marked.
+	// An item's grid starts with Automatic: the icon of what it opens, shown as it would be.
+	const iconPicker = (dialog, automatic) => {
+		const wrap = dialog.fields_dict.icon_grid.$wrapper[0];
+		const names = automatic ? ["", ...menu.icons] : menu.icons;
+		wrap.innerHTML = `<div class="form-group aw-icon-field">
+      <label class="control-label">${esc(t("Icon"))}</label>
+      <div class="aw-icon-pick" role="radiogroup" aria-label="${esc(t("Icon"))}">${names
+				.map((name) =>
+					name
+						? `<button type="button" role="radio" data-icon="${esc(name)}" aria-label="${esc(name)}">${icon(name)}</button>`
+						: `<button type="button" role="radio" class="is-auto" data-icon="" aria-label="${esc(t("Automatic"))}"><span data-auto-icon></span><span>${esc(t("Automatic"))}</span></button>`
+				)
+				.join("")}</div>
+    </div>`;
+		const paint = () => {
+			const chosen = dialog.get_value("icon") || "";
+			wrap.querySelectorAll("[data-icon]").forEach((button) => {
+				const on = button.dataset.icon === chosen;
+				button.classList.toggle("on", on);
+				button.setAttribute("aria-checked", String(on));
+			});
+			const auto = wrap.querySelector("[data-auto-icon]");
+			if (auto) auto.innerHTML = icon(automatic());
+		};
+		wrap.addEventListener("click", (event) => {
+			const button = event.target.closest("[data-icon]");
+			if (!button) return;
+			// the dialog takes a value a moment later; the grid follows it
+			Promise.resolve(dialog.set_value("icon", button.dataset.icon)).then(paint);
+		});
+		return paint;
+	};
+	const iconFields = [
+		{ fieldname: "icon", fieldtype: "Data", hidden: 1 },
+		{ fieldname: "icon_grid", fieldtype: "HTML" },
+	];
 	// One dialog adds an item and edits one: what it opens, how, and the label it shows. Picking
 	// what it opens fills an empty label with its name.
 	const itemDialog = (start, done) => {
@@ -131,10 +173,19 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 			filledLabel = value;
 			dialog.set_value("label", value);
 		};
+		let paint = () => {};
 		const dialog = new frappe.ui.Dialog({
 			title: start ? t("Edit item") : t("Add item"),
 			fields: [
-				{ fieldname: "item_type", fieldtype: "Select", label: t("Type"), options: ITEM_TYPES, default: "DocType", reqd: 1 },
+				{
+					fieldname: "item_type",
+					fieldtype: "Select",
+					label: t("Type"),
+					options: ITEM_TYPES,
+					default: "DocType",
+					reqd: 1,
+					onchange: () => paint(),
+				},
 				{
 					fieldname: "target",
 					fieldtype: "Dynamic Link",
@@ -147,11 +198,12 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 					onchange() {
 						const target = dialog.get_value("target");
 						const type = dialog.get_value("item_type");
+						paint();
 						if (!ready || !target) return;
 						// a document type opens as it is: a tree (Chart of Accounts) as a tree, others as a list
 						if (type === "DocType") {
 							frappe.db.get_value("DocType", target, "is_tree").then((r) => {
-								dialog.set_value("doc_view", r.message && r.message.is_tree ? "Tree" : "List");
+								dialog.set_value("doc_view", r.message && r.message.is_tree ? "Tree" : "List").then(paint);
 							});
 						}
 						const typed = () => dialog.get_value("label") && dialog.get_value("label") !== filledLabel;
@@ -172,6 +224,8 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 					mandatory_depends_on: "eval:doc.item_type === 'URL'",
 				},
 				{ fieldname: "label", fieldtype: "Data", label: t("Label"), description: t("Shown translated in the menu.") },
+				// until the site is migrated, an item has no icon of its own to keep
+				...(menu.item_icons ? iconFields : []),
 			],
 			primary_action_label: start ? t("Done") : t("Add"),
 			primary_action(values) {
@@ -182,12 +236,26 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 					url: url ? values.url : null,
 					doc_view: values.item_type === "DocType" ? values.doc_view || null : null,
 					label: values.label || (url ? values.url : values.target),
+					...(menu.item_icons ? { icon: values.icon || null } : {}),
 				});
 				dialog.hide();
 			},
 		});
+		if (menu.item_icons) {
+			paint = iconPicker(dialog, () =>
+				iconOf({
+					item_type: dialog.get_value("item_type"),
+					target: dialog.get_value("target"),
+					doc_view: dialog.get_value("doc_view"),
+				})
+			);
+			paint();
+		}
 		const filled = start ? dialog.set_values(start) : null;
-		Promise.resolve(filled).then(() => (ready = true));
+		Promise.resolve(filled).then(() => {
+			ready = true;
+			paint();
+		});
 		dialog.show();
 	};
 	const moduleDialog = (start, done) => {
@@ -195,7 +263,7 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 			title: start ? t("Edit module") : t("Add module"),
 			fields: [
 				{ fieldname: "label", fieldtype: "Data", label: t("Name"), reqd: 1 },
-				{ fieldname: "icon", fieldtype: "Select", label: t("Icon"), options: menu.icons, default: "box" },
+				...iconFields,
 			],
 			primary_action_label: start ? t("Done") : t("Add"),
 			primary_action(values) {
@@ -203,7 +271,8 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 				dialog.hide();
 			},
 		});
-		if (start) dialog.set_values(start);
+		const paint = iconPicker(dialog, null);
+		Promise.resolve(dialog.set_values(start || { icon: "box" })).then(paint);
 		dialog.show();
 	};
 
@@ -215,7 +284,7 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 	const showItem = (el, value) => {
 		el.dataset.spec = JSON.stringify(value);
 		el.querySelector(".name").textContent = shown(value);
-		el.querySelector(".aw-edit-kind").innerHTML = icon(KIND_ICON[kindOf(value)]);
+		el.querySelector(".aw-edit-kind").innerHTML = icon(iconOf(value));
 		mark(el);
 	};
 	const showModule = (el, value) => {

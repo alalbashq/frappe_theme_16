@@ -55,7 +55,7 @@
    "fieldname": "icon",
    "fieldtype": "Select",
    "label": "Icon",
-   "options": "wallet\nbanknote\nbag\nreceipt\nshield\nbox\npos\nusers\ncoins\ntarget\nbrief\nfactory\nbuilding\ncheck\nheadset\nspark\nlink\nrefresh"
+   "options": "wallet\nbanknote\ncoins\ncard\nbank\nreceipt\nscale\nbook\ncalculator\npercent\npie\nchart\ntrend\nbag\ncart\ntruck\ntag\nbox\nlayers\nwarehouse\nswap\nreturn\npos\nuser\nusers\nid-card\nheadset\nmail\nbrief\nfolder\nclipboard\ncheck\ncalendar\nclock\nflag\nalert\nstar\ntarget\nspark\nwrench\nfactory\nbuilding\nhome\nshield\nlock\nkey\ngear\ndoc\nlist\ntree\nwindow\nlink\ndownload\nrefresh"
   },
   {
    "fieldname": "column_a",
@@ -124,7 +124,7 @@
   }
  ],
  "links": [],
- "modified": "2026-11-12 18:45:00.000000",
+ "modified": "2026-11-15 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Advanced Workspace",
  "name": "Advanced Workspace Module",

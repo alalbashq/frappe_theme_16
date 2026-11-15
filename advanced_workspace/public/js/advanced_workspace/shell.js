@@ -1,6 +1,6 @@
 // The workspace frame. It stays on <body> for the whole visit: Desk moves pages in and out,
 // and lists, forms, reports and trees are Frappe's own pages, placed inside this frame.
-import { ICONS, SAR } from "./icons";
+import { ICONS, ITEM_ICONS, SAR } from "./icons";
 import { editMenu } from "./editor";
 import { HTML, CSS } from "./markup";
 
@@ -181,6 +181,16 @@ function pageStyle() {
   }
   html.aw-on .form-tab-content .section-head { background-color: transparent; }
   html.aw-on .btn.btn-primary { background-color: var(--aw-f-brand) !important; border-color: var(--aw-f-brand) !important; color: #fff !important; }
+  /* the menu editor's icon grid, in Frappe's dialog: Frappe's own surfaces and lines, the chosen
+     icon in the workspace's green */
+  .aw-icon-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px; max-height: 214px; overflow-y: auto; padding: 2px; }
+  .aw-icon-pick button { display: grid; place-items: center; height: 38px; padding: 0; border: 1px solid var(--border-color); border-radius: var(--border-radius); background: var(--control-bg); color: var(--text-color); }
+  .aw-icon-pick button:hover { border-color: var(--gray-500, #a0aec0); }
+  .aw-icon-pick button:focus-visible { outline: 2px solid var(--aw-f-brand, #005751); outline-offset: 1px; }
+  .aw-icon-pick button.on { border-color: var(--aw-f-brand, #005751); box-shadow: inset 0 0 0 1px var(--aw-f-brand, #005751); background: var(--aw-f-tint, #e6f1ef); color: var(--aw-f-brand-ink, #005751); }
+  .aw-icon-pick button.is-auto { grid-column: span 3; display: flex; justify-content: center; gap: 6px; font-size: var(--text-sm, 12px); }
+  .aw-icon-pick svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .aw-icon-pick [data-auto-icon] { display: grid; }
   @media (max-width: 1023px) {
     body.aw-framed .main-section, html[dir="ltr"] body.aw-framed .main-section,
     body.aw-framed.aw-no-side .main-section, html[dir="ltr"] body.aw-framed.aw-no-side .main-section { inset: 42px 0 0 0; }
@@ -211,6 +221,8 @@ function run(scope) {
 	const CHEVRON = '<svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>';
 	const icon = (name) => `<svg viewBox="0 0 24 24">${ICONS[name] || ICONS.box}</svg>`;
 	const KIND_ICONS = { dt: "doc", tree: "tree", page: "window", rp: "chart", url: "link" };
+	// its own icon, else the icon of what it opens, else one for its kind
+	const itemIcon = (item) => item.i || ITEM_ICONS[item.n] || KIND_ICONS[item.t] || "doc";
 	const KIND_WORDS = { tree: "Tree", page: "Page", rp: "Report", url: "Link" };
 	const api = (args) => frappe.xcall("advanced_workspace.api.home", args);
 
@@ -302,7 +314,7 @@ function run(scope) {
 					mod.items.length ? CHEVRON : ""
 				}</button>
       <div class="aw-sub"><b class="aw-fly-title">${esc(mod.label)}</b>${mod.items
-				.map((item, i) => `<button data-i="${i}">${esc(item.l)}</button>`)
+				.map((item, i) => `<button data-i="${i}">${icon(itemIcon(item))}<span>${esc(item.l)}</span></button>`)
 				.join("")}</div>
     </div>`
 			)
@@ -407,7 +419,7 @@ function run(scope) {
 			.map(
 				([item, i]) => `<div class="aw-dc" data-doc="${i}">
         <div class="aw-dc-head">
-          <button class="aw-dc-name" data-link="${i}">${icon("doc")}<span>${esc(item.l)}</span></button>
+          <button class="aw-dc-name" data-link="${i}">${icon(itemIcon(item))}<span>${esc(item.l)}</span></button>
           <span data-new-slot></span>
         </div>
         <div class="aw-dc-num" data-num><b class="aw-dash">—</b></div>
@@ -418,7 +430,7 @@ function run(scope) {
 		const tiles = more
 			.map(
 				([item, i]) => `<button class="aw-tile" data-link="${i}">
-        <span class="aw-tile-ico">${icon(KIND_ICONS[item.t])}</span>
+        <span class="aw-tile-ico">${icon(itemIcon(item))}</span>
         <span class="aw-tile-text"><b>${esc(item.l)}</b><small>${t(KIND_WORDS[item.t] || "Link")}</small></span>
         <svg class="aw-go" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>`
 			)

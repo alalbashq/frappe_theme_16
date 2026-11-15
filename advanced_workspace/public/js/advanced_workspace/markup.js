@@ -115,7 +115,10 @@ export const CSS = `
 .aw-mod.open .chev { transform: rotate(180deg); }
 .aw-sub { display: none; padding-block: 1px 4px; padding-inline-start: 22px; }
 .aw-mod.open .aw-sub { display: block; }
-.aw-sub button { display: block; width: 100%; padding: 3px 6px; border-radius: 4px; color: #d9efea; text-align: start; font-size: 12px; }
+.aw-sub button { display: flex; align-items: center; gap: 7px; width: 100%; padding: 3px 6px; border-radius: 4px; color: #d9efea; text-align: start; font-size: 12px; }
+/* each entry's icon sits under its module's name */
+.aw-sub button svg { width: 14px; height: 14px; opacity: .85; }
+.aw-sub button span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .aw-sub button:hover { background: rgba(255, 255, 255, .08); color: #fff; }
 .aw-sub button.on { background: rgba(255, 255, 255, .16); color: #fff; font-weight: 700; }
 .aw-fly-title { display: none; }
@@ -137,6 +140,8 @@ export const CSS = `
   .aw.is-closed .aw-fly-title { display: block; padding: 7px 9px 8px; margin-bottom: 4px; border-bottom: 1px solid var(--aw-line, #eef1f0); font-size: 13.5px; font-weight: 700; color: var(--aw-ink, #14201f); white-space: nowrap; }
   .aw.is-closed .aw-fly-title:last-child { margin-bottom: 0; border-bottom: 0; }
   .aw.is-closed .aw-sub button { padding: 7px 9px; border-radius: 6px; color: var(--aw-text, #33414a); font-size: 13px; }
+  .aw.is-closed .aw-sub button svg { width: 15px; height: 15px; color: var(--aw-muted, #71808a); opacity: 1; }
+  .aw.is-closed .aw-sub button:hover svg, .aw.is-closed .aw-sub button.on svg { color: inherit; }
   .aw.is-closed .aw-sub button:hover { background: var(--aw-hover, #f1f6f5); color: var(--aw-brand, #005751); }
   .aw.is-closed .aw-sub button.on { background: var(--aw-tint, #e5f1ee); color: var(--aw-brand, #005751); }
 }

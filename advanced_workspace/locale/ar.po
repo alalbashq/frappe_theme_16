@@ -2013,3 +2013,15 @@ msgstr "تم"
 msgctxt "Advanced Workspace"
 msgid "Shown translated in the menu."
 msgstr "يظهر مترجمًا في القائمة."
+
+msgctxt "Advanced Workspace"
+msgid "Automatic"
+msgstr "تلقائي"
+
+msgctxt "Advanced Workspace Item"
+msgid "Icon"
+msgstr "الأيقونة"
+
+msgctxt "Advanced Workspace Item"
+msgid "Left empty, the item shows the icon of what it opens."
+msgstr "إذا تُركت فارغة، يظهر العنصر بأيقونة ما يفتحه."

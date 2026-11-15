@@ -10,7 +10,7 @@ import frappe
 from frappe import _
 from frappe.utils import add_days, add_months, flt, get_first_day, getdate, nowdate
 
-from advanced_workspace.access import ADVANCED_ROLE, MODULE_DT, ROLE_DT
+from advanced_workspace.access import ADVANCED_ROLE, ITEM_DT, MODULE_DT, ROLE_DT
 
 # Labels are English, as in Frappe; their Arabic is in locale/ar.po under this context, and a
 # site's own labels can be translated in Frappe's Translation list, with or without it.
@@ -73,6 +73,15 @@ def item_kind(item):
 	return ITEM_TYPES.get(item.item_type, "dt")
 
 
+def has_item_icons():
+	"""Items have their own icon once the site is migrated; until then the code reads none."""
+	return frappe.get_meta(ITEM_DT).has_field("icon")
+
+
+def item_fields():
+	return ITEM_FIELDS + (("icon",) if has_item_icons() else ())
+
+
 def load_modules():
 	"""The menu is whatever the settings table says, read fresh on each request."""
 	rows = frappe.get_all(
@@ -85,9 +94,9 @@ def load_modules():
 	if not names:
 		return []
 	items = frappe.get_all(
-		"Advanced Workspace Item",
+		ITEM_DT,
 		filters={"parent": ["in", names], "parenttype": MODULE_DT, "enabled": 1},
-		fields=["parent", "label", "item_type", "target", "url", "doc_view"],
+		fields=["parent", "label", "item_type", "target", "url", "doc_view", *(["icon"] if has_item_icons() else [])],
 		order_by="idx asc",
 	)
 	stats = frappe.get_all(
@@ -131,6 +140,7 @@ def load_modules():
 					{
 						"t": item_kind(i),
 						"n": i.url if i.item_type == "URL" else i.target,
+						"i": i.get("icon") or None,
 						"l": label(i.label),
 						"names": label_names(i.label),
 					}
@@ -154,15 +164,18 @@ def menu_for_editing():
 	open, since the menu is arranged for everyone."""
 	frappe.has_permission(MODULE_DT, "write", throw=True)
 	rows = frappe.get_all(MODULE_DT, order_by="sequence asc", fields=["name", "label", "icon", "enabled"])
+	shown = [f for f in item_fields() if f != "enabled"]
 	items = frappe.get_all(
-		"Advanced Workspace Item",
+		ITEM_DT,
 		filters={"parent": ["in", [r.name for r in rows] or [""]], "parenttype": MODULE_DT},
-		fields=["name", "parent", "label", "item_type", "target", "url", "doc_view", "enabled"],
+		fields=["name", "parent", "enabled", *shown],
 		order_by="idx asc",
 	)
 	icons = (frappe.get_meta(MODULE_DT).get_field("icon").options or "").split("\n")
 	return {
 		"icons": [i for i in icons if i],
+		# whether an item can be given its own icon on this site yet
+		"item_icons": has_item_icons(),
 		"modules": [
 			{
 				"key": row.name,
@@ -177,7 +190,7 @@ def menu_for_editing():
 						"l": label(i.label) or _(i.target or i.url or ""),
 						"t": item_kind(i),
 						"hidden": not i.enabled,
-						"raw": {f: i.get(f) for f in ("label", "item_type", "target", "url", "doc_view")},
+						"raw": {f: i.get(f) for f in shown},
 					}
 					for i in items
 					if i.parent == row.name
@@ -200,6 +213,7 @@ def save_menu(menu, removed=None):
 	docs = {name: frappe.get_doc(MODULE_DT, name) for name in frappe.get_all(MODULE_DT, pluck="name")}
 	rows = {row.name: row for doc in docs.values() for row in doc.items}
 	listed = {item["row"] for entry in menu for item in entry.get("items") or [] if item.get("row")}
+	fields = item_fields()
 
 	plan = []
 	for index, entry in enumerate(menu):
@@ -221,7 +235,7 @@ def save_menu(menu, removed=None):
 		for item in entry.get("items") or []:
 			if item.get("row"):
 				if item["row"] in rows:
-					kept = {field: rows[item["row"]].get(field) for field in ITEM_FIELDS}
+					kept = {field: rows[item["row"]].get(field) for field in fields}
 					if item.get("changes"):
 						kept = new_item(item["changes"])
 					items.append(dict(kept, enabled=0 if item.get("hidden") else 1))
@@ -232,13 +246,13 @@ def save_menu(menu, removed=None):
 		for row in [] if doc.is_new() else doc.items:
 			if row.name in listed or row.name in removed:
 				continue
-			items.append({field: row.get(field) for field in ITEM_FIELDS})
+			items.append({field: row.get(field) for field in fields})
 		plan.append((doc, (index + 1) * 10, items, renamed or toggled))
 
 	changed = []
 	for doc, sequence, items, touched in plan:
-		before = [] if doc.is_new() else [tuple(row.get(f) or None for f in ITEM_FIELDS) for row in doc.items]
-		after = [tuple(item.get(f) or None for f in ITEM_FIELDS) for item in items]
+		before = [] if doc.is_new() else [tuple(row.get(f) or None for f in fields) for row in doc.items]
+		after = [tuple(item.get(f) or None for f in fields) for item in items]
 		if doc.is_new() or touched or before != after:
 			fresh = doc.is_new()
 			doc.sequence = sequence
@@ -327,12 +341,28 @@ def new_item(spec):
 		url = (spec.get("url") or "").strip()
 		if not url:
 			frappe.throw(_("A link item needs its URL."))
-		return {"label": (spec.get("label") or url).strip(), "item_type": kind, "url": url, "enabled": 1}
+		return {"label": (spec.get("label") or url).strip(), "item_type": kind, "url": url, "enabled": 1, **item_icon(spec)}
 	target = spec.get("target")
 	if not target or not frappe.db.exists(kind, target):
 		frappe.throw(_("{0} {1} does not exist.").format(_(kind), target or ""))
 	view = spec.get("doc_view") if kind == "DocType" and spec.get("doc_view") in ("List", "Tree") else None
-	return {"label": (spec.get("label") or target).strip(), "item_type": kind, "target": target, "doc_view": view, "enabled": 1}
+	return {
+		"label": (spec.get("label") or target).strip(),
+		"item_type": kind,
+		"target": target,
+		"doc_view": view,
+		"enabled": 1,
+		**item_icon(spec),
+	}
+
+
+def item_icon(spec):
+	"""The icon chosen for an item, if it is one of the menu's icons; empty, it shows the icon of what
+	it opens."""
+	if not has_item_icons():
+		return {}
+	icons = (frappe.get_meta(ITEM_DT).get_field("icon").options or "").split("\n")
+	return {"icon": spec.get("icon") if spec.get("icon") in icons and spec.get("icon") else None}
 
 
 def can_read(doctype):

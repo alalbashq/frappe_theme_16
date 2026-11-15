@@ -17,6 +17,37 @@ export const ICONS = {
 	"headset": "<path d=\"M4 14v-2a8 8 0 0 1 16 0v2M4 14h3v5H5a1 1 0 0 1-1-1v-4zM20 14h-3v5h2a1 1 0 0 0 1-1v-4z\"/>",
 	"spark": "<path d=\"M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2 2-6z\"/>",
 	"link": "<path d=\"M10 14a4 4 0 0 0 6 0l3-3a4 4 0 0 0-6-6l-1 1M14 10a4 4 0 0 0-6 0l-3 3a4 4 0 0 0 6 6l1-1\"/>",
+	"user": "<circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21a8 8 0 0 1 16 0\"/>",
+	"id-card": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><circle cx=\"9\" cy=\"11\" r=\"2\"/><path d=\"M6 16a3 3 0 0 1 6 0M14 10h4M14 14h3\"/>",
+	"mail": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M3 7l9 6 9-6\"/>",
+	"cart": "<path d=\"M3 4h2l2.4 11h11L21 8H6.2\"/><circle cx=\"9\" cy=\"19.5\" r=\"1.5\"/><circle cx=\"17\" cy=\"19.5\" r=\"1.5\"/>",
+	"truck": "<path d=\"M3 6h11v10H3zM14 10h4l3 3v3h-7\"/><circle cx=\"7\" cy=\"18\" r=\"2\"/><circle cx=\"17\" cy=\"18\" r=\"2\"/>",
+	"tag": "<path d=\"M3 12V4h8l10 10-8 8L3 12z\"/><circle cx=\"7.5\" cy=\"8.5\" r=\"1.5\"/>",
+	"layers": "<path d=\"M12 3l9 5-9 5-9-5 9-5zM3 12.5l9 5 9-5M3 17l9 5 9-5\"/>",
+	"warehouse": "<path d=\"M3 21V9l9-5 9 5v12M7 21v-8h10v8M7 17h10\"/>",
+	"swap": "<path d=\"M4 8h15l-3-3M20 16H5l3 3\"/>",
+	"return": "<path d=\"M9 14L4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3\"/>",
+	"card": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"2\"/><path d=\"M3 10h18M7 15h4\"/>",
+	"bank": "<path d=\"M3 10l9-6 9 6M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 21h18\"/>",
+	"scale": "<path d=\"M12 4v17M8 21h8M5 7h14M5 7l-3 7a3 3 0 0 0 6 0L5 7zM19 7l-3 7a3 3 0 0 0 6 0l-3-7z\"/>",
+	"book": "<path d=\"M4 4h6a2 2 0 0 1 2 2v15a2 2 0 0 0-2-2H4V4zM20 4h-6a2 2 0 0 0-2 2v15a2 2 0 0 1 2-2h6V4z\"/>",
+	"calculator": "<rect x=\"5\" y=\"3\" width=\"14\" height=\"18\" rx=\"2\"/><path d=\"M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01\"/>",
+	"percent": "<path d=\"M19 5L5 19\"/><circle cx=\"7\" cy=\"7\" r=\"2.5\"/><circle cx=\"17\" cy=\"17\" r=\"2.5\"/>",
+	"pie": "<path d=\"M12 3a9 9 0 1 0 9 9h-9V3z\"/><path d=\"M15 3.5A9 9 0 0 1 20.5 9H15V3.5z\"/>",
+	"trend": "<path d=\"M3 17l6-6 4 4 8-8M15 7h6v6\"/>",
+	"list": "<path d=\"M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01\"/>",
+	"folder": "<path d=\"M3 6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z\"/>",
+	"clipboard": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"17\" rx=\"2\"/><path d=\"M9 4V3h6v1M9 11l2 2 4-4M9 17h6\"/>",
+	"calendar": "<rect x=\"3\" y=\"5\" width=\"18\" height=\"16\" rx=\"2\"/><path d=\"M3 10h18M8 3v4M16 3v4\"/>",
+	"clock": "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M12 7v5l3 2\"/>",
+	"flag": "<path d=\"M5 21V4M5 4h12l-2.500 4L17 12H5\"/>",
+	"alert": "<path d=\"M12 3l10 18H2L12 3zM12 10v5M12 18h.01\"/>",
+	"star": "<path d=\"M12 3l2.800 5.700 6.200.900-4.500 4.400 1 6.200L12 17.300 6.500 20.200l1-6.200L3 9.600l6.200-.900L12 3z\"/>",
+	"wrench": "<path d=\"M14 4a5 5 0 0 0-4.600 6.900L3 17.300 6.700 21l6.400-6.400A5 5 0 0 0 20 10l-3 1.500-2.500-2.500L16 6a5 5 0 0 0-2-2z\"/>",
+	"home": "<path d=\"M3 11l9-7 9 7M5 9.500V20h14V9.500M10 20v-5h4v5\"/>",
+	"lock": "<rect x=\"5\" y=\"11\" width=\"14\" height=\"10\" rx=\"2\"/><path d=\"M8 11V7a4 4 0 0 1 8 0v4\"/>",
+	"key": "<circle cx=\"8\" cy=\"15\" r=\"4\"/><path d=\"M11 12l9-9M16 7l3 3M14 9l2 2\"/>",
+	"download": "<path d=\"M12 4v11M7 10l5 5 5-5M4 20h16\"/>",
 	"refresh": "<path d=\"M20 11a8 8 0 0 0-14-4L4 9M4 4v5h5M4 13a8 8 0 0 0 14 4l2-2M20 20v-5h-5\"/>",
 	"doc": "<path d=\"M7 3h7l5 5v13H7z\"/><path d=\"M14 3v5h5M10 13h6M10 17h4\"/>",
 	"tree": "<rect x=\"9\" y=\"3\" width=\"6\" height=\"4\" rx=\"1\"/><rect x=\"3\" y=\"17\" width=\"6\" height=\"4\" rx=\"1\"/><rect x=\"15\" y=\"17\" width=\"6\" height=\"4\" rx=\"1\"/><path d=\"M12 7v5M6 17v-5h12v5\"/>",
@@ -32,3 +63,39 @@ export const ICONS = {
 };
 
 export const SAR = "<svg class=\"aw-sar\" viewBox=\"0 0 1124.14 1256.39\" role=\"img\" aria-label=\"SAR\"><path d=\"M699.62,1113.02h0c-20.06,44.48-33.32,92.75-38.4,143.37l424.51-90.24c20.06-44.47,33.31-92.75,38.4-143.37l-424.51,90.24Z\"/><path d=\"M1085.73,895.8c20.06-44.47,33.32-92.75,38.4-143.37l-330.68,70.33v-135.2l292.27-62.11c20.06-44.47,33.32-92.75,38.4-143.37l-330.68,70.27V66.13c-50.67,28.45-95.67,66.32-132.25,110.99v403.35l-132.25,28.11V0c-50.67,28.44-95.67,66.32-132.25,110.99v525.69l-295.91,62.88c-20.06,44.47-33.33,92.75-38.42,143.37l334.33-71.05v170.26l-358.3,76.14c-20.06,44.47-33.32,92.75-38.4,143.37l375.04-79.7c30.53-6.35,56.77-24.4,73.83-49.24l68.78-101.97v-.02c7.14-10.55,11.3-23.27,11.3-36.97v-149.98l132.25-28.11v270.4l424.53-90.28Z\"/></svg>";
+
+// An item with no icon of its own shows the icon of what it opens: these for the documents,
+// reports and pages a menu usually holds, else one for its kind (a list, a tree, a report...).
+export const ITEM_ICONS = {
+	// selling
+	"Customer": "users", "Lead": "user", "Lead Details": "user", "Opportunity": "star", "Quotation": "tag",
+	"Sales Order": "cart", "Delivery Note": "truck", "Sales Invoice": "receipt", "Sales Person": "user",
+	"Sales Register": "list", "Sales Analytics": "trend", "Price List": "tag", "Item Price": "tag",
+	// point of sale
+	"POS Invoice": "receipt", "POS Profile": "pos", "POS Opening Entry": "clock", "POS Closing Entry": "check",
+	"MYSYS POS Closing Shift": "check", "point-of-sale": "pos",
+	// buying
+	"Supplier": "building", "Material Request": "clipboard", "Purchase Order": "cart", "Purchase Receipt": "box",
+	"Purchase Invoice": "receipt", "Purchase Register": "list", "Purchase Analytics": "trend",
+	// stock
+	"Item": "tag", "Warehouse": "warehouse", "Stock Entry": "swap", "Stock Reconciliation": "check",
+	"Stock Balance": "layers", "Stock Ledger": "book",
+	// accounts
+	"Journal Entry": "book", "Payment Entry": "card", "Payment Request": "card", "Bank Account": "bank",
+	"Budget": "pie", "Budget Variance Report": "pie", "General Ledger": "book", "Trial Balance": "scale",
+	"Balance Sheet": "scale", "Profit and Loss Statement": "trend", "Cash Flow": "coins",
+	"Accounts Receivable": "wallet", "Accounts Payable": "wallet", "Company": "building",
+	// people and pay
+	"Employee": "id-card", "Attendance": "calendar", "Monthly Attendance Sheet": "calendar", "Holiday List": "calendar",
+	"Leave Application": "calendar", "Employee Leave Balance": "calendar", "Expense Claim": "receipt",
+	"Additional Salary": "coins", "Salary Slip": "banknote", "Salary Structure": "layers",
+	"Salary Structure Assignment": "id-card", "Payroll Entry": "calculator", "Salary Register": "list",
+	// assets, making, projects, quality, support
+	"Asset": "box", "Asset Category": "folder", "Asset Movement": "swap", "Fixed Asset Register": "list",
+	"BOM": "layers", "Work Order": "wrench", "Job Card": "clipboard", "Production Plan": "calendar",
+	"Production Analytics": "trend", "Project": "folder", "Task": "check", "Timesheet": "clock",
+	"Project Summary": "pie", "Quality Inspection": "clipboard", "Non Conformance": "alert",
+	"Issue": "flag", "Warranty Claim": "shield",
+	// the system
+	"User": "user", "Role Profile": "key", "User Permission": "lock", "Advanced Workspace Module": "gear",
+};
