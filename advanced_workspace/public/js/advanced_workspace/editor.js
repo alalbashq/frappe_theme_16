@@ -116,6 +116,14 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 	// One dialog adds an item and edits one: what it opens, how, and the label it shows. Picking
 	// what it opens fills an empty label with its name.
 	const itemDialog = (start, done) => {
+		// what the item is fills the dialog first; only a choice made after that sets defaults.
+		// A label filled in for the last choice follows the next one; a label typed stays.
+		let ready = false;
+		let filledLabel = null;
+		const fillLabel = (value) => {
+			filledLabel = value;
+			dialog.set_value("label", value);
+		};
 		const dialog = new frappe.ui.Dialog({
 			title: start ? t("Edit item") : t("Add item"),
 			fields: [
@@ -131,11 +139,20 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 					mandatory_depends_on: "eval:doc.item_type !== 'URL'",
 					onchange() {
 						const target = dialog.get_value("target");
-						if (!target || dialog.get_value("label")) return;
+						const type = dialog.get_value("item_type");
+						if (!ready || !target) return;
+						// a document type opens as it is: a tree (Chart of Accounts) as a tree, others as a list
+						if (type === "DocType") {
+							frappe.db.get_value("DocType", target, "is_tree").then((r) => {
+								dialog.set_value("doc_view", r.message && r.message.is_tree ? "Tree" : "List");
+							});
+						}
+						const typed = () => dialog.get_value("label") && dialog.get_value("label") !== filledLabel;
+						if (typed()) return;
 						// a page by its title (its name is a route, such as point-of-sale)
-						if (dialog.get_value("item_type") !== "Page") return dialog.set_value("label", target);
+						if (type !== "Page") return fillLabel(target);
 						frappe.db.get_value("Page", target, "title").then((r) => {
-							if (!dialog.get_value("label")) dialog.set_value("label", (r.message && r.message.title) || target);
+							if (!typed()) fillLabel((r.message && r.message.title) || target);
 						});
 					},
 				},
@@ -162,7 +179,8 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 				dialog.hide();
 			},
 		});
-		if (start) dialog.set_values(start);
+		const filled = start ? dialog.set_values(start) : null;
+		Promise.resolve(filled).then(() => (ready = true));
 		dialog.show();
 	};
 	const moduleDialog = (start, done) => {

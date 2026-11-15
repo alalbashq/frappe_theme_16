@@ -158,10 +158,11 @@ function pageStyle() {
     --aw-f-tint: #1a2d2a;
   }
   html.aw-on .form-layout .form-grid { border-color: var(--aw-f-brand); }
-  html.aw-on .form-layout .form-grid .grid-heading-row { background-color: var(--aw-f-brand); color: #fff; }
-  html.aw-on .form-layout .form-grid .grid-heading-row :is(.grid-row, .data-row, .col) { background-color: transparent; }
-  html.aw-on .form-layout .form-grid .grid-heading-row :is(.static-area, .row-index, .grid-static-col, .col) { color: #fff; }
-  html.aw-on .form-layout .form-grid .grid-heading-row input[type="checkbox"] { border-color: rgba(255, 255, 255, 0.7); }
+  /* the column titles only: the filter row Frappe adds under them keeps its own colours */
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) { background-color: var(--aw-f-brand); color: #fff; }
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.data-row, .col) { background-color: transparent; }
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.static-area, .row-index, .grid-static-col, .col) { color: #fff; }
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) input[type="checkbox"] { border-color: rgba(255, 255, 255, 0.7); }
   html.aw-on .form-tabs-list .form-tabs .nav-item .nav-link.active {
     background-color: var(--aw-f-tint); color: var(--aw-f-brand-ink); border-bottom-color: var(--aw-f-brand-ink);
   }
