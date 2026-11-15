@@ -33,6 +33,16 @@
    "property": "collapsible",
    "property_type": "Check",
    "value": "1"
+  },
+  {
+   "doc_type": "Journal Entry",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_30",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "depends_on",
+   "property_type": "Data",
+   "value": "difference"
   }
  ],
  "sync_on_migrate": 1
