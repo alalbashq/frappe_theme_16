@@ -221,6 +221,17 @@ function pageStyle() {
     background: var(--aw-f-brand); color: #fff; border-bottom: 0; border-radius: 5px 5px 0 0;
   }
   html.aw-on .form-layout .form-grid .grid-heading-row :is(.grid-row, .data-row, .col) { background: transparent; }
+  /* Frappe scrolls a table sideways only past 10 column units; a layout fits its tables in 10,
+     so on a phone the columns take the widths Frappe gives them when scrolling, and scroll */
+  @media (max-width: 767px) {
+    html.aw-on .form-layout .form-grid-container:not(.column-limit-reached) .form-grid { min-width: max-content; }
+    html.aw-on .form-layout .form-grid-container:not(.column-limit-reached) .grid-static-col.col-xs-1 { flex: 1 0 60px; width: 60px; max-width: none; }
+    html.aw-on .form-layout .form-grid-container:not(.column-limit-reached) .grid-static-col.col-xs-2 { flex: 1 0 100px; width: 100px; max-width: none; }
+    html.aw-on .form-layout .form-grid-container:not(.column-limit-reached) .grid-static-col.col-xs-3 { flex: 1 0 140px; width: 140px; max-width: none; }
+    html.aw-on .form-layout .form-grid-container:not(.column-limit-reached) .grid-static-col.col-xs-4 { flex: 1 0 200px; width: 200px; max-width: none; }
+    html.aw-on .form-layout .form-grid-container:not(.column-limit-reached) .grid-static-col.col-xs-5 { flex: 1 0 250px; width: 250px; max-width: none; }
+    html.aw-on .form-layout .form-grid-container:not(.column-limit-reached) .grid-static-col.col-xs-6 { flex: 1 0 300px; width: 300px; max-width: none; }
+  }
   html.aw-on .form-layout .form-grid .grid-heading-row :is(.static-area, .row-index, .grid-static-col, .col) { color: #fff; font-weight: 600; }
   html.aw-on .form-layout .form-grid .grid-heading-row input[type="checkbox"] { border-color: rgba(255, 255, 255, 0.7); }
   html.aw-on .form-tabs-list .form-tabs .nav-item .nav-link {
