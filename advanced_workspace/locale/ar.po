@@ -1896,8 +1896,8 @@ msgid "Edit Workspace"
 msgstr "تعديل مساحة العمل"
 
 msgctxt "Advanced Workspace"
-msgid "Drag modules and items into order, or add new ones."
-msgstr "اسحب الأقسام والعناصر لترتيبها، أو أضف جديدًا."
+msgid "Drag modules and items into order, hide them, or add new ones."
+msgstr "اسحب الأقسام والعناصر لترتيبها، أو أخفِها، أو أضف جديدًا."
 
 msgctxt "Advanced Workspace"
 msgid "Save"
@@ -1914,6 +1914,18 @@ msgstr "اسحب لتغيير الترتيب"
 msgctxt "Advanced Workspace"
 msgid "Remove"
 msgstr "إزالة"
+
+msgctxt "Advanced Workspace"
+msgid "Hide"
+msgstr "إخفاء"
+
+msgctxt "Advanced Workspace"
+msgid "Show"
+msgstr "إظهار"
+
+msgctxt "Advanced Workspace"
+msgid "Hidden"
+msgstr "مخفي"
 
 msgctxt "Advanced Workspace"
 msgid "Module Settings"

@@ -149,14 +149,15 @@ ITEM_FIELDS = ("label", "item_type", "target", "url", "doc_view", "enabled")
 
 @frappe.whitelist()
 def menu_for_editing():
-	"""Every enabled module and item, as the menu's editor shows them: not limited to what the
-	editor may open, since the menu is arranged for everyone."""
+	"""Every module and item, as the menu's editor shows them, the hidden ones too (switched off:
+	out of the menu for everyone, kept to be shown again): not limited to what the editor may
+	open, since the menu is arranged for everyone."""
 	frappe.has_permission(MODULE_DT, "write", throw=True)
-	rows = frappe.get_all(MODULE_DT, filters={"enabled": 1}, order_by="sequence asc", fields=["name", "label", "icon"])
+	rows = frappe.get_all(MODULE_DT, order_by="sequence asc", fields=["name", "label", "icon", "enabled"])
 	items = frappe.get_all(
 		"Advanced Workspace Item",
-		filters={"parent": ["in", [r.name for r in rows] or [""]], "parenttype": MODULE_DT, "enabled": 1},
-		fields=["name", "parent", "label", "item_type", "target", "url", "doc_view"],
+		filters={"parent": ["in", [r.name for r in rows] or [""]], "parenttype": MODULE_DT},
+		fields=["name", "parent", "label", "item_type", "target", "url", "doc_view", "enabled"],
 		order_by="idx asc",
 	)
 	icons = (frappe.get_meta(MODULE_DT).get_field("icon").options or "").split("\n")
@@ -167,6 +168,7 @@ def menu_for_editing():
 				"key": row.name,
 				"label": label(row.label),
 				"icon": row.icon,
+				"hidden": not row.enabled,
 				# as stored, for editing: the label is the English source, shown translated
 				"raw": {"label": row.label, "icon": row.icon},
 				"items": [
@@ -174,6 +176,7 @@ def menu_for_editing():
 						"row": i.name,
 						"l": label(i.label) or _(i.target or i.url or ""),
 						"t": item_kind(i),
+						"hidden": not i.enabled,
 						"raw": {f: i.get(f) for f in ("label", "item_type", "target", "url", "doc_view")},
 					}
 					for i in items
@@ -189,7 +192,8 @@ def menu_for_editing():
 def save_menu(menu, removed=None):
 	"""The menu as arranged: modules in this order, each with its items in this order; an item may
 	have moved from another module, be new, or carry changes; a module may be new or renamed. A
-	removed item is switched off, not deleted, so it can come back from the module's settings."""
+	module or item may be hidden: switched off, out of the menu for everyone, and shown again
+	from the editor or its module's settings. A removed item is deleted."""
 	frappe.has_permission(MODULE_DT, "write", throw=True)
 	menu = frappe.parse_json(menu) or []
 	removed = set(frappe.parse_json(removed) or [])
@@ -210,39 +214,42 @@ def save_menu(menu, removed=None):
 				doc.label, doc.icon = fresh["label"], fresh["icon"]
 		else:
 			doc = new_module(entry.get("new") or {})
+		enabled = 0 if entry.get("hidden") else 1
+		toggled = doc.enabled != enabled
+		doc.enabled = enabled
 		items = []
 		for item in entry.get("items") or []:
 			if item.get("row"):
 				if item["row"] in rows:
 					kept = {field: rows[item["row"]].get(field) for field in ITEM_FIELDS}
 					if item.get("changes"):
-						kept = dict(new_item(item["changes"]), enabled=kept["enabled"])
-					items.append(kept)
+						kept = new_item(item["changes"])
+					items.append(dict(kept, enabled=0 if item.get("hidden") else 1))
 			else:
-				items.append(new_item(item))
-		# what the editor did not show stays, after the listed items: switched-off items, and any
-		# added since the editor opened; a removed one is switched off
+				items.append(dict(new_item(item), enabled=0 if item.get("hidden") else 1))
+		# what the editor did not show stays, after the listed items: any added since the editor
+		# opened; a removed one goes
 		for row in [] if doc.is_new() else doc.items:
-			if row.name in listed:
+			if row.name in listed or row.name in removed:
 				continue
-			kept = {field: row.get(field) for field in ITEM_FIELDS}
-			if row.name in removed:
-				kept["enabled"] = 0
-			items.append(kept)
-		plan.append((doc, (index + 1) * 10, items, renamed))
+			items.append({field: row.get(field) for field in ITEM_FIELDS})
+		plan.append((doc, (index + 1) * 10, items, renamed or toggled))
 
 	changed = []
-	for doc, sequence, items, renamed in plan:
+	for doc, sequence, items, touched in plan:
 		before = [] if doc.is_new() else [tuple(row.get(f) or None for f in ITEM_FIELDS) for row in doc.items]
 		after = [tuple(item.get(f) or None for f in ITEM_FIELDS) for item in items]
-		if doc.is_new() or renamed or before != after:
+		if doc.is_new() or touched or before != after:
+			fresh = doc.is_new()
 			doc.sequence = sequence
 			doc.set("items", [])
 			for item in items:
 				doc.append("items", item)
 			doc.flags.roles_in_background = True
 			doc.save()
-			changed.append(doc.name)
+			# a module's roles follow its items; a renamed or hidden module's are as they were
+			if fresh or before != after:
+				changed.append(doc.name)
 		elif doc.sequence != sequence:
 			frappe.db.set_value(MODULE_DT, doc.name, "sequence", sequence, update_modified=False)
 	# the roles of a module whose items changed get what those items need, as saving it from its

@@ -74,6 +74,11 @@ export const CSS = `
 .aw-edit-item.is-new .name::after, .aw-edit-mod.is-new > .aw-edit-head .name::after { content: " •"; color: #ffd27a; }
 .aw-edit-x, .aw-edit-gear { display: grid; place-items: center; width: 22px; height: 22px; flex: none; border-radius: 5px; color: #cfe6e1; opacity: .75; }
 .aw-edit-x:hover, .aw-edit-gear:hover { background: rgba(255, 255, 255, .12); opacity: 1; }
+/* a hidden module or item: faded, tagged, and its eye lit, so it is plain how to show it again */
+.aw-edit-tag { display: none; flex: none; padding: 0 6px; border-radius: 4px; background: rgba(255, 255, 255, .14); color: #e3f2ef; font-size: 10.5px; font-weight: 600; line-height: 17px; }
+.aw-edit-item.is-hidden > .aw-edit-tag, .aw-edit-mod.is-hidden > .aw-edit-head > .aw-edit-tag { display: inline-block; }
+.aw-edit-item.is-hidden > :is(.aw-edit-kind, .name), .aw-edit-mod.is-hidden > .aw-edit-head > :is(.aw-edit-kind, .name), .aw-edit-mod.is-hidden > :is(.aw-edit-items, .aw-edit-add) { opacity: .5; }
+.aw-edit [data-hide][aria-pressed="true"] { opacity: 1; color: #ffd27a; }
 .aw-edit-add { display: flex; align-items: center; gap: 6px; width: calc(100% - 12px); margin-inline-start: 12px; padding: 4px 6px; border-radius: 6px; text-align: start; font-size: 12px; color: #bfe3dc; }
 .aw-edit-add:hover { background: rgba(255, 255, 255, .08); color: #fff; }
 .aw-edit-add-mod { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 4px; padding: 7px; border: 1px dashed rgba(255, 255, 255, .35); border-radius: 8px; font-size: 12.5px; color: #e3f2ef; }

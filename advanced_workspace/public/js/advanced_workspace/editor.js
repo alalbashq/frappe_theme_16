@@ -1,6 +1,7 @@
 // Arranging the menu in place, for whoever may write its modules: modules and their items are
-// dragged into order (an item may move to another module), added, edited and removed, and the
-// whole menu is saved at once.
+// dragged into order (an item may move to another module), added, edited, hidden and removed,
+// and the whole menu is saved at once. A hidden module or item leaves the menu for everyone and
+// stays here, faded, to be shown again; a removed item is gone.
 //
 // Dragging follows the pointer, so a mouse, a pen and a finger all work, and the arrow keys move
 // the item whose handle has the focus. The menu sits in the frame's shadow root, where the
@@ -25,20 +26,26 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 	const shown = (spec) => (spec.label ? t(spec.label) : spec.target ? __(spec.target) : spec.url || "");
 	const spec = (el) => JSON.parse(el.dataset.spec);
 
+	// hidden: the eye shows what the menu shows now, and its title says what a click does
+	const hideButton = (cls, hidden) => `
+      <button class="${cls}" data-hide aria-pressed="${hidden}" aria-label="${esc(t(hidden ? "Show" : "Hide"))}" title="${esc(t(hidden ? "Show" : "Hide"))}">${icon(hidden ? "eye-off" : "eye")}</button>`;
+	const hiddenAttrs = (hidden) => `data-hidden="${hidden ? 1 : 0}" data-was-hidden="${hidden ? 1 : 0}"`;
+	const hiddenTag = `<span class="aw-edit-tag">${esc(t("Hidden"))}</span>`;
+
 	const itemHtml = (item, fresh) => `
-    <div class="aw-edit-item${fresh ? " is-new" : ""}" ${fresh ? "" : `data-row="${esc(item.row)}"`} data-spec="${esc(JSON.stringify(fresh || item.raw))}">
+    <div class="aw-edit-item${fresh ? " is-new" : ""}${item?.hidden ? " is-hidden" : ""}" ${fresh ? "" : `data-row="${esc(item.row)}"`} ${hiddenAttrs(item?.hidden)} data-spec="${esc(JSON.stringify(fresh || item.raw))}">
       <span class="aw-grip" data-drag="item" tabindex="0" role="button" aria-label="${esc(t("Drag to reorder"))}">${icon("grip")}</span>
       <span class="aw-edit-kind">${icon(KIND_ICON[fresh ? kindOf(fresh) : item.t] || "doc")}</span>
-      <span class="name">${esc(fresh ? shown(fresh) : item.l)}</span>
-      <button class="aw-edit-x" data-edit-item aria-label="${esc(t("Edit"))}" title="${esc(t("Edit"))}">${icon("pencil")}</button>
+      <span class="name">${esc(fresh ? shown(fresh) : item.l)}</span>${hiddenTag}
+      <button class="aw-edit-x" data-edit-item aria-label="${esc(t("Edit"))}" title="${esc(t("Edit"))}">${icon("pencil")}</button>${hideButton("aw-edit-x", item?.hidden)}
       <button class="aw-edit-x" data-remove aria-label="${esc(t("Remove"))}" title="${esc(t("Remove"))}">${icon("x")}</button>
     </div>`;
 	const moduleHtml = (mod, fresh) => `
-    <section class="aw-edit-mod${fresh ? " is-new" : ""}" ${fresh ? "" : `data-key="${esc(mod.key)}"`} data-spec="${esc(JSON.stringify(fresh || mod.raw))}">
+    <section class="aw-edit-mod${fresh ? " is-new" : ""}${mod.hidden ? " is-hidden" : ""}" ${fresh ? "" : `data-key="${esc(mod.key)}"`} ${hiddenAttrs(mod.hidden)} data-spec="${esc(JSON.stringify(fresh || mod.raw))}">
       <div class="aw-edit-head">
         <span class="aw-grip" data-drag="mod" tabindex="0" role="button" aria-label="${esc(t("Drag to reorder"))}">${icon("grip")}</span>
-        <span class="aw-edit-kind">${icon(mod.icon)}</span><span class="name">${esc(mod.label)}</span>
-        <button class="aw-edit-gear" data-edit-module aria-label="${esc(t("Edit"))}" title="${esc(t("Edit"))}">${icon("pencil")}</button>
+        <span class="aw-edit-kind">${icon(mod.icon)}</span><span class="name">${esc(mod.label)}</span>${hiddenTag}
+        <button class="aw-edit-gear" data-edit-module aria-label="${esc(t("Edit"))}" title="${esc(t("Edit"))}">${icon("pencil")}</button>${hideButton("aw-edit-gear", mod.hidden)}
         ${fresh ? "" : `<button class="aw-edit-gear" data-settings aria-label="${esc(t("Module Settings"))}" title="${esc(t("Module Settings"))}">${icon("gear")}</button>`}
       </div>
       <div class="aw-edit-items">${mod.items.map((item) => itemHtml(item)).join("")}</div>
@@ -49,7 +56,7 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
   <div class="aw-edit">
     <div class="aw-edit-bar">
       <b>${esc(t("Edit Workspace"))}</b>
-      <p>${esc(t("Drag modules and items into order, or add new ones."))}</p>
+      <p>${esc(t("Drag modules and items into order, hide them, or add new ones."))}</p>
       <div><button class="aw-edit-save" data-save>${esc(t("Save"))}</button><button data-cancel>${esc(t("Cancel"))}</button></div>
     </div>
     <div class="aw-edit-mods">${menu.modules.map((mod) => moduleHtml(mod)).join("")}</div>
@@ -200,19 +207,33 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 		dialog.show();
 	};
 
-	// an edited item or module shows its new name and icon, and is marked until saved
+	// an item or module that is new, edited, hidden or shown is marked until saved
+	const mark = (el) => {
+		const fresh = el.matches(".aw-edit-item") ? !el.dataset.row : !el.dataset.key;
+		el.classList.toggle("is-new", fresh || !!el.dataset.changed || el.dataset.hidden !== el.dataset.wasHidden);
+	};
 	const showItem = (el, value) => {
 		el.dataset.spec = JSON.stringify(value);
 		el.querySelector(".name").textContent = shown(value);
 		el.querySelector(".aw-edit-kind").innerHTML = icon(KIND_ICON[kindOf(value)]);
-		if (el.dataset.row) el.classList.add("is-new");
+		mark(el);
 	};
 	const showModule = (el, value) => {
 		el.dataset.spec = JSON.stringify(value);
 		el.querySelector(".aw-edit-head .name").textContent = t(value.label);
 		el.querySelector(".aw-edit-head .aw-edit-kind").innerHTML = icon(value.icon);
-		if (el.dataset.key) el.classList.add("is-new");
+		mark(el);
 	};
+	const setHidden = (el, button, hidden) => {
+		el.dataset.hidden = hidden ? "1" : "0";
+		el.classList.toggle("is-hidden", hidden);
+		button.innerHTML = icon(hidden ? "eye-off" : "eye");
+		button.title = t(hidden ? "Show" : "Hide");
+		button.setAttribute("aria-label", button.title);
+		button.setAttribute("aria-pressed", String(hidden));
+		mark(el);
+	};
+	const isHidden = (el) => el.dataset.hidden === "1";
 
 	return new Promise((resolve) => {
 		root.addEventListener("click", async (event) => {
@@ -222,6 +243,9 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 				const item = target.closest(".aw-edit-item");
 				if (item.dataset.row) removed.add(item.dataset.row);
 				item.remove();
+			} else if (target.matches("[data-hide]")) {
+				const piece = target.closest(".aw-edit-item, .aw-edit-mod");
+				setHidden(piece, target, !isHidden(piece));
 			} else if (target.matches("[data-edit-item]")) {
 				const item = target.closest(".aw-edit-item");
 				itemDialog(spec(item), (value) => {
@@ -252,10 +276,11 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 					key: mod.dataset.key || null,
 					new: mod.dataset.key ? null : spec(mod),
 					changes: mod.dataset.key && mod.dataset.changed ? spec(mod) : null,
+					hidden: isHidden(mod),
 					items: [...mod.querySelectorAll(".aw-edit-item")].map((item) =>
 						item.dataset.row
-							? { row: item.dataset.row, changes: item.dataset.changed ? spec(item) : null }
-							: spec(item)
+							? { row: item.dataset.row, changes: item.dataset.changed ? spec(item) : null, hidden: isHidden(item) }
+							: { ...spec(item), hidden: isHidden(item) }
 					),
 				}));
 				target.disabled = true;
