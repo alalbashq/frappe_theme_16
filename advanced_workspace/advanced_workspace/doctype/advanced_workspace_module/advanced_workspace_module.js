@@ -10,6 +10,14 @@
 	const NUMBERS = ["Currency", "Float", "Int", "Percent"];
 	const DATES = ["Date", "Datetime"];
 
+	// An item's Link To lists what opens by itself, found by its English or Arabic name, as the
+	// menu's editor does.
+	frappe.ui.form.on("Advanced Workspace Module", {
+		setup(frm) {
+			frm.set_query("target", "items", () => ({ query: "advanced_workspace.api.menu_targets" }));
+		},
+	});
+
 	frappe.ui.form.on("Advanced Workspace Stat", {
 		form_render(frm, cdt, cdn) {
 			refresh_row(frm, cdt, cdn);

@@ -239,6 +239,38 @@ def save_menu(menu, removed=None):
 	return visible_modules()
 
 
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def menu_targets(doctype, txt, searchfield, start, page_len, filters):
+	"""What a menu item can open, for its Link To: document types that open by themselves (not
+	child tables or virtual ones), reports in use and pages, found by their name in English or in
+	the user's language, whole and leading matches first. Frappe's own search looks in a
+	DocType's module too, so typing part of a module's name listed every DocType in it."""
+	txt = (txt or "").strip().lower()
+	if doctype == "DocType":
+		rows = frappe.get_all("DocType", filters={"istable": 0, "is_virtual": 0}, fields=["name", "module"])
+		found = [(r.name, _(r.name), _(r.module)) for r in rows]
+	elif doctype == "Report":
+		rows = frappe.get_all("Report", filters={"disabled": 0}, fields=["name", "ref_doctype"])
+		found = [(r.name, _(r.name), _(r.ref_doctype) if r.ref_doctype else "") for r in rows]
+	elif doctype == "Page":
+		rows = frappe.get_all("Page", fields=["name", "title"])
+		found = [(r.name, _(r.title or r.name), "") for r in rows]
+	else:
+		return []
+	if txt:
+		found = [r for r in found if txt in r[0].lower() or txt in r[1].lower()]
+
+	def rank(row):
+		names = (row[0].lower(), row[1].lower())
+		return 0 if txt in names else 1 if any(n.startswith(txt) for n in names) else 2
+
+	found.sort(key=lambda r: (rank(r), r[1]))
+	start, page_len = int(start or 0), int(page_len or 20)
+	# Frappe shows the name in the user's language; under it, the module or the report's document
+	return [[name, detail] for name, _shown, detail in found[start : start + page_len]]
+
+
 def new_module(spec):
 	frappe.has_permission(MODULE_DT, "create", throw=True)
 	title = (spec.get("label") or "").strip()

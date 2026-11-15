@@ -110,6 +110,8 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 					fieldtype: "Dynamic Link",
 					label: t("Link To"),
 					options: "item_type",
+					// only what opens by itself, found by its English or Arabic name
+					get_query: () => ({ query: "advanced_workspace.api.menu_targets" }),
 					depends_on: "eval:doc.item_type !== 'URL'",
 					mandatory_depends_on: "eval:doc.item_type !== 'URL'",
 				},
