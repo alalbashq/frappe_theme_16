@@ -1970,8 +1970,8 @@ msgstr "تم حفظ القائمة."
 msgid "Module {0} no longer exists. Reload the page."
 msgstr "القسم {0} لم يعد موجودًا. أعد تحميل الصفحة."
 
-msgid "A new module needs a name."
-msgstr "القسم الجديد يحتاج اسمًا."
+msgid "A module needs a name."
+msgstr "القسم يحتاج اسمًا."
 
 msgid "Unknown item type: {0}"
 msgstr "نوع عنصر غير معروف: {0}"
@@ -1981,3 +1981,23 @@ msgstr "عنصر الرابط يحتاج رابطه."
 
 msgid "{0} {1} does not exist."
 msgstr "{0} {1} غير موجود."
+
+msgctxt "Advanced Workspace"
+msgid "Edit"
+msgstr "تعديل"
+
+msgctxt "Advanced Workspace"
+msgid "Edit item"
+msgstr "تعديل عنصر"
+
+msgctxt "Advanced Workspace"
+msgid "Edit module"
+msgstr "تعديل قسم"
+
+msgctxt "Advanced Workspace"
+msgid "Done"
+msgstr "تم"
+
+msgctxt "Advanced Workspace"
+msgid "Shown translated in the menu."
+msgstr "يظهر مترجمًا في القائمة."

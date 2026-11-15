@@ -167,8 +167,15 @@ def menu_for_editing():
 				"key": row.name,
 				"label": label(row.label),
 				"icon": row.icon,
+				# as stored, for editing: the label is the English source, shown translated
+				"raw": {"label": row.label, "icon": row.icon},
 				"items": [
-					{"row": i.name, "l": label(i.label) or _(i.target or i.url or ""), "t": item_kind(i)}
+					{
+						"row": i.name,
+						"l": label(i.label) or _(i.target or i.url or ""),
+						"t": item_kind(i),
+						"raw": {f: i.get(f) for f in ("label", "item_type", "target", "url", "doc_view")},
+					}
 					for i in items
 					if i.parent == row.name
 				],
@@ -181,8 +188,8 @@ def menu_for_editing():
 @frappe.whitelist()
 def save_menu(menu, removed=None):
 	"""The menu as arranged: modules in this order, each with its items in this order; an item may
-	have moved from another module, or be new. A removed item is switched off, not deleted, so it
-	can come back from the module's settings."""
+	have moved from another module, be new, or carry changes; a module may be new or renamed. A
+	removed item is switched off, not deleted, so it can come back from the module's settings."""
 	frappe.has_permission(MODULE_DT, "write", throw=True)
 	menu = frappe.parse_json(menu) or []
 	removed = set(frappe.parse_json(removed) or [])
@@ -192,17 +199,25 @@ def save_menu(menu, removed=None):
 
 	plan = []
 	for index, entry in enumerate(menu):
+		renamed = False
 		if entry.get("key"):
 			doc = docs.get(entry["key"])
 			if not doc:
 				frappe.throw(_("Module {0} no longer exists. Reload the page.").format(entry["key"]))
+			if entry.get("changes"):
+				fresh = new_module(entry["changes"], check_only=True)
+				renamed = (fresh["label"], fresh["icon"]) != (doc.label, doc.icon)
+				doc.label, doc.icon = fresh["label"], fresh["icon"]
 		else:
 			doc = new_module(entry.get("new") or {})
 		items = []
 		for item in entry.get("items") or []:
 			if item.get("row"):
 				if item["row"] in rows:
-					items.append({field: rows[item["row"]].get(field) for field in ITEM_FIELDS})
+					kept = {field: rows[item["row"]].get(field) for field in ITEM_FIELDS}
+					if item.get("changes"):
+						kept = dict(new_item(item["changes"]), enabled=kept["enabled"])
+					items.append(kept)
 			else:
 				items.append(new_item(item))
 		# what the editor did not show stays, after the listed items: switched-off items, and any
@@ -214,13 +229,13 @@ def save_menu(menu, removed=None):
 			if row.name in removed:
 				kept["enabled"] = 0
 			items.append(kept)
-		plan.append((doc, (index + 1) * 10, items))
+		plan.append((doc, (index + 1) * 10, items, renamed))
 
 	changed = []
-	for doc, sequence, items in plan:
+	for doc, sequence, items, renamed in plan:
 		before = [] if doc.is_new() else [tuple(row.get(f) or None for f in ITEM_FIELDS) for row in doc.items]
 		after = [tuple(item.get(f) or None for f in ITEM_FIELDS) for item in items]
-		if doc.is_new() or before != after:
+		if doc.is_new() or renamed or before != after:
 			doc.sequence = sequence
 			doc.set("items", [])
 			for item in items:
@@ -271,12 +286,17 @@ def menu_targets(doctype, txt, searchfield, start, page_len, filters):
 	return [[name, detail] for name, _shown, detail in found[start : start + page_len]]
 
 
-def new_module(spec):
-	frappe.has_permission(MODULE_DT, "create", throw=True)
+def new_module(spec, check_only=False):
+	"""A new module from its name and icon; with check_only, just the checked name and icon, for
+	renaming one that exists."""
+	if not check_only:
+		frappe.has_permission(MODULE_DT, "create", throw=True)
 	title = (spec.get("label") or "").strip()
 	if not title:
-		frappe.throw(_("A new module needs a name."))
+		frappe.throw(_("A module needs a name."))
 	icons = (frappe.get_meta(MODULE_DT).get_field("icon").options or "").split("\n")
+	if check_only:
+		return {"label": title, "icon": spec.get("icon") if spec.get("icon") in icons else "box"}
 	key = frappe.scrub(title) if title.isascii() else f"module_{frappe.generate_hash(length=6)}"
 	base, n = key, 2
 	while frappe.db.exists(MODULE_DT, key):

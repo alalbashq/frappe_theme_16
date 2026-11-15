@@ -1,31 +1,44 @@
 // Arranging the menu in place, for whoever may write its modules: modules and their items are
-// dragged into order (an item may move to another module), items and modules are added, items
-// are removed, and the whole menu is saved at once.
+// dragged into order (an item may move to another module), added, edited and removed, and the
+// whole menu is saved at once.
 //
 // Dragging follows the pointer, so a mouse, a pen and a finger all work, and the arrow keys move
 // the item whose handle has the focus. The menu sits in the frame's shadow root, where the
 // browser's own drag and drop does not reach reliably.
+//
+// Each item and module keeps what it is (data-spec): an item's label, type, target, URL and
+// view, a module's label and icon, as stored, so the edit dialog opens on them. A label is
+// stored as typed, or as the English name of what the item opens, and shown translated.
 
 const MODULE_DT = "Advanced Workspace Module";
 const ITEM_TYPES = ["DocType", "Report", "Page", "URL"];
-const KIND = { DocType: "dt", Report: "rp", Page: "page", URL: "url" };
+const KIND_ICON = { dt: "doc", tree: "tree", rp: "chart", page: "window", url: "link" };
+
+const kindOf = (spec) =>
+	spec.item_type === "DocType" && spec.doc_view === "Tree"
+		? "tree"
+		: { DocType: "dt", Report: "rp", Page: "page", URL: "url" }[spec.item_type] || "dt";
 
 export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 	const menu = await frappe.xcall("advanced_workspace.api.menu_for_editing");
 	const removed = new Set();
+	const shown = (spec) => (spec.label ? t(spec.label) : spec.target ? __(spec.target) : spec.url || "");
+	const spec = (el) => JSON.parse(el.dataset.spec);
 
 	const itemHtml = (item, fresh) => `
-    <div class="aw-edit-item${fresh ? " is-new" : ""}" ${fresh ? `data-new="${esc(JSON.stringify(fresh))}"` : `data-row="${esc(item.row)}"`}>
+    <div class="aw-edit-item${fresh ? " is-new" : ""}" ${fresh ? "" : `data-row="${esc(item.row)}"`} data-spec="${esc(JSON.stringify(fresh || item.raw))}">
       <span class="aw-grip" data-drag="item" tabindex="0" role="button" aria-label="${esc(t("Drag to reorder"))}">${icon("grip")}</span>
-      ${icon({ dt: "doc", tree: "tree", rp: "chart", page: "window", url: "link" }[item.t] || "doc")}
-      <span class="name">${esc(item.l)}</span>
+      <span class="aw-edit-kind">${icon(KIND_ICON[fresh ? kindOf(fresh) : item.t] || "doc")}</span>
+      <span class="name">${esc(fresh ? shown(fresh) : item.l)}</span>
+      <button class="aw-edit-x" data-edit-item aria-label="${esc(t("Edit"))}" title="${esc(t("Edit"))}">${icon("pencil")}</button>
       <button class="aw-edit-x" data-remove aria-label="${esc(t("Remove"))}" title="${esc(t("Remove"))}">${icon("x")}</button>
     </div>`;
 	const moduleHtml = (mod, fresh) => `
-    <section class="aw-edit-mod${fresh ? " is-new" : ""}" ${fresh ? `data-new="${esc(JSON.stringify(fresh))}"` : `data-key="${esc(mod.key)}"`}>
+    <section class="aw-edit-mod${fresh ? " is-new" : ""}" ${fresh ? "" : `data-key="${esc(mod.key)}"`} data-spec="${esc(JSON.stringify(fresh || mod.raw))}">
       <div class="aw-edit-head">
         <span class="aw-grip" data-drag="mod" tabindex="0" role="button" aria-label="${esc(t("Drag to reorder"))}">${icon("grip")}</span>
-        ${icon(mod.icon)}<span class="name">${esc(mod.label)}</span>
+        <span class="aw-edit-kind">${icon(mod.icon)}</span><span class="name">${esc(mod.label)}</span>
+        <button class="aw-edit-gear" data-edit-module aria-label="${esc(t("Edit"))}" title="${esc(t("Edit"))}">${icon("pencil")}</button>
         ${fresh ? "" : `<button class="aw-edit-gear" data-settings aria-label="${esc(t("Module Settings"))}" title="${esc(t("Module Settings"))}">${icon("gear")}</button>`}
       </div>
       <div class="aw-edit-items">${mod.items.map((item) => itemHtml(item)).join("")}</div>
@@ -99,10 +112,12 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 		grip.focus();
 	});
 
-	// ------------------------------------------------------------------ adding and removing
-	const addItem = (list) => {
+	// ------------------------------------------------------------------ the dialogs
+	// One dialog adds an item and edits one: what it opens, how, and the label it shows. Picking
+	// what it opens fills an empty label with its name.
+	const itemDialog = (start, done) => {
 		const dialog = new frappe.ui.Dialog({
-			title: t("Add item"),
+			title: start ? t("Edit item") : t("Add item"),
 			fields: [
 				{ fieldname: "item_type", fieldtype: "Select", label: t("Type"), options: ITEM_TYPES, default: "DocType", reqd: 1 },
 				{
@@ -114,6 +129,15 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 					get_query: () => ({ query: "advanced_workspace.api.menu_targets" }),
 					depends_on: "eval:doc.item_type !== 'URL'",
 					mandatory_depends_on: "eval:doc.item_type !== 'URL'",
+					onchange() {
+						const target = dialog.get_value("target");
+						if (!target || dialog.get_value("label")) return;
+						// a page by its title (its name is a route, such as point-of-sale)
+						if (dialog.get_value("item_type") !== "Page") return dialog.set_value("label", target);
+						frappe.db.get_value("Page", target, "title").then((r) => {
+							if (!dialog.get_value("label")) dialog.set_value("label", (r.message && r.message.title) || target);
+						});
+					},
 				},
 				{ fieldname: "doc_view", fieldtype: "Select", label: t("View"), options: "\nList\nTree", depends_on: "eval:doc.item_type === 'DocType'" },
 				{
@@ -123,43 +147,53 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 					depends_on: "eval:doc.item_type === 'URL'",
 					mandatory_depends_on: "eval:doc.item_type === 'URL'",
 				},
-				{ fieldname: "label", fieldtype: "Data", label: t("Label"), description: t("Left empty, the item takes the name of what it opens.") },
+				{ fieldname: "label", fieldtype: "Data", label: t("Label"), description: t("Shown translated in the menu.") },
 			],
-			primary_action_label: t("Add"),
+			primary_action_label: start ? t("Done") : t("Add"),
 			primary_action(values) {
-				const fresh = {
+				const url = values.item_type === "URL";
+				done({
 					item_type: values.item_type,
-					target: values.item_type === "URL" ? null : values.target,
-					url: values.item_type === "URL" ? values.url : null,
+					target: url ? null : values.target,
+					url: url ? values.url : null,
 					doc_view: values.item_type === "DocType" ? values.doc_view || null : null,
-					label: values.label || null,
-				};
-				const kind = fresh.item_type === "DocType" && fresh.doc_view === "Tree" ? "tree" : KIND[fresh.item_type];
-				list.insertAdjacentHTML(
-					"beforeend",
-					itemHtml({ t: kind, l: fresh.label || (fresh.url ? fresh.url : __(fresh.target)) }, fresh)
-				);
+					label: values.label || (url ? values.url : values.target),
+				});
 				dialog.hide();
 			},
 		});
+		if (start) dialog.set_values(start);
 		dialog.show();
 	};
-	const addModule = () => {
+	const moduleDialog = (start, done) => {
 		const dialog = new frappe.ui.Dialog({
-			title: t("Add module"),
+			title: start ? t("Edit module") : t("Add module"),
 			fields: [
 				{ fieldname: "label", fieldtype: "Data", label: t("Name"), reqd: 1 },
 				{ fieldname: "icon", fieldtype: "Select", label: t("Icon"), options: menu.icons, default: "box" },
 			],
-			primary_action_label: t("Add"),
+			primary_action_label: start ? t("Done") : t("Add"),
 			primary_action(values) {
-				const fresh = { label: values.label.trim(), icon: values.icon || "box" };
-				mods.insertAdjacentHTML("beforeend", moduleHtml({ ...fresh, items: [] }, fresh));
-				mods.lastElementChild.scrollIntoView({ block: "nearest" });
+				done({ label: values.label.trim(), icon: values.icon || "box" });
 				dialog.hide();
 			},
 		});
+		if (start) dialog.set_values(start);
 		dialog.show();
+	};
+
+	// an edited item or module shows its new name and icon, and is marked until saved
+	const showItem = (el, value) => {
+		el.dataset.spec = JSON.stringify(value);
+		el.querySelector(".name").textContent = shown(value);
+		el.querySelector(".aw-edit-kind").innerHTML = icon(KIND_ICON[kindOf(value)]);
+		if (el.dataset.row) el.classList.add("is-new");
+	};
+	const showModule = (el, value) => {
+		el.dataset.spec = JSON.stringify(value);
+		el.querySelector(".aw-edit-head .name").textContent = t(value.label);
+		el.querySelector(".aw-edit-head .aw-edit-kind").innerHTML = icon(value.icon);
+		if (el.dataset.key) el.classList.add("is-new");
 	};
 
 	return new Promise((resolve) => {
@@ -170,10 +204,26 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 				const item = target.closest(".aw-edit-item");
 				if (item.dataset.row) removed.add(item.dataset.row);
 				item.remove();
+			} else if (target.matches("[data-edit-item]")) {
+				const item = target.closest(".aw-edit-item");
+				itemDialog(spec(item), (value) => {
+					item.dataset.changed = "1";
+					showItem(item, value);
+				});
+			} else if (target.matches("[data-edit-module]")) {
+				const mod = target.closest(".aw-edit-mod");
+				moduleDialog(spec(mod), (value) => {
+					mod.dataset.changed = "1";
+					showModule(mod, value);
+				});
 			} else if (target.matches("[data-add-item]")) {
-				addItem(target.closest(".aw-edit-mod").querySelector(".aw-edit-items"));
+				const list = target.closest(".aw-edit-mod").querySelector(".aw-edit-items");
+				itemDialog(null, (value) => list.insertAdjacentHTML("beforeend", itemHtml(null, value)));
 			} else if (target.matches("[data-add-module]")) {
-				addModule();
+				moduleDialog(null, (value) => {
+					mods.insertAdjacentHTML("beforeend", moduleHtml({ ...value, label: t(value.label), items: [] }, value));
+					mods.lastElementChild.scrollIntoView({ block: "nearest" });
+				});
 			} else if (target.matches("[data-settings]")) {
 				// in a new tab, so what is arranged here is not lost
 				window.open(frappe.utils.get_form_link(MODULE_DT, target.closest(".aw-edit-mod").dataset.key), "_blank");
@@ -182,9 +232,12 @@ export async function editMenu({ nav, side, t, esc, icon, canAddModule }) {
 			} else if (target.matches("[data-save]")) {
 				const arranged = [...mods.children].map((mod) => ({
 					key: mod.dataset.key || null,
-					new: mod.dataset.new ? JSON.parse(mod.dataset.new) : null,
+					new: mod.dataset.key ? null : spec(mod),
+					changes: mod.dataset.key && mod.dataset.changed ? spec(mod) : null,
 					items: [...mod.querySelectorAll(".aw-edit-item")].map((item) =>
-						item.dataset.row ? { row: item.dataset.row } : JSON.parse(item.dataset.new)
+						item.dataset.row
+							? { row: item.dataset.row, changes: item.dataset.changed ? spec(item) : null }
+							: spec(item)
 					),
 				}));
 				target.disabled = true;
