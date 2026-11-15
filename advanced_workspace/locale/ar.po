@@ -1546,3 +1546,28 @@ msgstr "السعر"
 msgctxt "Stock Entry Detail"
 msgid "Amount"
 msgstr "المبلغ"
+
+# Journal Entry, in the same layout
+msgctxt "Journal Entry"
+msgid "Entry Details"
+msgstr "تفاصيل القيد"
+
+msgctxt "Journal Entry"
+msgid "Posting Date"
+msgstr "التاريخ"
+
+msgctxt "Journal Entry Account"
+msgid "Account"
+msgstr "الحساب"
+
+msgctxt "Journal Entry Account"
+msgid "Debit"
+msgstr "مدين"
+
+msgctxt "Journal Entry Account"
+msgid "Credit"
+msgstr "دائن"
+
+msgctxt "Journal Entry Account"
+msgid "User Remark"
+msgstr "البيان"

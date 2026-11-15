@@ -1,0 +1,39 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Journal Entry",
+ "links": [],
+ "property_setters": [
+  {
+   "doc_type": "Journal Entry",
+   "doctype_or_field": "DocType",
+   "field_name": null,
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "field_order",
+   "property_type": "Data",
+   "value": "[\"entry_type_and_date\", \"voucher_type\", \"column_break1\", \"posting_date\", \"value_date\", \"column_break_oizh\", \"cheque_no\", \"cheque_date\", \"column_break_wpau\", \"multi_currency\", \"apply_tds\", \"tax_withholding_category\", \"is_system_generated\", \"section_break_tcvw\", \"for_all_stock_asset_accounts\", \"stock_asset_account\", \"periodic_entry_difference_account\", \"get_balance_for_periodic_accounting\", \"2_add_edit_gl_entries\", \"accounts\", \"section_break_ouaq\", \"custom_remark\", \"remark\", \"column_break_cixu\", \"total_debit\", \"column_break3\", \"total_credit\", \"column_break_30\", \"difference\", \"get_balance\", \"tax_withholding_tab\", \"section_tax_withholding_entry\", \"tax_withholding_group\", \"ignore_tax_withholding_threshold\", \"override_tax_withholding_entries\", \"tax_withholding_entries\", \"more_info_tab\", \"section_break99\", \"company\", \"naming_series\", \"clearance_date\", \"amended_from\", \"user_remark\", \"loan_transfer\", \"loan\", \"reference\", \"column_break98\", \"bill_no\", \"bill_date\", \"due_date\", \"column_break_isfa\", \"inter_company_journal_entry_reference\", \"process_deferred_accounting\", \"reversal_of\", \"payment_order\", \"stock_entry\", \"addtional_info\", \"mode_of_payment\", \"is_opening\", \"finance_book\", \"from_template\", \"title\", \"party_not_required\", \"write_off\", \"write_off_based_on\", \"get_outstanding_invoices\", \"write_off_amount\", \"printing_settings\", \"pay_to_recd_from\", \"letter_head\", \"select_print_heading\", \"column_break_35\", \"total_amount_currency\", \"total_amount\", \"total_amount_in_words\", \"auto_repeat_section\", \"auto_repeat\"]"
+  },
+  {
+   "doc_type": "Journal Entry",
+   "doctype_or_field": "DocField",
+   "field_name": "section_break99",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Entry Details"
+  },
+  {
+   "doc_type": "Journal Entry",
+   "doctype_or_field": "DocField",
+   "field_name": "auto_repeat_section",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "collapsible",
+   "property_type": "Check",
+   "value": "1"
+  }
+ ],
+ "sync_on_migrate": 1
+}
