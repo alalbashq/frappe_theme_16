@@ -15,5 +15,5 @@
    "value": "[\"type_section\", \"scan_barcode\", \"last_scanned_warehouse\", \"company\", \"column_break_2\", \"material_request_type\", \"customer\", \"column_break5\", \"transaction_date\", \"schedule_date\", \"column_break_31\", \"set_from_warehouse\", \"set_warehouse\", \"items_section\", \"items\", \"warehouse_section\", \"terms_tab\", \"terms_section_break\", \"tc_name\", \"terms\", \"more_info_tab\", \"status_section\", \"naming_series\", \"title\", \"auto_created_via_reorder\", \"buying_price_list\", \"amended_from\", \"status\", \"per_ordered\", \"column_break2\", \"transfer_status\", \"per_received\", \"printing_details\", \"letter_head\", \"select_print_heading\", \"reference\", \"job_card\", \"column_break_35\", \"work_order\", \"connections_tab\"]"
   }
  ],
- "sync_on_migrate": 1
+ "sync_on_migrate": 0
 }

@@ -34,10 +34,12 @@ def after_install():
 	seed_modules()
 	ensure_basics()
 	access.apply_all()
+	apply_form_layouts()
 
 
 def before_migrate():
 	ensure_layout_module()
+	remember_layout_settings()
 
 
 def after_migrate():
@@ -57,28 +59,103 @@ def ensure_layout_module():
 		).insert(ignore_permissions=True)
 
 
-def apply_form_layouts():
-	"""Lays the Form Layout files over their forms once more, after every app has synced its own.
+# what the site had, before this migrate, for each setting a layout file holds
+_before_migrate = {}
 
-	Frappe syncs each app's customizations in install order, so another app's field order for the
-	same form (MYSYS POS has one for Sales Invoice) would win on a site that installed it later.
-	"""
-	from frappe.modules.utils import sync_customizations_for_doctype
 
+def layout_files():
 	folder = frappe.get_app_path("advanced_workspace", "form_layout", "custom")
 	for name in sorted(os.listdir(folder)):
 		if name.endswith(".json"):
 			with open(os.path.join(folder, name), encoding="utf-8") as f:
 				text = f.read()
-			data = json.loads(text)
+			yield folder, name, text, json.loads(text)
+
+
+def setter_name(setter):
+	"""A Property Setter's name, as Frappe makes it."""
+	return f"{setter['doc_type']}-{setter.get('field_name') or setter.get('row_name') or 'main'}-{setter['property']}"
+
+
+def remember_layout_settings():
+	_before_migrate.clear()
+	for _folder, _name, _text, data in layout_files():
+		for setter in data["property_setters"]:
+			name = setter_name(setter)
+			_before_migrate[name] = frappe.db.get_value("Property Setter", name, "value")
+
+
+def apply_form_layouts():
+	"""Lays each Form Layout file over its form when the file is new or has changed since it was
+	last laid. Otherwise the form stays as the site has it, so what was changed there in Customize
+	Form outlives a migrate.
+
+	The files do not sync on every migrate (Frappe syncs them at install), but another app's
+	customizations do, and may put that app's own value back over a setting (MYSYS POS has a field
+	order for Sales Invoice). Such a setting returns to what the site had before the migrate: its
+	own change, or the layout's.
+	"""
+	from frappe.modules.utils import sync_customizations_for_doctype
+
+	others = None
+	for folder, name, text, data in layout_files():
+		# a form whose app is not installed yet is laid once it is
+		if not frappe.db.exists("DocType", data["doctype"]):
+			continue
+		key = f"advanced_workspace_form_layout:{name}"
+		stamp = hashlib.sha1(text.encode()).hexdigest()
+		if frappe.db.get_global(key) != stamp:
 			sync_customizations_for_doctype(data, folder, name)
 			drop_removed(data)
-			key = f"advanced_workspace_form_layout:{name}"
-			stamp = hashlib.sha1(text.encode()).hexdigest()
-			if frappe.db.get_global(key) != stamp:
-				reset_saved_columns(data)
-				frappe.db.set_global(key, stamp)
+			reset_saved_columns(data)
+			frappe.db.set_global(key, stamp)
+			continue
+		if others is None:
+			others = other_apps_settings()
+		for setter in data["property_setters"]:
+			keep_site_setting(setter, others.get(setter_name(setter)))
 	frappe.db.commit()
+
+
+def other_apps_settings():
+	"""The property setters that other apps sync on every migrate, by name, with their values."""
+	values = {}
+	for app in frappe.get_installed_apps():
+		if app == "advanced_workspace":
+			continue
+		for module in frappe.get_module_list(app):
+			folder = frappe.get_app_path(app, frappe.scrub(module), "custom")
+			if not os.path.isdir(folder):
+				continue
+			for name in os.listdir(folder):
+				if not name.endswith(".json"):
+					continue
+				with open(os.path.join(folder, name), encoding="utf-8") as f:
+					data = json.load(f)
+				if data.get("sync_on_migrate"):
+					for setter in data.get("property_setters") or []:
+						values[setter_name(setter)] = setter.get("value")
+	return values
+
+
+def keep_site_setting(setter, theirs):
+	"""Puts back what the site had before the migrate, when another app's sync changed it."""
+	name = setter_name(setter)
+	before = _before_migrate.get(name)
+	now = frappe.db.get_value("Property Setter", name, "value")
+	ours = setter["value"]
+	if before is None:
+		return
+	# the site had the layout's value, or one an app had put over it (in this migrate or at its
+	# install): the layout's; otherwise the site's own change
+	target = ours if before in (ours, theirs) else before
+	if now == target:
+		return
+	doc = frappe.get_doc(
+		dict(setter, doctype="Property Setter", value=target, module=LAYOUT_MODULE if target == ours else None)
+	)
+	doc.flags.validate_fields_for_doctype = False
+	doc.insert(ignore_permissions=True)
 
 
 def drop_removed(data):
