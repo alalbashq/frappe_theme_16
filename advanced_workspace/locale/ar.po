@@ -1571,3 +1571,11 @@ msgstr "دائن"
 msgctxt "Journal Entry Account"
 msgid "User Remark"
 msgstr "البيان"
+
+msgctxt "Sales Invoice"
+msgid "Return Details"
+msgstr "تفاصيل المرتجع"
+
+msgctxt "Purchase Invoice"
+msgid "Return Details"
+msgstr "تفاصيل المرتجع"
