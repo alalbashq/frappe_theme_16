@@ -33,6 +33,13 @@ export function mount() {
 	localStorage.removeItem(`advanced_workspace_shell:${frappe.session.user}`);
 	document.head.appendChild(pageStyle());
 	document.documentElement.classList.add("aw-on");
+	// Pages open at the whole width by default: Frappe's own "full width" setting, turned on
+	// once in each browser. A user who turns it off afterwards keeps it off.
+	if (!localStorage.getItem("advanced_workspace_full_width")) {
+		localStorage.setItem("container_fullwidth", "true");
+		localStorage.setItem("advanced_workspace_full_width", "1");
+	}
+	frappe.ui.toolbar?.set_fullwidth_if_enabled?.();
 	run(scope);
 }
 
@@ -886,6 +893,12 @@ function run(scope) {
 				label: __("Toggle Theme"),
 				icon: "monitor",
 				onClick: () => new frappe.ui.ThemeSwitcher().show(),
+			},
+			toolbar.toggle_full_width && {
+				name: "toggle-full-width",
+				label: __("Toggle Full Width"),
+				icon: "maximize",
+				onClick: () => toolbar.toggle_full_width(),
 			},
 			toolbar.setup_session_defaults &&
 				(frappe.boot.session_defaults || []).length && {
