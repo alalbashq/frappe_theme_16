@@ -244,6 +244,54 @@ function run(scope) {
 		else frappe.set_route("List", item.n);
 	}
 
+	// On the closed rail, which module's list is open is kept here rather than left to :hover: a
+	// list stays a moment after the pointer leaves it, and while the pointer heads for the open
+	// list across other icons (the slanting way to a lower entry), those icons wait instead of
+	// taking over. The pointer is heading for the list when it stays between the lines from where
+	// it was to the list's near corners.
+	const fly = (() => {
+		let shown = null;
+		let timer = 0;
+		const trail = [];
+		// where the pointer has been in the last moment: older places say nothing of where it heads
+		one("[data-side]").addEventListener("mousemove", (event) => {
+			trail.push([event.clientX, event.clientY, event.timeStamp]);
+			while (trail.length > 2 && event.timeStamp - trail[0][2] > 120) trail.shift();
+		});
+		const aiming = () => {
+			if (!shown || trail.length < 2) return false;
+			const box = shown.querySelector(".aw-sub").getBoundingClientRect();
+			const ahead = document.documentElement.dir === "rtl" ? -1 : 1;
+			const edge = ahead > 0 ? box.left : box.right;
+			const [x0, y0, t0] = trail[0];
+			const [x1, y1, t1] = trail[trail.length - 1];
+			if (t1 - t0 > 120) return false;
+			if ((x1 - x0) * ahead <= 0 || (edge - x1) * ahead <= 0) return false;
+			const slope = (x, y, cornerY) => (cornerY - y) / ((edge - x) * ahead);
+			return slope(x1, y1, box.top) < slope(x0, y0, box.top) && slope(x1, y1, box.bottom) > slope(x0, y0, box.bottom);
+		};
+		const show = (row) => {
+			clearTimeout(timer);
+			if (shown && shown !== row) shown.classList.remove("is-fly");
+			shown = row;
+			if (row) row.classList.add("is-fly");
+		};
+		// after a pause, the list under the pointer is the one open, or none
+		const settle = (wait) => {
+			clearTimeout(timer);
+			timer = setTimeout(() => show(all("[data-nav] .aw-mod").find((row) => row.matches(":hover")) || null), wait);
+		};
+		return {
+			enter(row) {
+				if (!shown || shown === row || !aiming()) show(row);
+				else settle(300);
+			},
+			leave(row) {
+				if (shown === row) settle(250);
+			},
+		};
+	})();
+
 	function buildNav() {
 		const nav = one("[data-nav]");
 		nav.innerHTML = home.modules
@@ -281,22 +329,29 @@ function run(scope) {
 			const level = () => {
 				if (!app.classList.contains("is-closed") || window.innerWidth <= DRAWER_WIDTH) return;
 				const sub = row.querySelector(".aw-sub");
-				const top = Math.round(row.querySelector(".aw-mod-btn").getBoundingClientRect().top);
-				sub.style.setProperty("--fly-bridge", `${top}px`);
+				const icon = row.querySelector(".aw-mod-btn").getBoundingClientRect();
+				const top = Math.round(icon.top);
 				const place = () => {
 					const margin = 12;
 					const ceiling = 52;
 					const tall = sub.scrollHeight;
 					const room = window.innerHeight - margin - ceiling;
-					const start = tall > room ? ceiling : Math.min(top, window.innerHeight - margin - tall);
-					sub.style.setProperty("--fly-top", `${Math.max(ceiling, start)}px`);
-					sub.style.setProperty("--fly-max", `${Math.min(tall, room)}px`);
+					const start = Math.max(ceiling, tall > room ? ceiling : Math.min(top, window.innerHeight - margin - tall));
+					const high = Math.min(tall, room);
+					sub.style.setProperty("--fly-top", `${start}px`);
+					sub.style.setProperty("--fly-max", `${high}px`);
+					// the bridge spans the icon and the list, however far the list rose
+					const from = Math.min(start, top);
+					sub.style.setProperty("--fly-bridge", `${from}px`);
+					sub.style.setProperty("--fly-bridge-h", `${Math.max(start + high, Math.round(icon.bottom)) - from}px`);
 				};
 				place();
 				requestAnimationFrame(place);
 			};
 			row.addEventListener("mouseenter", level);
 			row.addEventListener("focusin", level);
+			row.addEventListener("mouseenter", () => fly.enter(row));
+			row.addEventListener("mouseleave", () => fly.leave(row));
 		});
 	}
 

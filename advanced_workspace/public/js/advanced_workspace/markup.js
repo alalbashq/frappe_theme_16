@@ -128,9 +128,12 @@ export const CSS = `
   .aw.is-closed .aw-mod-btn { justify-content: center; min-height: 42px; padding: 0; border-radius: 10px; }
   .aw.is-closed .aw-mod-btn span, .aw.is-closed .aw-mod-btn .chev { display: none; }
   .aw.is-closed .aw-mod-btn svg { width: 19px; height: 19px; }
-  .aw.is-closed .aw-sub, .aw.is-closed .aw-mod.open .aw-sub { display: none; position: fixed; z-index: 30; top: var(--fly-top, 60px); inset-inline-start: calc(var(--aw-rail, 60px) + 6px); min-width: 230px; max-width: 300px; max-height: var(--fly-max, calc(100vh - var(--fly-top, 60px) - 12px)); overflow-y: auto; padding: 6px; border-radius: 10px; background: var(--aw-panel, #fff); color: var(--aw-ink, #24303a); box-shadow: 0 14px 34px rgba(0, 40, 36, .22), 0 0 0 1px rgba(0, 40, 36, .07); }
-  .aw.is-closed .aw-sub::before { content: ""; position: fixed; top: var(--fly-bridge, var(--fly-top, 60px)); inset-inline-start: var(--aw-rail, 60px); width: 8px; height: 42px; }
-  .aw.is-closed .aw-mod:hover .aw-sub, .aw.is-closed .aw-mod:has(:focus-visible) .aw-sub { display: block; }
+  /* which list is open is kept by the shell (is-fly): it stays a moment after the pointer leaves */
+  .aw.is-closed .aw-sub, .aw.is-closed .aw-mod.open .aw-sub { display: block; visibility: hidden; opacity: 0; transition: opacity .1s ease, visibility 0s linear .1s; position: fixed; z-index: 30; top: var(--fly-top, 60px); inset-inline-start: calc(var(--aw-rail, 60px) + 6px); min-width: 230px; max-width: 300px; max-height: var(--fly-max, calc(100vh - var(--fly-top, 60px) - 12px)); overflow-y: auto; padding: 6px; border-radius: 10px; background: var(--aw-panel, #fff); color: var(--aw-ink, #24303a); box-shadow: 0 14px 34px rgba(0, 40, 36, .22), 0 0 0 1px rgba(0, 40, 36, .07); }
+  /* the strip between the icon and its list (the rail's edge and the gap) belongs to the list, as
+     tall as the icon and the list together, so the pointer crossing it to any entry keeps it open */
+  .aw.is-closed .aw-sub::before { content: ""; position: fixed; top: var(--fly-bridge, var(--fly-top, 60px)); inset-inline-start: calc(var(--aw-rail, 60px) - 8px); width: 14px; height: var(--fly-bridge-h, 42px); }
+  .aw.is-closed .aw-mod.is-fly .aw-sub, .aw.is-closed .aw-mod:has(:focus-visible) .aw-sub { visibility: visible; opacity: 1; z-index: 31; transition: opacity .08s ease, visibility 0s; }
   .aw.is-closed .aw-fly-title { display: block; padding: 7px 9px 8px; margin-bottom: 4px; border-bottom: 1px solid var(--aw-line, #eef1f0); font-size: 13.5px; font-weight: 700; color: var(--aw-ink, #14201f); white-space: nowrap; }
   .aw.is-closed .aw-fly-title:last-child { margin-bottom: 0; border-bottom: 0; }
   .aw.is-closed .aw-sub button { padding: 7px 9px; border-radius: 6px; color: var(--aw-text, #33414a); font-size: 13px; }
