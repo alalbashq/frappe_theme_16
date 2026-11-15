@@ -1579,3 +1579,8 @@ msgstr "تفاصيل المرتجع"
 msgctxt "Purchase Invoice"
 msgid "Return Details"
 msgstr "تفاصيل المرتجع"
+
+# the reference calls the sales partner the sales rep
+msgctxt "Sales Invoice"
+msgid "Sales Partner"
+msgstr "مندوب المبيعات"

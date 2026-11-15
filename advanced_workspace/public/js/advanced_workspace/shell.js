@@ -33,7 +33,51 @@ export function mount() {
 	localStorage.removeItem(`advanced_workspace_shell:${frappe.session.user}`);
 	document.head.appendChild(pageStyle());
 	document.documentElement.classList.add("aw-on");
+	// a form label kept on one line shows its whole text when the pointer rests on it
+	document.addEventListener("mouseover", (event) => {
+		const label = event.target.closest?.(".form-layout .control-label");
+		if (label && !label.title && label.scrollWidth > label.clientWidth) label.title = label.textContent.trim();
+	});
+	$(document).on("form-refresh", (event, frm) => {
+		keepColumnsFilled();
+		if (frm && frm.layout) fillColumns(frm.layout);
+	});
 	run(scope);
+}
+
+// A form column left with nothing to show (its fields hidden for this kind of document: a credit
+// sale's POS profile, a balanced entry's difference) gives its width to the section's other
+// columns, as Frappe does for a column hidden on purpose. Frappe re-evaluates what shows on
+// every change and then refreshes its sections; the columns are settled after that. Its form
+// code loads with the first form, so the hook is set on the first refresh.
+function keepColumnsFilled() {
+	const Layout = frappe.ui.form && frappe.ui.form.Layout;
+	if (!Layout || Layout.prototype.awFillColumns) return;
+	const refreshSections = Layout.prototype.refresh_sections;
+	Layout.prototype.refresh_sections = function () {
+		const result = refreshSections.apply(this, arguments);
+		fillColumns(this);
+		return result;
+	};
+	Layout.prototype.awFillColumns = true;
+}
+
+function fillColumns(layout) {
+	for (const section of layout.sections || []) {
+		const columns = section.columns || [];
+		if (columns.length < 2) continue;
+		let changed = false;
+		for (const column of columns) {
+			const $column = column.wrapper;
+			if (!$column || (column.df && (column.df.hidden || column.df.hidden_due_to_dependency))) continue;
+			const empty = !$column.find(".frappe-control:not(.hide-control)").length;
+			if (empty !== $column.hasClass("hide-control")) {
+				$column.toggleClass("hide-control", empty);
+				changed = true;
+			}
+		}
+		if (changed) columns[0].resize_all_columns();
+	}
 }
 
 // With the user's Search Bar off, Frappe builds no search, yet 16.5x's Ctrl+K still opens it
@@ -134,18 +178,43 @@ function pageStyle() {
     --aw-pill: var(--surface-gray-2, #2b2b2b);
     color-scheme: dark;
   }
-  /* Forms, as the workspace draws them: the page's whole width (Frappe keeps 900px unless a
-     user turns full width on), green table heads and tabs. The fields stay Frappe's own. */
+  /* Forms, as the workspace draws them (the Sales Invoice reference): the page's whole width
+     (Frappe keeps 900px unless a user turns full width on), white bordered fields of one
+     height, labels on one line so a row's fields line up, green table heads and tabs. */
   html.aw-on {
     --page-max-width: 100%;
     --primary: #005751 !important;
     --aw-f-brand: #005751;
     --aw-f-brand-ink: #005751;
+    --aw-f-field: #fff;
+    --aw-f-fixed: #f3f5f7;
+    --aw-f-line: #d3d9df;
   }
   html.aw-on[data-theme="dark"] {
     --primary: #1d7a6e !important;
     --aw-f-brand: #1d7a6e;
     --aw-f-brand-ink: #5fc4b5;
+    --aw-f-field: var(--control-bg);
+    --aw-f-fixed: var(--disabled-control-bg);
+    --aw-f-line: #3b3b3b;
+  }
+  /* Frappe sizes its fields by --input-height (28px); forms take 36px, tables keep theirs */
+  html.aw-on .form-layout .form-section { --input-height: 36px; }
+  html.aw-on .form-layout .form-grid { --input-height: 28px; }
+  html.aw-on .form-layout .frappe-control:not(.form-grid *) :is(.form-control:not([type="checkbox"]), .like-disabled-input) {
+    background-color: var(--aw-f-field); border: 1px solid var(--aw-f-line); border-radius: 6px; box-shadow: none;
+  }
+  html.aw-on .form-layout .frappe-control:not(.form-grid *) :is(.like-disabled-input, .form-control[disabled], .form-control[readonly]) {
+    background-color: var(--aw-f-fixed);
+  }
+  /* a read-only value sits in the middle of its 36px, and longer text grows the box */
+  html.aw-on .form-layout .frappe-control:not(.form-grid *) .like-disabled-input { padding: 7px 10px; line-height: 20px; }
+  html.aw-on .form-layout .frappe-control:not(.form-grid *) .form-control:not([type="checkbox"]):focus {
+    border-color: var(--aw-f-brand-ink); box-shadow: 0 0 0 2px color-mix(in srgb, var(--aw-f-brand-ink) 18%, transparent);
+  }
+  html.aw-on .form-layout .frappe-control:not(.form-grid *) .select-icon { top: 50%; transform: translateY(-50%); }
+  html.aw-on .form-layout .frappe-control:not([data-fieldtype="Check"]):not(.form-grid *) .control-label {
+    display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   html.aw-on .form-layout .form-grid { border: 1px solid var(--aw-f-brand); border-radius: 6px; }
   html.aw-on .form-layout .form-grid .grid-heading-row {
