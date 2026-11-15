@@ -1,0 +1,39 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Sales Order",
+ "links": [],
+ "property_setters": [
+  {
+   "doc_type": "Sales Order",
+   "doctype_or_field": "DocType",
+   "field_name": null,
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "field_order",
+   "property_type": "Data",
+   "value": "[\"customer_section\", \"scan_barcode\", \"last_scanned_warehouse\", \"company\", \"column_break0\", \"customer\", \"sales_partner\", \"column_break_7\", \"transaction_date\", \"transaction_time\", \"delivery_date\", \"column_break1\", \"order_type\", \"set_warehouse\", \"reserve_stock\", \"accounting_dimensions_section\", \"cost_center\", \"dimension_col_break\", \"project\", \"items_section\", \"items\", \"section_break_31\", \"total_qty\", \"total\", \"column_break_33\", \"additional_discount_percentage\", \"discount_amount\", \"column_break_33a\", \"total_taxes_and_charges\", \"column_break_46\", \"grand_total\", \"rounded_total\", \"advance_paid\", \"taxes_section\", \"tax_category\", \"taxes_and_charges\", \"column_break_38\", \"shipping_rule\", \"column_break_49\", \"incoterm\", \"named_place\", \"section_break_40\", \"taxes\", \"sec_tax_breakup\", \"other_charges_calculation\", \"item_wise_tax_details\", \"contact_info\", \"billing_address_column\", \"customer_address\", \"address_display\", \"customer_group\", \"territory\", \"column_break_84\", \"contact_person\", \"contact_display\", \"contact_phone\", \"contact_mobile\", \"contact_email\", \"shipping_address_column\", \"shipping_address_name\", \"shipping_address\", \"column_break_93\", \"dispatch_address_name\", \"dispatch_address\", \"col_break46\", \"company_address\", \"company_address_display\", \"column_break_92\", \"company_contact_person\", \"payment_schedule_section\", \"payment_terms_section\", \"ignore_default_payment_terms_template\", \"payment_terms_template\", \"payment_schedule\", \"terms_section_break\", \"tc_name\", \"terms\", \"more_info\", \"currency_and_price_list\", \"currency\", \"conversion_rate\", \"column_break2\", \"selling_price_list\", \"price_list_currency\", \"plc_conversion_rate\", \"ignore_pricing_rule\", \"sec_warehouse\", \"column_break_28\", \"total_net_weight\", \"base_total\", \"base_net_total\", \"net_total\", \"totals_section\", \"in_words\", \"disable_rounded_total\", \"column_break_nuxg\", \"rounding_adjustment\", \"base_totals_section\", \"base_grand_total\", \"base_in_words\", \"column_break_bgfw\", \"base_rounding_adjustment\", \"base_rounded_total\", \"section_break_43\", \"base_total_taxes_and_charges\", \"section_break_efew\", \"additional_discount_section\", \"apply_discount_on\", \"base_discount_amount\", \"coupon_code\", \"pricing_rule_details\", \"pricing_rules\", \"packing_list\", \"packed_items\", \"section_break_78\", \"status\", \"delivery_status\", \"per_delivered\", \"column_break_81\", \"per_billed\", \"per_picked\", \"billing_status\", \"advance_payment_status\", \"sales_team_section_break\", \"column_break7\", \"amount_eligible_for_commission\", \"commission_rate\", \"total_commission\", \"section_break1\", \"sales_team\", \"loyalty_points_redemption\", \"loyalty_points\", \"column_break_116\", \"loyalty_amount\", \"auto_repeat_section\", \"from_date\", \"to_date\", \"column_break_108\", \"auto_repeat\", \"update_auto_repeat_reference\", \"printing_details\", \"letter_head\", \"group_same_items\", \"column_break4\", \"select_print_heading\", \"language\", \"utm_analytics_section\", \"utm_source\", \"utm_medium\", \"column_break_ijxt\", \"utm_campaign\", \"utm_content\", \"additional_info_section\", \"naming_series\", \"customer_name\", \"tax_id\", \"skip_delivery_note\", \"has_unit_price_items\", \"is_subcontracted\", \"amended_from\", \"is_internal_customer\", \"po_no\", \"po_date\", \"represents_company\", \"title\", \"column_break_yvzv\", \"inter_company_order_reference\", \"party_account_currency\", \"proforma_tab\", \"proforma_html\", \"column_break_50\", \"connections_tab\"]"
+  },
+  {
+   "doc_type": "Sales Order",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_50",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Order",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_33a",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "depends_on",
+   "property_type": "Data",
+   "value": "eval:doc.docstatus == 0 || doc.total_taxes_and_charges"
+  }
+ ],
+ "sync_on_migrate": 1
+}

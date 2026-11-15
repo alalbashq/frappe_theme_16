@@ -1,0 +1,39 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Purchase Receipt",
+ "links": [],
+ "property_setters": [
+  {
+   "doc_type": "Purchase Receipt",
+   "doctype_or_field": "DocType",
+   "field_name": null,
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "field_order",
+   "property_type": "Data",
+   "value": "[\"supplier_section\", \"scan_barcode\", \"last_scanned_warehouse\", \"company\", \"column_break0\", \"supplier\", \"supplier_delivery_note\", \"column_break1\", \"posting_date\", \"set_posting_time\", \"column_break_31\", \"set_warehouse\", \"rejected_warehouse\", \"set_from_warehouse\", \"column_break_12\", \"is_return\", \"return_against\", \"apply_putaway_rule\", \"accounting_dimensions_section\", \"cost_center\", \"dimension_col_break\", \"project\", \"items_section\", \"items\", \"section_break0\", \"total_qty\", \"total\", \"column_break_43\", \"additional_discount_percentage\", \"discount_amount\", \"column_break_27\", \"total_taxes_and_charges\", \"column_break3\", \"grand_total\", \"rounded_total\", \"taxes_charges_section\", \"tax_category\", \"taxes_and_charges\", \"shipping_col\", \"shipping_rule\", \"column_break_53\", \"incoterm\", \"named_place\", \"taxes_section\", \"taxes\", \"totals\", \"base_taxes_and_charges_added\", \"base_taxes_and_charges_deducted\", \"base_total_taxes_and_charges\", \"taxes_and_charges_added\", \"taxes_and_charges_deducted\", \"sec_tax_breakup\", \"other_charges_calculation\", \"item_wise_tax_details\", \"address_and_contact_tab\", \"section_addresses\", \"supplier_address\", \"address_display\", \"col_break_address\", \"contact_person\", \"contact_display\", \"contact_mobile\", \"contact_email\", \"section_break_98\", \"dispatch_address\", \"dispatch_address_display\", \"column_break_100\", \"shipping_address\", \"shipping_address_display\", \"billing_address_section\", \"billing_address\", \"column_break_104\", \"billing_address_display\", \"terms_tab\", \"tc_name\", \"terms\", \"more_info_tab\", \"currency_and_price_list\", \"currency\", \"conversion_rate\", \"column_break2\", \"buying_price_list\", \"price_list_currency\", \"plc_conversion_rate\", \"ignore_pricing_rule\", \"sec_warehouse\", \"col_break_warehouse\", \"is_subcontracted\", \"supplier_warehouse\", \"total_net_weight\", \"base_total\", \"base_net_total\", \"net_total\", \"totals_section\", \"in_words\", \"column_break_50\", \"disable_rounded_total\", \"rounding_adjustment\", \"base_totals_section\", \"base_grand_total\", \"base_in_words\", \"column_break_ugyv\", \"base_rounding_adjustment\", \"base_rounded_total\", \"section_break_42\", \"apply_discount_on\", \"base_discount_amount\", \"pricing_rule_details\", \"pricing_rules\", \"raw_material_details\", \"get_current_stock\", \"supplied_items\", \"status_section\", \"status\", \"column_break4\", \"per_billed\", \"per_returned\", \"subscription_detail\", \"auto_repeat\", \"printing_settings\", \"letter_head\", \"group_same_items\", \"column_break_97\", \"select_print_heading\", \"language\", \"transporter_info\", \"transporter_name\", \"column_break5\", \"lr_no\", \"lr_date\", \"additional_info_section\", \"naming_series\", \"supplier_name\", \"subcontracting_receipt\", \"posting_time\", \"instructions\", \"is_internal_supplier\", \"represents_company\", \"title\", \"inter_company_reference\", \"column_break_131\", \"remarks\", \"range\", \"amended_from\", \"other_details\", \"column_break_44\", \"connections_tab\"]"
+  },
+  {
+   "doc_type": "Purchase Receipt",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_44",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Purchase Receipt",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_27",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "depends_on",
+   "property_type": "Data",
+   "value": "eval:doc.docstatus == 0 || doc.total_taxes_and_charges"
+  }
+ ],
+ "sync_on_migrate": 1
+}

@@ -1584,3 +1584,308 @@ msgstr "تفاصيل المرتجع"
 msgctxt "Sales Invoice"
 msgid "Sales Partner"
 msgstr "مندوب المبيعات"
+
+# the main screens customers work on, worded as the invoices are
+msgctxt "Sales Order"
+msgid "Date"
+msgstr "التاريخ"
+
+msgctxt "Sales Order"
+msgid "Sales Partner"
+msgstr "مندوب المبيعات"
+
+msgctxt "Sales Order"
+msgid "Total Quantity"
+msgstr "إجمالي الكمية"
+
+msgctxt "Sales Order"
+msgid "Total"
+msgstr "الإجمالي"
+
+msgctxt "Sales Order"
+msgid "Additional Discount Percentage"
+msgstr "نسبة الخصم الإضافية"
+
+msgctxt "Sales Order"
+msgid "Additional Discount Amount"
+msgstr "مبلغ الخصم الإضافي"
+
+msgctxt "Sales Order"
+msgid "Total Taxes and Charges"
+msgstr "مجموع الضرائب والرسوم"
+
+msgctxt "Sales Order"
+msgid "Grand Total"
+msgstr "المجموع الكلي"
+
+msgctxt "Sales Order"
+msgid "Rounded Total"
+msgstr "الإجمالي المقرّب"
+
+msgctxt "Sales Order"
+msgid "Scan Barcode"
+msgstr "مسح الباركود"
+
+msgctxt "Delivery Note"
+msgid "Date"
+msgstr "التاريخ"
+
+msgctxt "Delivery Note"
+msgid "Sales Partner"
+msgstr "مندوب المبيعات"
+
+msgctxt "Delivery Note"
+msgid "Total Quantity"
+msgstr "إجمالي الكمية"
+
+msgctxt "Delivery Note"
+msgid "Total"
+msgstr "الإجمالي"
+
+msgctxt "Delivery Note"
+msgid "Additional Discount Percentage"
+msgstr "نسبة الخصم الإضافية"
+
+msgctxt "Delivery Note"
+msgid "Additional Discount Amount"
+msgstr "مبلغ الخصم الإضافي"
+
+msgctxt "Delivery Note"
+msgid "Total Taxes and Charges"
+msgstr "مجموع الضرائب والرسوم"
+
+msgctxt "Delivery Note"
+msgid "Grand Total"
+msgstr "المجموع الكلي"
+
+msgctxt "Delivery Note"
+msgid "Rounded Total"
+msgstr "الإجمالي المقرّب"
+
+msgctxt "Delivery Note"
+msgid "Scan Barcode"
+msgstr "مسح الباركود"
+
+msgctxt "Purchase Receipt"
+msgid "Date"
+msgstr "التاريخ"
+
+msgctxt "Purchase Receipt"
+msgid "Supplier"
+msgstr "المورد"
+
+msgctxt "Purchase Receipt"
+msgid "Total Quantity"
+msgstr "إجمالي الكمية"
+
+msgctxt "Purchase Receipt"
+msgid "Total"
+msgstr "الإجمالي"
+
+msgctxt "Purchase Receipt"
+msgid "Additional Discount Percentage"
+msgstr "نسبة الخصم الإضافية"
+
+msgctxt "Purchase Receipt"
+msgid "Additional Discount Amount"
+msgstr "مبلغ الخصم الإضافي"
+
+msgctxt "Purchase Receipt"
+msgid "Total Taxes and Charges"
+msgstr "مجموع الضرائب والرسوم"
+
+msgctxt "Purchase Receipt"
+msgid "Grand Total"
+msgstr "المجموع الكلي"
+
+msgctxt "Purchase Receipt"
+msgid "Rounded Total"
+msgstr "الإجمالي المقرّب"
+
+msgctxt "Purchase Receipt"
+msgid "Scan Barcode"
+msgstr "مسح الباركود"
+
+msgctxt "Purchase Order"
+msgid "Date"
+msgstr "التاريخ"
+
+msgctxt "Purchase Order"
+msgid "Supplier"
+msgstr "المورد"
+
+msgctxt "Purchase Order"
+msgid "Total Quantity"
+msgstr "إجمالي الكمية"
+
+msgctxt "Purchase Order"
+msgid "Total"
+msgstr "الإجمالي"
+
+msgctxt "Purchase Order"
+msgid "Additional Discount Percentage"
+msgstr "نسبة الخصم الإضافية"
+
+msgctxt "Purchase Order"
+msgid "Additional Discount Amount"
+msgstr "مبلغ الخصم الإضافي"
+
+msgctxt "Purchase Order"
+msgid "Total Taxes and Charges"
+msgstr "مجموع الضرائب والرسوم"
+
+msgctxt "Purchase Order"
+msgid "Grand Total"
+msgstr "المجموع الكلي"
+
+msgctxt "Purchase Order"
+msgid "Rounded Total"
+msgstr "الإجمالي المقرّب"
+
+msgctxt "Purchase Order"
+msgid "Scan Barcode"
+msgstr "مسح الباركود"
+
+msgctxt "Material Request"
+msgid "Transaction Date"
+msgstr "التاريخ"
+
+msgctxt "Material Request"
+msgid "Scan Barcode"
+msgstr "مسح الباركود"
+
+msgctxt "Sales Order Item"
+msgid "Item Code"
+msgstr "الصنف"
+
+msgctxt "Sales Order Item"
+msgid "Item Name"
+msgstr "اسم الصنف"
+
+msgctxt "Sales Order Item"
+msgid "Delivery Date"
+msgstr "تاريخ التسليم"
+
+msgctxt "Sales Order Item"
+msgid "Quantity"
+msgstr "الكمية"
+
+msgctxt "Sales Order Item"
+msgid "UOM"
+msgstr "وحدة القياس"
+
+msgctxt "Sales Order Item"
+msgid "Rate"
+msgstr "السعر"
+
+msgctxt "Sales Order Item"
+msgid "Amount"
+msgstr "المبلغ"
+
+msgctxt "Delivery Note Item"
+msgid "Item Code"
+msgstr "الصنف"
+
+msgctxt "Delivery Note Item"
+msgid "Item Name"
+msgstr "اسم الصنف"
+
+msgctxt "Delivery Note Item"
+msgid "Quantity"
+msgstr "الكمية"
+
+msgctxt "Delivery Note Item"
+msgid "UOM"
+msgstr "وحدة القياس"
+
+msgctxt "Delivery Note Item"
+msgid "Rate"
+msgstr "السعر"
+
+msgctxt "Delivery Note Item"
+msgid "Amount"
+msgstr "المبلغ"
+
+msgctxt "Delivery Note Item"
+msgid "Warehouse"
+msgstr "المستودع"
+
+msgctxt "Purchase Receipt Item"
+msgid "Item Code"
+msgstr "الصنف"
+
+msgctxt "Purchase Receipt Item"
+msgid "Item Name"
+msgstr "اسم الصنف"
+
+msgctxt "Purchase Receipt Item"
+msgid "Received Quantity"
+msgstr "الكمية المستلمة"
+
+msgctxt "Purchase Receipt Item"
+msgid "Accepted Quantity"
+msgstr "الكمية المقبولة"
+
+msgctxt "Purchase Receipt Item"
+msgid "Rejected Quantity"
+msgstr "الكمية المرفوضة"
+
+msgctxt "Purchase Receipt Item"
+msgid "Rate"
+msgstr "السعر"
+
+msgctxt "Purchase Receipt Item"
+msgid "Amount"
+msgstr "المبلغ"
+
+msgctxt "Purchase Order Item"
+msgid "Item Code"
+msgstr "الصنف"
+
+msgctxt "Purchase Order Item"
+msgid "Item Name"
+msgstr "اسم الصنف"
+
+msgctxt "Purchase Order Item"
+msgid "Required By"
+msgstr "مطلوب بتاريخ"
+
+msgctxt "Purchase Order Item"
+msgid "Quantity"
+msgstr "الكمية"
+
+msgctxt "Purchase Order Item"
+msgid "UOM"
+msgstr "وحدة القياس"
+
+msgctxt "Purchase Order Item"
+msgid "Rate"
+msgstr "السعر"
+
+msgctxt "Purchase Order Item"
+msgid "Amount"
+msgstr "المبلغ"
+
+msgctxt "Material Request Item"
+msgid "Item Code"
+msgstr "الصنف"
+
+msgctxt "Material Request Item"
+msgid "Item Name"
+msgstr "اسم الصنف"
+
+msgctxt "Material Request Item"
+msgid "Required By"
+msgstr "مطلوب بتاريخ"
+
+msgctxt "Material Request Item"
+msgid "Quantity"
+msgstr "الكمية"
+
+msgctxt "Material Request Item"
+msgid "UOM"
+msgstr "وحدة القياس"
+
+msgctxt "Material Request Item"
+msgid "Target Warehouse"
+msgstr "إلى مخزن"

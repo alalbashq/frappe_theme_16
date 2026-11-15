@@ -1,0 +1,49 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Delivery Note",
+ "links": [],
+ "property_setters": [
+  {
+   "doc_type": "Delivery Note",
+   "doctype_or_field": "DocType",
+   "field_name": null,
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "field_order",
+   "property_type": "Data",
+   "value": "[\"scan_barcode\", \"last_scanned_warehouse\", \"company\", \"column_break1\", \"customer\", \"sales_partner\", \"column_break_10\", \"posting_date\", \"set_posting_time\", \"col_break23\", \"set_warehouse\", \"set_target_warehouse\", \"column_break_18\", \"is_return\", \"issue_credit_note\", \"return_against\", \"accounting_dimensions_section\", \"cost_center\", \"dimension_col_break\", \"project\", \"items_section\", \"items\", \"section_break_31\", \"total_qty\", \"total\", \"column_break_35\", \"additional_discount_percentage\", \"discount_amount\", \"column_break_33\", \"total_taxes_and_charges\", \"column_break_47\", \"grand_total\", \"rounded_total\", \"taxes_section\", \"tax_category\", \"taxes_and_charges\", \"column_break_43\", \"shipping_rule\", \"column_break_39\", \"incoterm\", \"named_place\", \"section_break_41\", \"taxes\", \"sec_tax_breakup\", \"other_charges_calculation\", \"item_wise_tax_details\", \"address_and_contact_tab\", \"contact_info\", \"customer_address\", \"address_display\", \"col_break21\", \"contact_person\", \"contact_display\", \"contact_mobile\", \"contact_email\", \"shipping_address_section\", \"shipping_address_name\", \"shipping_address\", \"column_break_95\", \"dispatch_address_name\", \"dispatch_address\", \"company_address_section\", \"company_address\", \"company_address_display\", \"column_break_101\", \"company_contact_person\", \"terms_tab\", \"tc_name\", \"terms\", \"more_info_tab\", \"currency_and_price_list\", \"currency\", \"conversion_rate\", \"selling_price_list\", \"price_list_currency\", \"plc_conversion_rate\", \"ignore_pricing_rule\", \"section_break_30\", \"total_net_weight\", \"base_total\", \"base_net_total\", \"net_total\", \"totals_section\", \"in_words\", \"column_break3\", \"disable_rounded_total\", \"rounding_adjustment\", \"base_totals_section\", \"base_grand_total\", \"base_in_words\", \"column_break_ydwe\", \"base_rounding_adjustment\", \"base_rounded_total\", \"section_break_44\", \"base_total_taxes_and_charges\", \"section_break_49\", \"apply_discount_on\", \"base_discount_amount\", \"pricing_rule_details\", \"pricing_rules\", \"packing_list\", \"packed_items\", \"product_bundle_help\", \"section_break_83\", \"per_billed\", \"status\", \"column_break_112\", \"per_installed\", \"installation_status\", \"column_break_89\", \"per_returned\", \"transporter_info\", \"transporter\", \"lr_no\", \"delivery_trip\", \"driver\", \"col_break34\", \"transporter_name\", \"lr_date\", \"vehicle_no\", \"driver_name\", \"customer_po_details\", \"po_no\", \"column_break_17\", \"po_date\", \"sales_team_section_break\", \"amount_eligible_for_commission\", \"column_break7\", \"commission_rate\", \"total_commission\", \"section_break1\", \"sales_team\", \"auto_repeat_section\", \"auto_repeat\", \"printing_details\", \"letter_head\", \"print_without_amount\", \"group_same_items\", \"column_break_88\", \"select_print_heading\", \"language\", \"utm_analytics_section\", \"utm_source\", \"utm_medium\", \"column_break_neoj\", \"utm_campaign\", \"utm_content\", \"more_info\", \"naming_series\", \"tax_id\", \"customer_name\", \"posting_time\", \"amended_from\", \"is_internal_customer\", \"represents_company\", \"inter_company_reference\", \"customer_group\", \"territory\", \"title\", \"column_break5\", \"excise_page\", \"instructions\", \"col_break_warehouse\", \"column_break_51\", \"connections_tab\"]"
+  },
+  {
+   "doc_type": "Delivery Note",
+   "doctype_or_field": "DocField",
+   "field_name": "col_break_warehouse",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Delivery Note",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_51",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Delivery Note",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_33",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "depends_on",
+   "property_type": "Data",
+   "value": "eval:doc.docstatus == 0 || doc.total_taxes_and_charges"
+  }
+ ],
+ "sync_on_migrate": 1
+}

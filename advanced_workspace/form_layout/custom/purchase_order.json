@@ -1,0 +1,39 @@
+{
+ "custom_fields": [],
+ "custom_perms": [],
+ "doctype": "Purchase Order",
+ "links": [],
+ "property_setters": [
+  {
+   "doc_type": "Purchase Order",
+   "doctype_or_field": "DocType",
+   "field_name": null,
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "field_order",
+   "property_type": "Data",
+   "value": "[\"supplier_section\", \"scan_barcode\", \"last_scanned_warehouse\", \"company\", \"column_break_7\", \"supplier\", \"order_confirmation_no\", \"column_break1\", \"transaction_date\", \"schedule_date\", \"items_col_break\", \"set_warehouse\", \"set_from_warehouse\", \"accounting_dimensions_section\", \"cost_center\", \"dimension_col_break\", \"project\", \"items_section\", \"items\", \"sb_last_purchase\", \"total_qty\", \"total\", \"column_break_40\", \"additional_discount_percentage\", \"discount_amount\", \"column_break_26\", \"total_taxes_and_charges\", \"column_break_39\", \"grand_total\", \"rounded_total\", \"advance_paid\", \"taxes_section\", \"tax_category\", \"taxes_and_charges\", \"column_break_53\", \"shipping_rule\", \"column_break_50\", \"incoterm\", \"named_place\", \"section_break_52\", \"taxes\", \"totals\", \"base_taxes_and_charges_added\", \"base_taxes_and_charges_deducted\", \"base_total_taxes_and_charges\", \"taxes_and_charges_added\", \"taxes_and_charges_deducted\", \"sec_tax_breakup\", \"other_charges_calculation\", \"item_wise_tax_details\", \"address_and_contact_tab\", \"section_addresses\", \"supplier_address\", \"address_display\", \"supplier_group\", \"col_break_address\", \"contact_person\", \"contact_display\", \"contact_mobile\", \"contact_email\", \"shipping_address_section\", \"dispatch_address\", \"dispatch_address_display\", \"column_break_99\", \"shipping_address\", \"shipping_address_display\", \"company_billing_address_section\", \"billing_address\", \"column_break_103\", \"billing_address_display\", \"drop_ship\", \"customer\", \"customer_name\", \"column_break_19\", \"customer_contact_person\", \"customer_contact_display\", \"customer_contact_mobile\", \"customer_contact_email\", \"terms_tab\", \"payment_schedule_section\", \"payment_terms_template\", \"payment_schedule\", \"terms_section_break\", \"tc_name\", \"terms\", \"more_info_tab\", \"currency_and_price_list\", \"currency\", \"conversion_rate\", \"cb_price_list\", \"buying_price_list\", \"price_list_currency\", \"plc_conversion_rate\", \"ignore_pricing_rule\", \"before_items_section\", \"total_net_weight\", \"base_total\", \"base_net_total\", \"net_total\", \"section_break_48\", \"pricing_rules\", \"set_reserve_warehouse\", \"totals_section\", \"in_words\", \"column_break4\", \"disable_rounded_total\", \"rounding_adjustment\", \"base_totals_section\", \"base_grand_total\", \"base_in_words\", \"column_break_jkoz\", \"base_rounding_adjustment\", \"base_rounded_total\", \"section_break_tnkm\", \"discount_section\", \"apply_discount_on\", \"base_discount_amount\", \"tracking_section\", \"status\", \"advance_payment_status\", \"column_break_75\", \"per_billed\", \"per_received\", \"column_break5\", \"letter_head\", \"group_same_items\", \"column_break_86\", \"select_print_heading\", \"language\", \"auto_repeat_section\", \"from_date\", \"to_date\", \"column_break_97\", \"auto_repeat\", \"update_auto_repeat_reference\", \"additional_info_section\", \"naming_series\", \"supplier_name\", \"order_confirmation_date\", \"transaction_time\", \"is_subcontracted\", \"has_unit_price_items\", \"supplier_warehouse\", \"title\", \"party_account_currency\", \"represents_company\", \"ref_sq\", \"amended_from\", \"column_break_74\", \"mps\", \"is_internal_supplier\", \"inter_company_order_reference\", \"column_break_45\", \"connections_tab\"]"
+  },
+  {
+   "doc_type": "Purchase Order",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_45",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Purchase Order",
+   "doctype_or_field": "DocField",
+   "field_name": "column_break_26",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "depends_on",
+   "property_type": "Data",
+   "value": "eval:doc.docstatus == 0 || doc.total_taxes_and_charges"
+  }
+ ],
+ "sync_on_migrate": 1
+}
