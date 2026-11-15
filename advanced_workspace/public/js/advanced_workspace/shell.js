@@ -100,6 +100,9 @@ function pageStyle() {
   ${faces}
   html.aw-on { --font-stack: "IBM Plex Sans Arabic", "InterVariable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   :root { --aw-side: clamp(200px, 14vw, 260px); --aw-rail: 60px; }
+  /* wider while the menu is edited, so names show beside their buttons; the page moves over with
+     it, as the menu is part of the layout and never lies over the page */
+  @media (min-width: 1024px) { html.aw-arranging { --aw-side: 320px; } }
   body.aw-framed .body-sidebar-container { display: none !important; }
   body.aw-framed .sidebar-toggle-btn { display: none !important; }
   /* Frappe 16.5x's dock, the column of app icons: the frame's bar and menu stand in for it */
@@ -711,6 +714,7 @@ function run(scope) {
 		const wasClosed = app.classList.contains("is-closed");
 		app.classList.remove("is-closed");
 		document.body.classList.remove("aw-no-side");
+		document.documentElement.classList.add("aw-arranging");
 		if (window.innerWidth <= DRAWER_WIDTH) app.classList.add("is-open");
 		let modules = null;
 		try {
@@ -728,6 +732,7 @@ function run(scope) {
 		if (modules) home.modules = modules;
 		app.classList.toggle("is-closed", wasClosed);
 		document.body.classList.toggle("aw-no-side", wasClosed);
+		document.documentElement.classList.remove("aw-arranging");
 		closeDrawer();
 		edit.classList.remove("on");
 		arranging = false;

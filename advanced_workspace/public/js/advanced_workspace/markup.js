@@ -66,8 +66,6 @@ export const CSS = `
 .aw-edit-head .name, .aw-edit-item .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .aw-edit-head svg, .aw-edit-item svg, .aw-edit-add svg, .aw-edit-add-mod svg { width: 15px; height: 15px; flex: none; }
 .aw-edit-kind { display: grid; place-items: center; flex: none; }
-/* wider while the menu is edited, so names show beside their buttons */
-@media (min-width: 1024px) { .aw-side:has(.aw-edit) { width: 300px; } }
 .aw-grip { display: grid; place-items: center; width: 18px; height: 24px; flex: none; border-radius: 4px; color: #9fd0c7; cursor: grab; touch-action: none; }
 .aw-grip:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
 .aw-edit-items { min-height: 10px; padding-inline-start: 12px; }
