@@ -1,5 +1,6 @@
 """Install, migrate, and take over sites that ran the earlier Package version."""
 
+import hashlib
 import json
 import os
 
@@ -68,8 +69,41 @@ def apply_form_layouts():
 	for name in sorted(os.listdir(folder)):
 		if name.endswith(".json"):
 			with open(os.path.join(folder, name), encoding="utf-8") as f:
-				sync_customizations_for_doctype(json.load(f), folder, name)
+				text = f.read()
+			data = json.loads(text)
+			sync_customizations_for_doctype(data, folder, name)
+			key = f"advanced_workspace_form_layout:{name}"
+			stamp = hashlib.sha1(text.encode()).hexdigest()
+			if frappe.db.get_global(key) != stamp:
+				reset_saved_columns(data)
+				frappe.db.set_global(key, stamp)
 	frappe.db.commit()
+
+
+def reset_saved_columns(data):
+	"""A table whose columns a layout sets shows them to everyone: the columns a user chose for it
+	(Frappe keeps them per user, as GridView) are dropped once, whenever its layout file changes."""
+	child = data["doctype"]
+	if not any(p["property"] in ("in_list_view", "columns") for p in data["property_setters"]):
+		return
+	parents = set(frappe.get_all("DocField", filters={"fieldtype": "Table", "options": child}, pluck="parent"))
+	parents |= set(frappe.get_all("Custom Field", filters={"fieldtype": "Table", "options": child}, pluck="dt"))
+	for parent in parents:
+		for user, raw in frappe.db.sql(
+			"select `user`, `data` from `__UserSettings` where `doctype`=%s", parent
+		):
+			settings = json.loads(raw or "{}")
+			if child in (settings.get("GridView") or {}):
+				del settings["GridView"][child]
+				frappe.db.sql(
+					"update `__UserSettings` set `data`=%s where `user`=%s and `doctype`=%s",
+					(json.dumps(settings), user, parent),
+				)
+	# the cached copies are written back to the table later, so they go too
+	for raw in frappe.cache.hgetall("_user_settings"):
+		key = raw.decode() if isinstance(raw, bytes) else raw
+		if key.split("::", 1)[0] in parents:
+			frappe.cache.hdel("_user_settings", key)
 
 
 # ---------------------------------------------------------------------- the Package version

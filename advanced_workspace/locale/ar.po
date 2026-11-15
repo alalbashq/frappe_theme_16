@@ -1268,3 +1268,112 @@ msgstr "تفاصيل الفاتورة"
 msgctxt "Sales Invoice"
 msgid "Stock Details"
 msgstr "تفاصيل المخزون"
+
+# Sales Invoice, worded as the reference layout words it
+msgctxt "Sales Invoice"
+msgid "Posting Date"
+msgstr "التاريخ"
+
+msgctxt "Sales Invoice"
+msgid "Include Payment (POS)"
+msgstr "تضمين الدفع (نقاط البيع)"
+
+msgctxt "Sales Invoice"
+msgid "Is Return (Credit Note)"
+msgstr "هل هو مرتجع (مذكرة ائتمانية)"
+
+msgctxt "Sales Invoice"
+msgid "Remarks"
+msgstr "ملاحظات"
+
+msgctxt "Sales Invoice"
+msgid "Total Quantity"
+msgstr "إجمالي الكمية"
+
+msgctxt "Sales Invoice"
+msgid "Total"
+msgstr "الإجمالي"
+
+msgctxt "Sales Invoice"
+msgid "Additional Discount Percentage"
+msgstr "نسبة الخصم الإضافية"
+
+msgctxt "Sales Invoice"
+msgid "Additional Discount Amount"
+msgstr "مبلغ الخصم الإضافي"
+
+msgctxt "Sales Invoice"
+msgid "Total Taxes and Charges"
+msgstr "مجموع الضرائب والرسوم"
+
+msgctxt "Sales Invoice"
+msgid "Grand Total"
+msgstr "المجموع الكلي"
+
+msgctxt "Sales Invoice"
+msgid "Rounded Total"
+msgstr "الإجمالي المقرّب"
+
+msgctxt "Sales Invoice"
+msgid "Outstanding Amount"
+msgstr "المبلغ المستحق"
+
+msgctxt "Sales Invoice"
+msgid "POS Profile"
+msgstr "ملف نقطة البيع"
+
+msgctxt "Sales Invoice"
+msgid "Change Amount"
+msgstr "المبلغ المتبقي للزبون"
+
+msgctxt "Sales Invoice"
+msgid "Paid Amount"
+msgstr "المبلغ المدفوع"
+
+msgctxt "Sales Invoice"
+msgid "Sales Invoice Payment"
+msgstr "دفع فاتورة المبيعات"
+
+msgctxt "Sales Invoice"
+msgid "Scan Barcode"
+msgstr "مسح الباركود"
+
+msgctxt "Sales Invoice"
+msgid "Customer"
+msgstr "العميل"
+
+msgctxt "Sales Invoice Item"
+msgid "Item"
+msgstr "الصنف"
+
+msgctxt "Sales Invoice Item"
+msgid "Item Name"
+msgstr "اسم الصنف"
+
+msgctxt "Sales Invoice Item"
+msgid "Quantity"
+msgstr "الكمية"
+
+msgctxt "Sales Invoice Item"
+msgid "UOM"
+msgstr "وحدة القياس"
+
+msgctxt "Sales Invoice Item"
+msgid "Rate"
+msgstr "السعر"
+
+msgctxt "Sales Invoice Item"
+msgid "Amount"
+msgstr "المبلغ"
+
+msgctxt "Sales Invoice Item"
+msgid "Qty (Warehouse)"
+msgstr "الكمية المتاحة في المستودع"
+
+msgctxt "Sales Invoice Payment"
+msgid "Mode of Payment"
+msgstr "طريقة الدفع"
+
+msgctxt "Sales Invoice Payment"
+msgid "Amount"
+msgstr "المبلغ"
