@@ -1377,3 +1377,172 @@ msgstr "طريقة الدفع"
 msgctxt "Sales Invoice Payment"
 msgid "Amount"
 msgstr "المبلغ"
+
+# Purchase Invoice, Payment Entry and Stock Entry, worded as the Sales Invoice layout is
+msgctxt "Purchase Invoice"
+msgid "Tax Details"
+msgstr "تفاصيل الضريبة"
+
+msgctxt "Purchase Invoice"
+msgid "Invoice Details"
+msgstr "تفاصيل الفاتورة"
+
+msgctxt "Purchase Invoice"
+msgid "Stock Details"
+msgstr "تفاصيل المخزون"
+
+msgctxt "Purchase Invoice"
+msgid "Posting Date"
+msgstr "التاريخ"
+
+msgctxt "Purchase Invoice"
+msgid "Remarks"
+msgstr "ملاحظات"
+
+msgctxt "Purchase Invoice"
+msgid "Supplier"
+msgstr "المورد"
+
+msgctxt "Purchase Invoice"
+msgid "Scan Barcode"
+msgstr "مسح الباركود"
+
+msgctxt "Purchase Invoice"
+msgid "Is Return (Debit Note)"
+msgstr "هل هو مرتجع (إشعار مدين)"
+
+msgctxt "Purchase Invoice"
+msgid "Total Quantity"
+msgstr "إجمالي الكمية"
+
+msgctxt "Purchase Invoice"
+msgid "Total"
+msgstr "الإجمالي"
+
+msgctxt "Purchase Invoice"
+msgid "Additional Discount Percentage"
+msgstr "نسبة الخصم الإضافية"
+
+msgctxt "Purchase Invoice"
+msgid "Additional Discount Amount"
+msgstr "مبلغ الخصم الإضافي"
+
+msgctxt "Purchase Invoice"
+msgid "Total Taxes and Charges"
+msgstr "مجموع الضرائب والرسوم"
+
+msgctxt "Purchase Invoice"
+msgid "Grand Total"
+msgstr "المجموع الكلي"
+
+msgctxt "Purchase Invoice"
+msgid "Rounded Total"
+msgstr "الإجمالي المقرّب"
+
+msgctxt "Purchase Invoice"
+msgid "Outstanding Amount"
+msgstr "المبلغ المستحق"
+
+msgctxt "Purchase Invoice"
+msgid "Paid Amount"
+msgstr "المبلغ المدفوع"
+
+msgctxt "Purchase Invoice Item"
+msgid "Item"
+msgstr "الصنف"
+
+msgctxt "Purchase Invoice Item"
+msgid "Item Name"
+msgstr "اسم الصنف"
+
+msgctxt "Purchase Invoice Item"
+msgid "Accepted Qty"
+msgstr "الكمية"
+
+msgctxt "Purchase Invoice Item"
+msgid "UOM"
+msgstr "وحدة القياس"
+
+msgctxt "Purchase Invoice Item"
+msgid "Rate"
+msgstr "السعر"
+
+msgctxt "Purchase Invoice Item"
+msgid "Amount"
+msgstr "المبلغ"
+
+msgctxt "Payment Entry"
+msgid "More Info"
+msgstr "المزيد من المعلومات"
+
+msgctxt "Payment Entry"
+msgid "Voucher Details"
+msgstr "تفاصيل السند"
+
+msgctxt "Payment Entry"
+msgid "Posting Date"
+msgstr "التاريخ"
+
+msgctxt "Payment Entry"
+msgid "Remarks"
+msgstr "ملاحظات"
+
+msgctxt "Stock Entry"
+msgid "Entry Details"
+msgstr "تفاصيل الحركة"
+
+msgctxt "Stock Entry"
+msgid "Warehouse Addresses"
+msgstr "عناوين المخازن"
+
+msgctxt "Stock Entry"
+msgid "Posting Date"
+msgstr "التاريخ"
+
+msgctxt "Stock Entry"
+msgid "Remarks"
+msgstr "ملاحظات"
+
+msgctxt "Stock Entry"
+msgid "Scan Barcode"
+msgstr "مسح الباركود"
+
+msgctxt "Stock Entry"
+msgid "Default Source Warehouse"
+msgstr "من مخزن"
+
+msgctxt "Stock Entry"
+msgid "Default Target Warehouse"
+msgstr "إلى مخزن"
+
+msgctxt "Stock Entry Detail"
+msgid "Source Warehouse"
+msgstr "من مخزن"
+
+msgctxt "Stock Entry Detail"
+msgid "Target Warehouse"
+msgstr "إلى مخزن"
+
+msgctxt "Stock Entry Detail"
+msgid "Item Code"
+msgstr "الصنف"
+
+msgctxt "Stock Entry Detail"
+msgid "Item Name"
+msgstr "اسم الصنف"
+
+msgctxt "Stock Entry Detail"
+msgid "Qty"
+msgstr "الكمية"
+
+msgctxt "Stock Entry Detail"
+msgid "UOM"
+msgstr "وحدة القياس"
+
+msgctxt "Stock Entry Detail"
+msgid "Basic Rate (as per Stock UOM)"
+msgstr "السعر"
+
+msgctxt "Stock Entry Detail"
+msgid "Amount"
+msgstr "المبلغ"
