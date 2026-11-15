@@ -31,6 +31,9 @@ def home(action=None, key=None, company=None, lang=None, part=None):
 			"companies": companies(),
 			"full_name": profile.full_name,
 			"image": profile.user_image,
+			# who may arrange the menu: whoever may write its modules
+			"can_edit": bool(frappe.has_permission(MODULE_DT, "write")),
+			"can_add_module": bool(frappe.has_permission(MODULE_DT, "create")),
 		}
 	if action == "language":
 		return set_language(lang)
@@ -137,6 +140,140 @@ def load_modules():
 			}
 		)
 	return out
+
+
+# ---------------------------------------------------------------------- arranging the menu
+
+ITEM_FIELDS = ("label", "item_type", "target", "url", "doc_view", "enabled")
+
+
+@frappe.whitelist()
+def menu_for_editing():
+	"""Every enabled module and item, as the menu's editor shows them: not limited to what the
+	editor may open, since the menu is arranged for everyone."""
+	frappe.has_permission(MODULE_DT, "write", throw=True)
+	rows = frappe.get_all(MODULE_DT, filters={"enabled": 1}, order_by="sequence asc", fields=["name", "label", "icon"])
+	items = frappe.get_all(
+		"Advanced Workspace Item",
+		filters={"parent": ["in", [r.name for r in rows] or [""]], "parenttype": MODULE_DT, "enabled": 1},
+		fields=["name", "parent", "label", "item_type", "target", "url", "doc_view"],
+		order_by="idx asc",
+	)
+	icons = (frappe.get_meta(MODULE_DT).get_field("icon").options or "").split("\n")
+	return {
+		"icons": [i for i in icons if i],
+		"modules": [
+			{
+				"key": row.name,
+				"label": label(row.label),
+				"icon": row.icon,
+				"items": [
+					{"row": i.name, "l": label(i.label) or _(i.target or i.url or ""), "t": item_kind(i)}
+					for i in items
+					if i.parent == row.name
+				],
+			}
+			for row in rows
+		],
+	}
+
+
+@frappe.whitelist()
+def save_menu(menu, removed=None):
+	"""The menu as arranged: modules in this order, each with its items in this order; an item may
+	have moved from another module, or be new. A removed item is switched off, not deleted, so it
+	can come back from the module's settings."""
+	frappe.has_permission(MODULE_DT, "write", throw=True)
+	menu = frappe.parse_json(menu) or []
+	removed = set(frappe.parse_json(removed) or [])
+	docs = {name: frappe.get_doc(MODULE_DT, name) for name in frappe.get_all(MODULE_DT, pluck="name")}
+	rows = {row.name: row for doc in docs.values() for row in doc.items}
+	listed = {item["row"] for entry in menu for item in entry.get("items") or [] if item.get("row")}
+
+	plan = []
+	for index, entry in enumerate(menu):
+		if entry.get("key"):
+			doc = docs.get(entry["key"])
+			if not doc:
+				frappe.throw(_("Module {0} no longer exists. Reload the page.").format(entry["key"]))
+		else:
+			doc = new_module(entry.get("new") or {})
+		items = []
+		for item in entry.get("items") or []:
+			if item.get("row"):
+				if item["row"] in rows:
+					items.append({field: rows[item["row"]].get(field) for field in ITEM_FIELDS})
+			else:
+				items.append(new_item(item))
+		# what the editor did not show stays, after the listed items: switched-off items, and any
+		# added since the editor opened; a removed one is switched off
+		for row in [] if doc.is_new() else doc.items:
+			if row.name in listed:
+				continue
+			kept = {field: row.get(field) for field in ITEM_FIELDS}
+			if row.name in removed:
+				kept["enabled"] = 0
+			items.append(kept)
+		plan.append((doc, (index + 1) * 10, items))
+
+	changed = []
+	for doc, sequence, items in plan:
+		before = [] if doc.is_new() else [tuple(row.get(f) or None for f in ITEM_FIELDS) for row in doc.items]
+		after = [tuple(item.get(f) or None for f in ITEM_FIELDS) for item in items]
+		if doc.is_new() or before != after:
+			doc.sequence = sequence
+			doc.set("items", [])
+			for item in items:
+				doc.append("items", item)
+			doc.flags.roles_in_background = True
+			doc.save()
+			changed.append(doc.name)
+		elif doc.sequence != sequence:
+			frappe.db.set_value(MODULE_DT, doc.name, "sequence", sequence, update_modified=False)
+	# the roles of a module whose items changed get what those items need, as saving it from its
+	# form does; it takes seconds a module, so it runs after this save, in the background
+	if changed:
+		frappe.enqueue(
+			"advanced_workspace.access.apply_modules", names=changed, queue="short", enqueue_after_commit=True
+		)
+	return visible_modules()
+
+
+def new_module(spec):
+	frappe.has_permission(MODULE_DT, "create", throw=True)
+	title = (spec.get("label") or "").strip()
+	if not title:
+		frappe.throw(_("A new module needs a name."))
+	icons = (frappe.get_meta(MODULE_DT).get_field("icon").options or "").split("\n")
+	key = frappe.scrub(title) if title.isascii() else f"module_{frappe.generate_hash(length=6)}"
+	base, n = key, 2
+	while frappe.db.exists(MODULE_DT, key):
+		key, n = f"{base}_{n}", n + 1
+	return frappe.get_doc(
+		{
+			"doctype": MODULE_DT,
+			"module_key": key,
+			"label": title,
+			"icon": spec.get("icon") if spec.get("icon") in icons else "box",
+			"enabled": 1,
+		}
+	)
+
+
+def new_item(spec):
+	kind = spec.get("item_type")
+	if kind not in ITEM_TYPES:
+		frappe.throw(_("Unknown item type: {0}").format(kind))
+	if kind == "URL":
+		url = (spec.get("url") or "").strip()
+		if not url:
+			frappe.throw(_("A link item needs its URL."))
+		return {"label": (spec.get("label") or url).strip(), "item_type": kind, "url": url, "enabled": 1}
+	target = spec.get("target")
+	if not target or not frappe.db.exists(kind, target):
+		frappe.throw(_("{0} {1} does not exist.").format(_(kind), target or ""))
+	view = spec.get("doc_view") if kind == "DocType" and spec.get("doc_view") in ("List", "Tree") else None
+	return {"label": (spec.get("label") or target).strip(), "item_type": kind, "target": target, "doc_view": view, "enabled": 1}
 
 
 def can_read(doctype):

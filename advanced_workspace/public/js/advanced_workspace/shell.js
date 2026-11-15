@@ -1,6 +1,7 @@
 // The workspace frame. It stays on <body> for the whole visit: Desk moves pages in and out,
 // and lists, forms, reports and trees are Frappe's own pages, placed inside this frame.
 import { ICONS, SAR } from "./icons";
+import { editMenu } from "./editor";
 import { HTML, CSS } from "./markup";
 
 const HOST_ID = "advanced-workspace-host";
@@ -688,6 +689,48 @@ function run(scope) {
 		show(mod);
 	}
 
+	// The menu, arranged in place: the side panel opens (from the rail, or as the drawer on a
+	// phone) while it is edited, and the menu is drawn again from what was saved.
+	let arranging = false;
+	async function arrangeMenu() {
+		if (arranging) return;
+		arranging = true;
+		const edit = one("[data-edit]");
+		edit.classList.add("on");
+		const wasClosed = app.classList.contains("is-closed");
+		app.classList.remove("is-closed");
+		document.body.classList.remove("aw-no-side");
+		if (window.innerWidth <= DRAWER_WIDTH) app.classList.add("is-open");
+		let modules = null;
+		try {
+			modules = await editMenu({
+				nav: one("[data-nav]"),
+				side: one("[data-side]"),
+				t,
+				esc,
+				icon,
+				canAddModule: home.can_add_module,
+			});
+		} catch (error) {
+			console.error(error);
+		}
+		if (modules) home.modules = modules;
+		app.classList.toggle("is-closed", wasClosed);
+		document.body.classList.toggle("aw-no-side", wasClosed);
+		closeDrawer();
+		edit.classList.remove("on");
+		arranging = false;
+		buildNav();
+		sync();
+		if (modules && isHome()) {
+			const again = home.modules.find((m) => m.key === current?.key) || home.modules.find((m) => !m.link);
+			if (again) {
+				one(`.aw-mod[data-key="${again.key}"]`)?.classList.add("open");
+				show(again);
+			}
+		}
+	}
+
 	// Frappe's own notifications, with their tabs, reading and counts. They sit in the Desk
 	// sidebar, hidden behind this frame, so they move to <body>, where their code keeps working
 	// on the same element: a side panel on Frappe 16.5x, a dropdown before it.
@@ -796,6 +839,13 @@ function run(scope) {
 			theme.addEventListener("click", () => new frappe.ui.ThemeSwitcher().show());
 		});
 		safely("notifications", wireNotifications);
+		safely("menu editing", () => {
+			// for whoever may write the menu's modules: Frappe's own permission on them
+			if (!home.can_edit) return;
+			const edit = one("[data-edit]");
+			edit.hidden = false;
+			edit.addEventListener("click", arrangeMenu);
+		});
 		safely("language", () => {
 			const language = one("[data-lang]");
 			const target = LANG === "ar" ? "en" : "ar";

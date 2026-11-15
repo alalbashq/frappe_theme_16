@@ -13,6 +13,7 @@ export const HTML = `
       <button class="aw-lang" data-lang></button>
       <button data-full data-t-title="Full Screen"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/></svg></button>
       <button data-theme data-t-title="Theme"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 2-2s-1-2 0-3 2-1 3-1c2.5 0 4-1.500 4-3.500C21 6.500 17 3 12 3z"/><circle cx="7.500" cy="11" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="16" cy="9" r="1"/></svg></button>
+      <button data-edit data-t-title="Edit Workspace" hidden><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM13.500 6.500l4 4"/></svg></button>
       <button data-bell data-t-title="Notifications"><svg viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10 21h4"/></svg><span class="aw-count" data-bell-count hidden></span></button>
       <div class="aw-user">
         <button class="aw-avatar" data-user-btn data-t-title="My Account"></button>
@@ -49,6 +50,35 @@ export const CSS = `
 .aw-tools { display: flex; align-items: center; gap: 18px; margin-inline-start: auto; }
 .aw-tools > button { display: grid; place-items: center; width: 28px; height: 28px; }
 .aw-tools [data-bell] { position: relative; }
+.aw-tools > button[hidden] { display: none; }
+.aw-tools [data-edit].on { background: rgba(255, 255, 255, .18); border-radius: 6px; }
+/* arranging the menu */
+.aw-edit { padding-bottom: 12px; }
+.aw-edit-bar { position: sticky; top: -8px; z-index: 2; margin: -8px -8px 8px; padding: 10px 10px 9px; background: var(--aw-chrome, #005751); border-bottom: 1px solid rgba(255, 255, 255, .15); }
+.aw-edit-bar b { display: block; font-size: 13px; }
+.aw-edit-bar p { margin: 2px 0 8px; font-size: 11.5px; line-height: 1.5; color: #cfe6e1; }
+.aw-edit-bar div { display: flex; gap: 6px; }
+.aw-edit-bar button { flex: 1; height: 28px; border-radius: 6px; font-size: 12.5px; font-weight: 600; background: rgba(255, 255, 255, .12); color: #fff; }
+.aw-edit-bar .aw-edit-save { background: #fff; color: var(--aw-chrome, #005751); }
+.aw-edit-bar button:disabled { opacity: .6; }
+.aw-edit-mod { margin-bottom: 6px; padding: 4px; border-radius: 8px; background: rgba(255, 255, 255, .06); }
+.aw-edit-head { display: flex; align-items: center; gap: 6px; min-height: 30px; padding: 0 2px; font-size: 13px; font-weight: 600; }
+.aw-edit-head .name, .aw-edit-item .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aw-edit-head svg, .aw-edit-item svg, .aw-edit-add svg, .aw-edit-add-mod svg { width: 15px; height: 15px; flex: none; }
+.aw-grip { display: grid; place-items: center; width: 18px; height: 24px; flex: none; border-radius: 4px; color: #9fd0c7; cursor: grab; touch-action: none; }
+.aw-grip:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+.aw-edit-items { min-height: 10px; padding-inline-start: 12px; }
+.aw-edit-item { display: flex; align-items: center; gap: 6px; min-height: 28px; padding: 0 2px; border-radius: 6px; font-size: 12.5px; color: #e3f2ef; }
+.aw-edit-item:hover { background: rgba(255, 255, 255, .06); }
+.aw-edit-item.is-new .name::after, .aw-edit-mod.is-new > .aw-edit-head .name::after { content: " •"; color: #ffd27a; }
+.aw-edit-x, .aw-edit-gear { display: grid; place-items: center; width: 22px; height: 22px; flex: none; border-radius: 5px; color: #cfe6e1; opacity: .75; }
+.aw-edit-x:hover, .aw-edit-gear:hover { background: rgba(255, 255, 255, .12); opacity: 1; }
+.aw-edit-add { display: flex; align-items: center; gap: 6px; width: calc(100% - 12px); margin-inline-start: 12px; padding: 4px 6px; border-radius: 6px; text-align: start; font-size: 12px; color: #bfe3dc; }
+.aw-edit-add:hover { background: rgba(255, 255, 255, .08); color: #fff; }
+.aw-edit-add-mod { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 4px; padding: 7px; border: 1px dashed rgba(255, 255, 255, .35); border-radius: 8px; font-size: 12.5px; color: #e3f2ef; }
+.aw-edit-add-mod:hover { background: rgba(255, 255, 255, .06); }
+.aw-edit .is-dragging { opacity: .6; outline: 1px dashed rgba(255, 255, 255, .7); }
+.aw-edit.is-moving, .aw-edit.is-moving .aw-grip { cursor: grabbing; user-select: none; }
 .aw-count { position: absolute; top: -3px; inset-inline-end: -5px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: #e0413c; color: #fff; font-size: 10px; font-weight: 700; line-height: 16px; text-align: center; font-variant-numeric: tabular-nums; }
 .aw-count[hidden] { display: none; }
 .aw-tools .aw-lang { width: auto; height: 28px; padding: 0 8px; font-size: 13px; border-radius: 5px; white-space: nowrap; }

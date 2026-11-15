@@ -46,9 +46,16 @@ def ensure_role(name):
 
 def module_saved(doc, method=None):
 	"""A module saved from its form: its roles get what its menu now needs."""
-	if doc.flags.get("seeding"):
+	if doc.flags.get("seeding") or doc.flags.get("roles_in_background"):
 		return
 	apply_module(doc.name)
+
+
+def apply_modules(names):
+	"""For the menu's editor, in a background job: a module's roles take seconds to set."""
+	for name in names:
+		if frappe.db.exists(MODULE_DT, name):
+			apply_module(name)
 
 
 def apply_all():

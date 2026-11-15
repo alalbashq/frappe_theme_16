@@ -1889,3 +1889,95 @@ msgstr "وحدة القياس"
 msgctxt "Material Request Item"
 msgid "Target Warehouse"
 msgstr "إلى مخزن"
+
+# arranging the menu
+msgctxt "Advanced Workspace"
+msgid "Edit Workspace"
+msgstr "تعديل مساحة العمل"
+
+msgctxt "Advanced Workspace"
+msgid "Drag modules and items into order, or add new ones."
+msgstr "اسحب الأقسام والعناصر لترتيبها، أو أضف جديدًا."
+
+msgctxt "Advanced Workspace"
+msgid "Save"
+msgstr "حفظ"
+
+msgctxt "Advanced Workspace"
+msgid "Cancel"
+msgstr "إلغاء"
+
+msgctxt "Advanced Workspace"
+msgid "Drag to reorder"
+msgstr "اسحب لتغيير الترتيب"
+
+msgctxt "Advanced Workspace"
+msgid "Remove"
+msgstr "إزالة"
+
+msgctxt "Advanced Workspace"
+msgid "Module Settings"
+msgstr "إعدادات القسم"
+
+msgctxt "Advanced Workspace"
+msgid "Add item"
+msgstr "إضافة عنصر"
+
+msgctxt "Advanced Workspace"
+msgid "Add module"
+msgstr "إضافة قسم"
+
+msgctxt "Advanced Workspace"
+msgid "Type"
+msgstr "النوع"
+
+msgctxt "Advanced Workspace"
+msgid "Link To"
+msgstr "يفتح"
+
+msgctxt "Advanced Workspace"
+msgid "View"
+msgstr "طريقة العرض"
+
+msgctxt "Advanced Workspace"
+msgid "URL"
+msgstr "الرابط"
+
+msgctxt "Advanced Workspace"
+msgid "Label"
+msgstr "الاسم الظاهر"
+
+msgctxt "Advanced Workspace"
+msgid "Left empty, the item takes the name of what it opens."
+msgstr "إذا تركته فارغًا يأخذ العنصر اسم ما يفتحه."
+
+msgctxt "Advanced Workspace"
+msgid "Add"
+msgstr "إضافة"
+
+msgctxt "Advanced Workspace"
+msgid "Name"
+msgstr "الاسم"
+
+msgctxt "Advanced Workspace"
+msgid "Icon"
+msgstr "الأيقونة"
+
+msgctxt "Advanced Workspace"
+msgid "The menu is saved."
+msgstr "تم حفظ القائمة."
+
+msgid "Module {0} no longer exists. Reload the page."
+msgstr "القسم {0} لم يعد موجودًا. أعد تحميل الصفحة."
+
+msgid "A new module needs a name."
+msgstr "القسم الجديد يحتاج اسمًا."
+
+msgid "Unknown item type: {0}"
+msgstr "نوع عنصر غير معروف: {0}"
+
+msgid "A link item needs its URL."
+msgstr "عنصر الرابط يحتاج رابطه."
+
+msgid "{0} {1} does not exist."
+msgstr "{0} {1} غير موجود."
