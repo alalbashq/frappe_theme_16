@@ -135,36 +135,17 @@ function pageStyle() {
     color-scheme: dark;
   }
   /* Forms, as the workspace draws them: the page's whole width (Frappe keeps 900px unless a
-     user turns full width on), bordered white fields, green table heads and tabs. The light
-     values are the reference's; the dark ones are Frappe's own controls and lines. */
+     user turns full width on), green table heads and tabs. The fields stay Frappe's own. */
   html.aw-on {
     --page-max-width: 100%;
     --primary: #005751 !important;
     --aw-f-brand: #005751;
     --aw-f-brand-ink: #005751;
-    --aw-f-field: #fff;
-    --aw-f-fixed: #f3f5f7;
-    --aw-f-line: #cfd6dd;
   }
   html.aw-on[data-theme="dark"] {
     --primary: #1d7a6e !important;
     --aw-f-brand: #1d7a6e;
     --aw-f-brand-ink: #5fc4b5;
-    --aw-f-field: var(--control-bg);
-    --aw-f-fixed: var(--disabled-control-bg, var(--subtle-fg));
-    --aw-f-line: var(--dark-border-color, var(--border-color));
-  }
-  html.aw-on .form-layout .form-control:not(.form-grid .form-control):not([type="checkbox"]),
-  html.aw-on .form-layout .like-disabled-input:not(.form-grid .like-disabled-input) {
-    background: var(--aw-f-field); border: 1px solid var(--aw-f-line); border-radius: 6px; box-shadow: none;
-  }
-  html.aw-on .form-layout input.form-control:not(.form-grid .form-control),
-  html.aw-on .form-layout select.form-control:not(.form-grid .form-control),
-  html.aw-on .form-layout .like-disabled-input:not(.form-grid .like-disabled-input) { min-height: 36px; height: 36px; }
-  html.aw-on .form-layout .like-disabled-input:not(.form-grid .like-disabled-input),
-  html.aw-on .form-layout .form-control:is([disabled], [readonly]):not(.form-grid .form-control) { background: var(--aw-f-fixed); }
-  html.aw-on .form-layout .form-control:not(.form-grid .form-control):focus {
-    border-color: var(--aw-f-brand-ink); box-shadow: 0 0 0 2px color-mix(in srgb, var(--aw-f-brand-ink) 20%, transparent);
   }
   html.aw-on .form-layout .form-grid { border: 1px solid var(--aw-f-brand); border-radius: 6px; }
   html.aw-on .form-layout .form-grid .grid-heading-row {

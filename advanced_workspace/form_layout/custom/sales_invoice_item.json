@@ -22,31 +22,31 @@
    "module": "Form Layout",
    "property": "columns",
    "property_type": "Int",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice Item",
+   "doctype_or_field": "DocField",
+   "field_name": "item_name",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "in_list_view",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice Item",
+   "doctype_or_field": "DocField",
+   "field_name": "item_name",
+   "is_system_generated": 0,
+   "module": "Form Layout",
+   "property": "columns",
+   "property_type": "Int",
    "value": "2"
   },
   {
    "doc_type": "Sales Invoice Item",
    "doctype_or_field": "DocField",
-   "field_name": "item_name",
-   "is_system_generated": 0,
-   "module": "Form Layout",
-   "property": "in_list_view",
-   "property_type": "Check",
-   "value": "1"
-  },
-  {
-   "doc_type": "Sales Invoice Item",
-   "doctype_or_field": "DocField",
-   "field_name": "item_name",
-   "is_system_generated": 0,
-   "module": "Form Layout",
-   "property": "columns",
-   "property_type": "Int",
-   "value": "3"
-  },
-  {
-   "doc_type": "Sales Invoice Item",
-   "doctype_or_field": "DocField",
    "field_name": "qty",
    "is_system_generated": 0,
    "module": "Form Layout",
@@ -102,7 +102,7 @@
    "module": "Form Layout",
    "property": "columns",
    "property_type": "Int",
-   "value": "1"
+   "value": "2"
   },
   {
    "doc_type": "Sales Invoice Item",
@@ -122,7 +122,7 @@
    "module": "Form Layout",
    "property": "columns",
    "property_type": "Int",
-   "value": "1"
+   "value": "2"
   },
   {
    "doc_type": "Sales Invoice Item",

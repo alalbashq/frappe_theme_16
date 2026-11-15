@@ -72,12 +72,39 @@ def apply_form_layouts():
 				text = f.read()
 			data = json.loads(text)
 			sync_customizations_for_doctype(data, folder, name)
+			drop_removed(data)
 			key = f"advanced_workspace_form_layout:{name}"
 			stamp = hashlib.sha1(text.encode()).hexdigest()
 			if frappe.db.get_global(key) != stamp:
 				reset_saved_columns(data)
 				frappe.db.set_global(key, stamp)
 	frappe.db.commit()
+
+
+def drop_removed(data):
+	"""Frappe's sync only adds and updates, so what a layout file no longer has is removed here:
+	its property setters, and its layout breaks (they hold no data)."""
+	doctype = data["doctype"]
+	kept = {(p["field_name"], p["property"]) for p in data["property_setters"]}
+	for setter in frappe.get_all(
+		"Property Setter",
+		filters={"module": LAYOUT_MODULE, "doc_type": doctype},
+		fields=["name", "field_name", "property"],
+	):
+		if (setter.field_name, setter.property) not in kept:
+			frappe.delete_doc("Property Setter", setter.name, ignore_permissions=True)
+	fields = {f["fieldname"] for f in data["custom_fields"]}
+	for field in frappe.get_all(
+		"Custom Field",
+		filters={
+			"module": LAYOUT_MODULE,
+			"dt": doctype,
+			"fieldtype": ["in", ["Tab Break", "Section Break", "Column Break"]],
+		},
+		fields=["name", "fieldname"],
+	):
+		if field.fieldname not in fields:
+			frappe.delete_doc("Custom Field", field.name, ignore_permissions=True)
 
 
 def reset_saved_columns(data):
