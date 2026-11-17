@@ -99,6 +99,10 @@ def copy_standard(parent):
 	if frappe.db.exists("Custom DocPerm", {"parent": parent}):
 		return
 	for row in frappe.get_all("DocPerm", filters={"parent": parent}, fields=["role", *PERM_FIELDS]):
+		# a standard rule may name a role this site does not have (an app's role that was never
+		# created here): Frappe would refuse the copy, and the rule gives nobody anything anyway
+		if not frappe.db.exists("Role", row.role):
+			continue
 		values = {"doctype": "Custom DocPerm", "parent": parent, "parenttype": "DocType", "parentfield": "permissions"}
 		values.update(row)
 		frappe.get_doc(values).insert(ignore_permissions=True)

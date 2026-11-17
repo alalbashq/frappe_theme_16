@@ -235,6 +235,8 @@ def adopt_package_rows():
 	- A module named its roles in two columns, user_role and manager_role; the app reads its
 	  roles table. A module with no roles there gets the roles of those columns, so whoever saw
 	  it before still does; one without them gets the catalog's roles, as on a new site.
+	  Only on such a site (the columns are still in the table): elsewhere a module without
+	  roles was made that way and is left alone.
 
 	Returns the modules given roles, for their permissions to be applied. Never touches a
 	module that already has roles. Safe to run on every migrate.
@@ -247,17 +249,20 @@ def adopt_package_rows():
 	old_columns = frappe.db.has_column(access.MODULE_DT, "user_role") and frappe.db.has_column(
 		access.MODULE_DT, "manager_role"
 	)
+	if not old_columns:
+		# not a site that ran the Package version: a module without roles there was made so
+		# on purpose (in the menu's editor, say) and stays as it is
+		return []
 	catalog_by_key = {module["key"]: module for module in catalog.MODULES}
 	given = []
 	for name in frappe.get_all(access.MODULE_DT, pluck="name"):
 		if frappe.db.exists(access.ROLE_DT, {"parent": name, "parenttype": access.MODULE_DT}):
 			continue
 		pairs = []
-		if old_columns:
-			user_role, manager_role = frappe.db.sql(
-				f"select user_role, manager_role from `tab{access.MODULE_DT}` where name=%s", name
-			)[0]
-			pairs = [(role, level) for role, level in ((user_role, "User"), (manager_role, "Manager")) if role and frappe.db.exists("Role", role)]
+		user_role, manager_role = frappe.db.sql(
+			f"select user_role, manager_role from `tab{access.MODULE_DT}` where name=%s", name
+		)[0]
+		pairs = [(role, level) for role, level in ((user_role, "User"), (manager_role, "Manager")) if role and frappe.db.exists("Role", role)]
 		standard = []
 		if not pairs:
 			module = catalog_by_key.get(name) or {}
