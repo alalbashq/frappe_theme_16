@@ -1,0 +1,13 @@
+/* A Link field's dropdown in a child table, in Arabic (RTL).
+ *
+ * Frappe opens the dropdown at least 250px wide and pins its LEFT edge to the field, flipping it
+ * only when it would leave the window. In a right-to-left form the field sits on the table's
+ * right, so the dropdown runs past the table's right edge and the table cuts it off (the item
+ * picker in an invoice's items, once the item column is narrower). Pinned to the field's RIGHT
+ * edge it opens towards the table's inside, as it does in English.
+ *
+ * On every Desk page, for every user: the forms are the same with or without the workspace. */
+[dir="rtl"] .form-grid .awesomplete > ul {
+	left: auto;
+	right: 0;
+}

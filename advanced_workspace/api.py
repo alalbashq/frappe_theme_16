@@ -12,6 +12,18 @@ from frappe.utils import add_days, add_months, flt, get_first_day, getdate, nowd
 
 from advanced_workspace.access import ADVANCED_ROLE, ITEM_DT, MODULE_DT, ROLE_DT
 
+
+def _query_has_function(name):
+	"""Whether this Frappe's query builder takes `name` in dict fields ({"YEAR": ...}).
+
+	The list grows between releases: YEAR is in Frappe 16.5x, not in 16.2x."""
+	try:
+		from frappe.database.query import FUNCTION_MAPPING
+	except ImportError:
+		return False
+	return name in FUNCTION_MAPPING
+
+
 # Labels are English, as in Frappe; their Arabic is in locale/ar.po under this context, and a
 # site's own labels can be translated in Frappe's Translation list, with or without it.
 CONTEXT = "Advanced Workspace"
@@ -592,16 +604,31 @@ class Figures:
 		filters = conditions(spec)
 		if self.company and frappe.get_meta(doctype).has_field("company"):
 			filters.append([doctype, "company", "=", self.company])
-		filters.append([doctype, spec["d"], "between", [f"{first[0]}-{first[1]:02d}-01", str(today)]])
 		value = {"SUM": spec["f"], "as": "v"} if spec.get("f") else {"COUNT": "name", "as": "v"}
-		rows = frappe.get_list(
-			doctype,
-			filters=filters,
-			fields=[{"YEAR": spec["d"], "as": "y"}, {"MONTH": spec["d"], "as": "m"}, value],
-			group_by="y, m",
-			order_by="y asc, m asc",
-		)
-		return {(int(row.y), int(row.m)): flt(row.v) for row in rows}
+		if _query_has_function("YEAR"):
+			rows = frappe.get_list(
+				doctype,
+				filters=[*filters, [doctype, spec["d"], "between", [f"{first[0]}-{first[1]:02d}-01", str(today)]]],
+				fields=[{"YEAR": spec["d"], "as": "y"}, {"MONTH": spec["d"], "as": "m"}, value],
+				group_by="y, m",
+				order_by="y asc, m asc",
+			)
+			return {(int(row.y), int(row.m)): flt(row.v) for row in rows}
+		# Frappe before 16.5x has no YEAR in its query builder: one MONTH-grouped read per
+		# calendar year of the range (two at most for the twelve months the home shows)
+		out = {}
+		for year in range(first[0], today.year + 1):
+			start = f"{first[0]}-{first[1]:02d}-01" if year == first[0] else f"{year}-01-01"
+			end = str(today) if year == today.year else f"{year}-12-31"
+			rows = frappe.get_list(
+				doctype,
+				filters=[*filters, [doctype, spec["d"], "between", [start, end]]],
+				fields=[{"MONTH": spec["d"], "as": "m"}, value],
+				group_by="m",
+				order_by="m asc",
+			)
+			out.update({(year, int(row.m)): flt(row.v) for row in rows})
+		return out
 
 	def doctypes(self, module):
 		"""The module's own documents this user can read, once each, in menu order."""

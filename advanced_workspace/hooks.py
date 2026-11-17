@@ -7,6 +7,8 @@ app_license = "mit"
 
 # The workspace frame, its start on /desk and its font: on every Desk page
 app_include_js = ["advanced_workspace.bundle.js"]
+# For every Desk user, with or without the workspace (a child table's Link dropdown in RTL)
+app_include_css = ["advanced_workspace.bundle.css"]
 
 # whether this user gets the workspace design, decided on the server
 boot_session = "advanced_workspace.boot.boot_session"

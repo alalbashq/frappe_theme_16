@@ -31,6 +31,7 @@ def before_install():
 
 
 def after_install():
+	adopt_package_rows()
 	seed_modules()
 	ensure_basics()
 	access.apply_all()
@@ -43,6 +44,8 @@ def before_migrate():
 
 
 def after_migrate():
+	for name in adopt_package_rows():
+		access.apply_module(name)
 	ensure_basics()
 	apply_form_layouts()
 
@@ -105,9 +108,20 @@ def apply_form_layouts():
 		key = f"advanced_workspace_form_layout:{name}"
 		stamp = hashlib.sha1(text.encode()).hexdigest()
 		if frappe.db.get_global(key) != stamp:
-			sync_customizations_for_doctype(data, folder, name)
-			drop_removed(data)
-			reset_saved_columns(data)
+			# A form the site's own settings make invalid (a Unique on a field with repeated
+			# values, say: Frappe validates the whole form here) keeps its layout as it was
+			# and is logged; the other forms, and the migrate, go on. It is tried again on
+			# the next migrate, as its stamp is not written.
+			savepoint = f"aw_layout_{hashlib.sha1(name.encode()).hexdigest()[:12]}"
+			frappe.db.savepoint(savepoint)
+			try:
+				sync_customizations_for_doctype(data, folder, name)
+				drop_removed(data)
+				reset_saved_columns(data)
+			except Exception:
+				frappe.db.rollback(save_point=savepoint)
+				frappe.log_error(title=f"Advanced Workspace: form layout {name} not applied")
+				continue
 			frappe.db.set_global(key, stamp)
 			continue
 		if others is None:
@@ -211,6 +225,55 @@ def reset_saved_columns(data):
 
 
 # ---------------------------------------------------------------------- the Package version
+
+
+def adopt_package_rows():
+	"""Rows the Package version wrote in its own shape, put into the app's.
+
+	- A tree item was item_type "Tree"; the app keeps item_type "DocType" with doc_view "Tree"
+	  (Frappe refuses to save a module that still has the old value).
+	- A module named its roles in two columns, user_role and manager_role; the app reads its
+	  roles table. A module with no roles there gets the roles of those columns, so whoever saw
+	  it before still does; one without them gets the catalog's roles, as on a new site.
+
+	Returns the modules given roles, for their permissions to be applied. Never touches a
+	module that already has roles. Safe to run on every migrate.
+	"""
+	if not frappe.db.table_exists(access.MODULE_DT):
+		return []
+	frappe.db.sql(
+		f"update `tab{access.ITEM_DT}` set item_type='DocType', doc_view='Tree' where item_type='Tree'"
+	)
+	old_columns = frappe.db.has_column(access.MODULE_DT, "user_role") and frappe.db.has_column(
+		access.MODULE_DT, "manager_role"
+	)
+	catalog_by_key = {module["key"]: module for module in catalog.MODULES}
+	given = []
+	for name in frappe.get_all(access.MODULE_DT, pluck="name"):
+		if frappe.db.exists(access.ROLE_DT, {"parent": name, "parenttype": access.MODULE_DT}):
+			continue
+		pairs = []
+		if old_columns:
+			user_role, manager_role = frappe.db.sql(
+				f"select user_role, manager_role from `tab{access.MODULE_DT}` where name=%s", name
+			)[0]
+			pairs = [(role, level) for role, level in ((user_role, "User"), (manager_role, "Manager")) if role and frappe.db.exists("Role", role)]
+		standard = []
+		if not pairs:
+			module = catalog_by_key.get(name) or {}
+			role = module.get("role") or module.get("role_of") or frappe.db.get_value(access.MODULE_DT, name, "label") or name
+			pairs = [(f"Workspace {role} User", "User"), (f"Workspace {role} Manager", "Manager")]
+			standard = [r for r in catalog.STANDARD_ROLES.get(name, []) if frappe.db.exists("Role", r)]
+		doc = frappe.get_doc(access.MODULE_DT, name)
+		for role, level in pairs:
+			access.ensure_role(role)
+			doc.append("roles", {"role": role, "access": level})
+		for role in standard:
+			doc.append("roles", {"role": role, "access": "View Only"})
+		doc.flags.seeding = True
+		doc.save(ignore_permissions=True)
+		given.append(name)
+	return given
 
 
 def adopt_package():
