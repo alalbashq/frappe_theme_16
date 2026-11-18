@@ -193,9 +193,17 @@ function pageStyle() {
   html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link { padding-inline: 8px; margin-inline: 0; }
   html.aw-on .page-container .form-layout .form-column { padding-inline: 5px; }
   html.aw-on .page-container .form-layout .form-group { margin-bottom: 6px; }
-  html.aw-on .page-container .form-layout .form-section { padding-bottom: 8px; }
-  /* section titles line up with the fields under them (the column's 5px) */
-  html.aw-on .page-container .form-layout .form-section .section-head { padding-inline: 5px; }
+  /* !important: another app sets .form-section { padding-bottom: 15px !important } */
+  html.aw-on .page-container .form-layout .form-section { padding-bottom: 8px !important; }
+  /* a folded section is its title alone: nothing under it */
+  html.aw-on .page-container .form-layout .form-section:has(> .section-head.collapsed) { padding-bottom: 0 !important; }
+  /* section titles line up with the fields under them (the column's 5px), 8px above and below */
+  html.aw-on .page-container .form-layout .form-section .section-head { padding: 8px 5px; }
+  html.aw-on .page-container .form-layout .form-section .section-body { padding-top: 6px; }
+  /* the tab bar: Frappe gives each tab 10px above and below and 7px/9px inside (a 58px bar) */
+  html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link { margin-block: 3px; padding-block: 5px; }
+  html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link.active { padding-bottom: 5px; }
+  html.aw-on .page-container .form-tab-content { margin-top: 2px; }
   /* a field's help text keeps clear of the next field */
   html.aw-on .page-container .form-layout .form-group .help-box { margin-bottom: 4px; }
   /* the menu editor's icon grid, in Frappe's dialog: Frappe's own surfaces and lines, the chosen
