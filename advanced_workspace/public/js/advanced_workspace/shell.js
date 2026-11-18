@@ -183,10 +183,10 @@ function pageStyle() {
   html.aw-on .btn.btn-primary { background-color: var(--aw-f-brand) !important; border-color: var(--aw-f-brand) !important; color: #fff !important; }
   /* a light line round every field of a form, so a field reads as a box on the page; green on focus */
   html.aw-on .form-layout :is(.form-control, .like-disabled-input, .ql-container) {
-    border: 1px solid var(--aw-f-line, #d9e2e0);
+    border: 1px solid var(--aw-f-line, rgba(0, 87, 81, .38));
   }
   html.aw-on .form-layout :is(.form-control, .input-with-feedback):focus { border-color: var(--aw-f-brand); }
-  html.aw-on[data-theme="dark"] { --aw-f-line: #33413f; }
+  html.aw-on[data-theme="dark"] { --aw-f-line: rgba(95, 196, 181, .4); }
   /* the menu editor's icon grid, in Frappe's dialog: Frappe's own surfaces and lines, the chosen
      icon in the workspace's green */
   .aw-icon-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px; max-height: 214px; overflow-y: auto; padding: 2px; }
