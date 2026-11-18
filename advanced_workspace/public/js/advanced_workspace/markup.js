@@ -2,7 +2,7 @@
 export const HTML = `
 <div class="aw">
   <header class="aw-top">
-    <button class="aw-logo" data-go-home data-t-title="Home"><svg viewBox="60 100 414 298" aria-hidden="true"><g transform="translate(-6 -32)"><path d="M98 398 L208 288 L268 348 L364 252" fill="none" stroke="#005751" stroke-width="74" stroke-linejoin="miter" stroke-miterlimit="10"/><path d="M350.6 392.6 L446.6 296.6" fill="none" stroke="#12a08c" stroke-width="74"/><path fill="#12a08c" d="M402 138L464 200L402 262L340 200Z"/></g></svg></button>
+    <button class="aw-logo" data-go-home data-t-title="Home"><svg viewBox="60 100 414 298" aria-hidden="true"><g transform="translate(-6 -32)"><path d="M98 398 L208 288 L268 348 L364 252" fill="none" stroke="#005751" stroke-width="74" stroke-linejoin="miter" stroke-miterlimit="10" stroke-linecap="butt"/><path d="M350.6 392.6 L446.6 296.6" fill="none" stroke="#12a08c" stroke-width="74" stroke-linecap="butt"/><path fill="#12a08c" d="M402 138L464 200L402 262L340 200Z"/></g></svg></button>
     <button class="aw-menu-btn" data-toggle data-t-title="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <button class="aw-search" data-search>
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -27,7 +27,7 @@ export const HTML = `
       <div class="aw-side-head"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><span data-t="Main Menu"></span></div>
       <nav data-nav data-t-label="Modules"></nav>
     </aside>
-    <main class="aw-main" data-main><div class="aw-loading" role="status"><span class="aw-loading-mark"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#005751"/><g class="m-all" transform="translate(-6 -32)"><path class="m-road" pathLength="100" d="M98 398 L208 288 L268 348 L364 252" fill="none" stroke="#fff" stroke-width="74" stroke-linejoin="miter" stroke-miterlimit="10"/><path class="m-team" pathLength="100" d="M350.6 392.6 L446.6 296.6" fill="none" stroke="#5fc4b5" stroke-width="74"/><path class="m-gem" fill="#5fc4b5" d="M402 138L464 200L402 262L340 200Z"/></g></svg></span><span data-t="Loading"></span></div></main>
+    <main class="aw-main" data-main><div class="aw-loading" role="status"><span class="aw-loading-mark"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#005751"/><g class="m-all" transform="translate(-6 -32)"><path class="m-road" pathLength="100" d="M98 398 L208 288 L268 348 L364 252" fill="none" stroke="#fff" stroke-width="74" stroke-linejoin="miter" stroke-miterlimit="10" stroke-linecap="butt"/><path class="m-team" pathLength="100" d="M350.6 392.6 L446.6 296.6" fill="none" stroke="#5fc4b5" stroke-width="74" stroke-linecap="butt"/><path class="m-gem" fill="#5fc4b5" d="M402 138L464 200L402 262L340 200Z"/></g></svg></span><span data-t="Loading"></span></div></main>
   </div>
 </div>
 `;
