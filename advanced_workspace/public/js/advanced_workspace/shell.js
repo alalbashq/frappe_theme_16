@@ -170,14 +170,23 @@ function pageStyle() {
     --aw-f-brand-ink: #5fc4b5;
     --aw-f-tint: #1a2d2a;
   }
-  html.aw-on .form-layout .form-grid { border-color: var(--aw-f-brand); }
-  /* the column titles only: the filter row Frappe adds under them keeps its own colours */
-  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) { background-color: var(--aw-f-brand); color: #fff; }
+  /* tables: the head in the brand's light tint with teal titles, divided like the rows under it, so head
+     and rows read as one table (a solid teal head with white titles stood apart from white rows) */
+  html.aw-on .form-layout .form-grid { border-color: var(--aw-f-line, rgba(0, 87, 81, .38)); }
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) { background-color: var(--aw-f-tint); color: var(--aw-f-brand-ink); }
   html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.data-row, .col) { background-color: transparent; }
-  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.static-area, .row-index, .grid-static-col, .col) { color: #fff; }
-  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) input[type="checkbox"] { border-color: rgba(255, 255, 255, 0.7); }
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.static-area, .row-index, .grid-static-col, .col) { color: var(--aw-f-brand-ink); font-weight: 600; }
+  /* a row's cells are the table's own: no field line inside them */
+  html.aw-on .form-layout .form-grid :is(.form-control, .like-disabled-input) { border-color: transparent; }
+  /* tabs look like what they are, buttons: each in a light line, tinted under the pointer, the open one
+     filled with its title in bold */
+  html.aw-on .form-tabs-list .form-tabs .nav-item .nav-link {
+    border: 1px solid var(--aw-f-line, rgba(0, 87, 81, .38)); border-radius: 8px; color: var(--text-color);
+    transition: background-color .15s, border-color .15s, color .15s;
+  }
+  html.aw-on .form-tabs-list .form-tabs .nav-item .nav-link:hover { background-color: var(--aw-f-tint); border-color: var(--aw-f-brand); color: var(--aw-f-brand-ink); }
   html.aw-on .form-tabs-list .form-tabs .nav-item .nav-link.active {
-    background-color: var(--aw-f-tint); color: var(--aw-f-brand-ink); border-bottom-color: var(--aw-f-brand-ink);
+    background-color: var(--aw-f-tint); color: var(--aw-f-brand-ink); border-color: var(--aw-f-brand); font-weight: 600;
   }
   html.aw-on .form-tab-content .section-head { background-color: transparent; }
   html.aw-on .btn.btn-primary { background-color: var(--aw-f-brand) !important; border-color: var(--aw-f-brand) !important; color: #fff !important; }
@@ -190,7 +199,7 @@ function pageStyle() {
   /* tighter forms: Frappe pads each tab 15px a side with a 5px margin (45px between tab names), each
      column 15px a side (30px between fields) and leaves 16px under each field */
   /* on a form's page only: Frappe's dialogs (quick entry) keep their own spacing */
-  html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link { padding-inline: 8px; margin-inline: 0; }
+  html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link { padding-inline: 10px; margin-inline: 3px; }
   html.aw-on .page-container .form-layout .form-column { padding-inline: 5px; }
   html.aw-on .page-container .form-layout .form-group { margin-bottom: 6px; }
   /* !important: another app sets .form-section { padding-bottom: 15px !important } */
@@ -201,8 +210,8 @@ function pageStyle() {
   html.aw-on .page-container .form-layout .form-section .section-head { padding: 8px 5px; }
   html.aw-on .page-container .form-layout .form-section .section-body { padding-top: 6px; }
   /* the tab bar: Frappe gives each tab 10px above and below and 7px/9px inside (a 58px bar) */
-  html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link { margin-block: 3px; padding-block: 5px; }
-  html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link.active { padding-bottom: 5px; }
+  html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link { margin-block: 5px; padding-block: 4px; }
+  html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link.active { padding-bottom: 4px; }
   html.aw-on .page-container .form-tab-content { margin-top: 2px; }
   /* a field's help text keeps clear of the next field */
   html.aw-on .page-container .form-layout .form-group .help-box { margin-bottom: 4px; }
