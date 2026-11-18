@@ -12,10 +12,10 @@ app_include_css = ["advanced_workspace.bundle.css"]
 
 # The MYSYS icon in the workspace's colours (public/images/brand): the browser tab, Frappe's boot splash
 # and the app's logo. A favicon or splash image set in Website Settings still comes first.
-app_logo_url = "/assets/advanced_workspace/images/brand/mysys-icon.svg"
+app_logo_url = "/assets/advanced_workspace/images/brand/mysys-icon.svg?v=3"
 website_context = {
-	"favicon": "/assets/advanced_workspace/images/brand/favicon.ico",
-	"splash_image": "/assets/advanced_workspace/images/brand/mysys-splash.svg",
+	"favicon": "/assets/advanced_workspace/images/brand/favicon.ico?v=3",
+	"splash_image": "/assets/advanced_workspace/images/brand/mysys-splash.svg?v=3",
 }
 
 # whether this user gets the workspace design, decided on the server

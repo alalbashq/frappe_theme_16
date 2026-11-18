@@ -20,10 +20,10 @@ function setMeta(name, content) {
 }
 
 export function applyBrand() {
-	setLink("icon", `${BRAND}/favicon.ico`, { type: "image/x-icon", sizes: "16x16 32x32 48x48" });
-	setLink("shortcut icon", `${BRAND}/favicon.ico`, { type: "image/x-icon" });
-	setLink("apple-touch-icon", `${BRAND}/apple-touch-icon.png`, { sizes: "180x180" });
-	setLink("manifest", `${BRAND}/manifest.json`);
+	setLink("icon", `${BRAND}/favicon.ico?v=3`, { type: "image/x-icon", sizes: "16x16 32x32 48x48" });
+	setLink("shortcut icon", `${BRAND}/favicon.ico?v=3`, { type: "image/x-icon" });
+	setLink("apple-touch-icon", `${BRAND}/apple-touch-icon.png?v=3`, { sizes: "180x180" });
+	setLink("manifest", `${BRAND}/manifest.json?v=3`);
 	setMeta("theme-color", TEAL);
 	setMeta("msapplication-navbutton-color", TEAL);
 }

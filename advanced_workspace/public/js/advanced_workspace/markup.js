@@ -27,7 +27,7 @@ export const HTML = `
       <div class="aw-side-head"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><span data-t="Main Menu"></span></div>
       <nav data-nav data-t-label="Modules"></nav>
     </aside>
-    <main class="aw-main" data-main><div class="aw-loading" role="status"><span class="aw-loading-mark"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#005751"/><g transform="translate(-6 -32)"><path d="M98 398 L208 288 L268 348 L364 252" fill="none" stroke="#fff" stroke-width="74" stroke-linejoin="miter" stroke-miterlimit="10"/><path d="M350.6 392.6 L446.6 296.6" fill="none" stroke="#5fc4b5" stroke-width="74"/><path fill="#5fc4b5" d="M402 138L464 200L402 262L340 200Z"/></g></svg></span><span data-t="Loading"></span></div></main>
+    <main class="aw-main" data-main><div class="aw-loading" role="status"><span class="aw-loading-mark"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#005751"/><g class="m-all" transform="translate(-6 -32)"><path class="m-road" pathLength="100" d="M98 398 L208 288 L268 348 L364 252" fill="none" stroke="#fff" stroke-width="74" stroke-linejoin="miter" stroke-miterlimit="10"/><path class="m-team" pathLength="100" d="M350.6 392.6 L446.6 296.6" fill="none" stroke="#5fc4b5" stroke-width="74"/><path class="m-gem" fill="#5fc4b5" d="M402 138L464 200L402 262L340 200Z"/></g></svg></span><span data-t="Loading"></span></div></main>
   </div>
 </div>
 `;
@@ -155,10 +155,29 @@ export const CSS = `
 .aw-loading, .aw-empty { padding: 60px 20px; text-align: center; color: var(--aw-muted, #71808a); }
 /* while the home loads: the MYSYS icon breathing above the word */
 .aw-loading { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-top: 18vh; font-size: 13px; }
-.aw .aw-loading-mark { display: grid; place-items: center; animation: aw-breathe 1.6s ease-in-out infinite; }
+.aw .aw-loading-mark { display: grid; place-items: center; }
 .aw .aw-loading-mark svg { width: 64px; height: 64px; stroke: none; border-radius: 14px; box-shadow: 0 10px 28px rgba(0, 87, 81, .22); }
-@keyframes aw-breathe { 0%, 100% { transform: scale(.93); opacity: .75; } 50% { transform: scale(1); opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .aw .aw-loading-mark { animation: none; } }
+/* the mark draws itself: the road, the team beside it, the gem */
+.aw .m-road,.aw .m-team{stroke-dasharray:100;stroke-dashoffset:100;animation:m-draw 2.6s cubic-bezier(.6,0,.2,1) infinite}
+.aw .m-team{animation-name:m-team}
+.aw .m-gem{transform-box:fill-box;transform-origin:center;transform:scale(0);animation:m-gem 2.6s infinite}
+.aw .m-all{animation:m-fade 2.6s infinite}
+@keyframes m-draw{0%{stroke-dashoffset:100}
+35%,100%{stroke-dashoffset:0}
+}
+@keyframes m-team{0%,25%{stroke-dashoffset:100}
+55%,100%{stroke-dashoffset:0}
+}
+@keyframes m-gem{0%,50%{transform:scale(0)}
+62%{transform:scale(1.15)}
+70%,100%{transform:scale(1)}
+}
+@keyframes m-fade{0%,86%{opacity:1}
+100%{opacity:0}
+}
+@media (prefers-reduced-motion:reduce){.aw .m-road,.aw .m-team,.aw .m-gem,.aw .m-all{animation:none;stroke-dashoffset:0;transform:none;opacity:1}
+}
+
 .aw h2 { margin: 0; font-size: 14px; font-weight: 700; color: var(--aw-ink, #14201f); }
 .aw-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 30px; margin-bottom: 10px; }
 .aw-bar-tools { display: flex; align-items: center; gap: 8px; }
