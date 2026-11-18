@@ -2,7 +2,7 @@
 export const HTML = `
 <div class="aw">
   <header class="aw-top">
-    <button class="aw-logo" data-go-home data-t-title="Home"><svg viewBox="100 150 976 866" aria-hidden="true"><path fill="#005751" d="M120 816L415 484C435 465 458 452 488 444C516 438 542 450 563 460C580 470 596 490 676 575L1056 176V316L678 717L512 540C504 536 496 536 486 544L247 816Z"/><path fill="#005751" d="M202 995H330L499 800L672 994L960 675V994H1056V431L675 843L499 654Z"/><path fill="#5fc4b5" d="M688 361L756 431L687 500L618 430Z"/></svg></button>
+    <button class="aw-logo" data-go-home data-t-title="Home"><svg viewBox="60 100 414 298" aria-hidden="true"><g transform="translate(-6 -32)"><path d="M98 398 L208 288 L268 348 L364 252" fill="none" stroke="#005751" stroke-width="74" stroke-linejoin="miter" stroke-miterlimit="10"/><path d="M350.6 392.6 L446.6 296.6" fill="none" stroke="#12a08c" stroke-width="74"/><path fill="#12a08c" d="M402 138L464 200L402 262L340 200Z"/></g></svg></button>
     <button class="aw-menu-btn" data-toggle data-t-title="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <button class="aw-search" data-search>
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -27,7 +27,7 @@ export const HTML = `
       <div class="aw-side-head"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><span data-t="Main Menu"></span></div>
       <nav data-nav data-t-label="Modules"></nav>
     </aside>
-    <main class="aw-main" data-main><div class="aw-loading" role="status"><span class="aw-loading-mark"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#005751"/><g transform="translate(95 114.1) scale(0.33) translate(-100 -150)"><path fill="#fff" d="M120 816L415 484C435 465 458 452 488 444C516 438 542 450 563 460C580 470 596 490 676 575L1056 176V316L678 717L512 540C504 536 496 536 486 544L247 816Z"/><path fill="#fff" d="M202 995H330L499 800L672 994L960 675V994H1056V431L675 843L499 654Z"/><path fill="#5fc4b5" d="M688 361L756 431L687 500L618 430Z"/></g></svg></span><span data-t="Loading"></span></div></main>
+    <main class="aw-main" data-main><div class="aw-loading" role="status"><span class="aw-loading-mark"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#005751"/><g transform="translate(-6 -32)"><path d="M98 398 L208 288 L268 348 L364 252" fill="none" stroke="#fff" stroke-width="74" stroke-linejoin="miter" stroke-miterlimit="10"/><path d="M350.6 392.6 L446.6 296.6" fill="none" stroke="#5fc4b5" stroke-width="74"/><path fill="#5fc4b5" d="M402 138L464 200L402 262L340 200Z"/></g></svg></span><span data-t="Loading"></span></div></main>
   </div>
 </div>
 `;
@@ -41,7 +41,7 @@ export const CSS = `
 .aw-top { display: flex; align-items: center; height: 42px; flex: none; gap: 14px; padding: 0 14px; background: var(--aw-chrome, #005751); color: #fff; }
 /* the MYSYS mark in the workspace's teal, on a white tile (.aw button would clear the tile) */
 .aw .aw-logo { width: 30px; height: 30px; display: grid; place-items: center; flex: none; background: #fff; border-radius: 7px; }
-.aw .aw-logo svg { width: 22px; height: 20px; stroke: none; }
+.aw .aw-logo svg { width: 24px; height: 18px; stroke: none; }
 .aw-menu-btn { display: grid; place-items: center; width: 30px; height: 30px; flex: none; }
 .aw-search { position: relative; display: flex; align-items: center; gap: 10px; flex: 0 1 300px; min-width: 0; height: 28px; padding: 0 10px; border-radius: 8px; background: #003f3a; border: 1px solid #1d7069; }
 .aw-search svg { width: 16px; height: 16px; }
