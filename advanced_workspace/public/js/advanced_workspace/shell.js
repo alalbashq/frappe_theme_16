@@ -170,12 +170,15 @@ function pageStyle() {
     --aw-f-brand-ink: #5fc4b5;
     --aw-f-tint: #1a2d2a;
   }
-  /* tables: the head in the brand's light tint with teal titles, divided like the rows under it, so head
-     and rows read as one table (a solid teal head with white titles stood apart from white rows) */
-  html.aw-on .form-layout .form-grid { border-color: var(--aw-f-line, rgba(0, 87, 81, .38)); }
-  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) { background-color: var(--aw-f-tint); color: var(--aw-f-brand-ink); }
+  html.aw-on .form-layout .form-grid { border-color: var(--aw-f-brand); }
+  /* the column titles only: the filter row Frappe adds under them keeps its own colours */
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) { background-color: var(--aw-f-brand); color: #fff; }
   html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.data-row, .col) { background-color: transparent; }
-  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.static-area, .row-index, .grid-static-col, .col) { color: var(--aw-f-brand-ink); font-weight: 600; }
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.static-area, .row-index, .grid-static-col, .col) { color: #fff; }
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) input[type="checkbox"] { border-color: rgba(255, 255, 255, 0.7); }
+  /* table rows as compact as their head: Frappe fixes each cell at 43px with 10px padding (head 29px) */
+  html.aw-on .form-layout .form-grid .grid-body .grid-row > .data-row > .col { height: 32px; padding-top: 6px; padding-bottom: 6px; }
+  html.aw-on .form-layout .form-grid .grid-body .grid-row .editable-row :is(.form-control, .like-disabled-input) { height: 32px; }
   /* a row's cells are the table's own: no field line inside them */
   html.aw-on .form-layout .form-grid :is(.form-control, .like-disabled-input) { border-color: transparent; }
   /* tabs look like what they are, buttons: each in a light line, tinted under the pointer, the open one
