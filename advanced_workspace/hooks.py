@@ -10,6 +10,14 @@ app_include_js = ["advanced_workspace.bundle.js"]
 # For every Desk user, with or without the workspace (a child table's Link dropdown in RTL)
 app_include_css = ["advanced_workspace.bundle.css"]
 
+# The MYSYS icon in the workspace's colours (public/images/brand): the browser tab, Frappe's boot splash
+# and the app's logo. A favicon or splash image set in Website Settings still comes first.
+app_logo_url = "/assets/advanced_workspace/images/brand/mysys-icon.svg"
+website_context = {
+	"favicon": "/assets/advanced_workspace/images/brand/favicon.ico",
+	"splash_image": "/assets/advanced_workspace/images/brand/mysys-splash.svg",
+}
+
 # whether this user gets the workspace design, decided on the server
 boot_session = "advanced_workspace.boot.boot_session"
 

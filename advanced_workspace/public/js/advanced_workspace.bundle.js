@@ -1,8 +1,11 @@
 // Loaded on every Desk page. The server decides at boot who gets the workspace design:
 // the workspace role and a module to see. Everyone else keeps Frappe's own Desk.
 import { mount } from "./advanced_workspace/shell";
+import { applyBrand } from "./advanced_workspace/brand";
 
 const on = () => Boolean(frappe.boot && frappe.boot.advanced_workspace);
+
+applyBrand();
 
 // Before the router starts, so Frappe's own desktop never flashes on /desk.
 (function () {

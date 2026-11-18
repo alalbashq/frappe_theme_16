@@ -2,7 +2,7 @@
 export const HTML = `
 <div class="aw">
   <header class="aw-top">
-    <button class="aw-logo" data-go-home data-t-title="Home"><svg viewBox="100 150 976 866" aria-hidden="true"><path fill="#002b5c" d="M120 816L415 484C435 465 458 452 488 444C516 438 542 450 563 460C580 470 596 490 676 575L1056 176V316L678 717L512 540C504 536 496 536 486 544L247 816Z"/><path fill="#002b5c" d="M202 995H330L499 800L672 994L960 675V994H1056V431L675 843L499 654Z"/><path fill="#00c6da" d="M688 361L756 431L687 500L618 430Z"/></svg></button>
+    <button class="aw-logo" data-go-home data-t-title="Home"><svg viewBox="100 150 976 866" aria-hidden="true"><path fill="#005751" d="M120 816L415 484C435 465 458 452 488 444C516 438 542 450 563 460C580 470 596 490 676 575L1056 176V316L678 717L512 540C504 536 496 536 486 544L247 816Z"/><path fill="#005751" d="M202 995H330L499 800L672 994L960 675V994H1056V431L675 843L499 654Z"/><path fill="#5fc4b5" d="M688 361L756 431L687 500L618 430Z"/></svg></button>
     <button class="aw-menu-btn" data-toggle data-t-title="Menu"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
     <button class="aw-search" data-search>
       <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
@@ -27,7 +27,7 @@ export const HTML = `
       <div class="aw-side-head"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><span data-t="Main Menu"></span></div>
       <nav data-nav data-t-label="Modules"></nav>
     </aside>
-    <main class="aw-main" data-main><div class="aw-loading" data-t="Loading"></div></main>
+    <main class="aw-main" data-main><div class="aw-loading" role="status"><span class="aw-loading-mark"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#005751"/><g transform="translate(95 114.1) scale(0.33) translate(-100 -150)"><path fill="#fff" d="M120 816L415 484C435 465 458 452 488 444C516 438 542 450 563 460C580 470 596 490 676 575L1056 176V316L678 717L512 540C504 536 496 536 486 544L247 816Z"/><path fill="#fff" d="M202 995H330L499 800L672 994L960 675V994H1056V431L675 843L499 654Z"/><path fill="#5fc4b5" d="M688 361L756 431L687 500L618 430Z"/></g></svg></span><span data-t="Loading"></span></div></main>
   </div>
 </div>
 `;
@@ -39,7 +39,7 @@ export const CSS = `
 .aw button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 .aw button:focus-visible, .aw a:focus-visible, .aw input:focus-visible, .aw select:focus-visible { outline: 2px solid #47BC76; outline-offset: 2px; }
 .aw-top { display: flex; align-items: center; height: 42px; flex: none; gap: 14px; padding: 0 14px; background: var(--aw-chrome, #005751); color: #fff; }
-/* the MYSYS mark in its own colours, on a white tile (.aw button would clear the tile) */
+/* the MYSYS mark in the workspace's teal, on a white tile (.aw button would clear the tile) */
 .aw .aw-logo { width: 30px; height: 30px; display: grid; place-items: center; flex: none; background: #fff; border-radius: 7px; }
 .aw .aw-logo svg { width: 22px; height: 20px; stroke: none; }
 .aw-menu-btn { display: grid; place-items: center; width: 30px; height: 30px; flex: none; }
@@ -153,6 +153,12 @@ export const CSS = `
 .aw.is-framed .aw-body { justify-content: flex-start; }
 .aw-main { flex: 1; min-width: 0; overflow-y: auto; scrollbar-gutter: stable; padding: 14px 18px 28px; background: var(--aw-page, #f4f6f5); }
 .aw-loading, .aw-empty { padding: 60px 20px; text-align: center; color: var(--aw-muted, #71808a); }
+/* while the home loads: the MYSYS icon breathing above the word */
+.aw-loading { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-top: 18vh; font-size: 13px; }
+.aw .aw-loading-mark { display: grid; place-items: center; animation: aw-breathe 1.6s ease-in-out infinite; }
+.aw .aw-loading-mark svg { width: 64px; height: 64px; stroke: none; border-radius: 14px; box-shadow: 0 10px 28px rgba(0, 87, 81, .22); }
+@keyframes aw-breathe { 0%, 100% { transform: scale(.93); opacity: .75; } 50% { transform: scale(1); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .aw .aw-loading-mark { animation: none; } }
 .aw h2 { margin: 0; font-size: 14px; font-weight: 700; color: var(--aw-ink, #14201f); }
 .aw-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 30px; margin-bottom: 10px; }
 .aw-bar-tools { display: flex; align-items: center; gap: 8px; }
