@@ -187,6 +187,11 @@ function pageStyle() {
   }
   html.aw-on .form-layout :is(.form-control, .input-with-feedback):focus { border-color: var(--aw-f-brand); }
   html.aw-on[data-theme="dark"] { --aw-f-line: rgba(95, 196, 181, .4); }
+  /* tighter forms: Frappe pads each tab 15px a side with a 5px margin (45px between tab names), each
+     column 15px a side (30px between fields) and leaves 16px under each field */
+  html.aw-on .form-tabs-list .form-tabs .nav-item .nav-link { padding-inline: 10px; margin-inline: 2px; }
+  html.aw-on .form-layout .form-column { padding-inline: 8px; }
+  html.aw-on .form-layout .form-group { margin-bottom: 10px; }
   /* the menu editor's icon grid, in Frappe's dialog: Frappe's own surfaces and lines, the chosen
      icon in the workspace's green */
   .aw-icon-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 6px; max-height: 214px; overflow-y: auto; padding: 2px; }
