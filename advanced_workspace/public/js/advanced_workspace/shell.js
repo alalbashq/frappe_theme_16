@@ -170,7 +170,9 @@ function pageStyle() {
     --aw-f-brand-ink: #5fc4b5;
     --aw-f-tint: #1a2d2a;
   }
-  html.aw-on .form-layout .form-grid { border-color: var(--aw-f-brand); }
+  /* Frappe 16 draws the table's frame on .form-grid-container (grey): in the head's teal, so no
+     grey rim stands round the head's corners */
+  html.aw-on .form-layout :is(.form-grid-container, .form-grid) { border-color: var(--aw-f-brand); }
   /* the column titles only: the filter row Frappe adds under them keeps its own colours */
   html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) { background-color: var(--aw-f-brand); color: #fff; }
   html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.data-row, .col) { background-color: transparent; }
