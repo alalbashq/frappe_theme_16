@@ -176,9 +176,14 @@ function pageStyle() {
   html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.data-row, .col) { background-color: transparent; }
   html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(.static-area, .row-index, .grid-static-col, .col) { color: #fff; }
   html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) input[type="checkbox"] { border-color: rgba(255, 255, 255, 0.7); }
+  /* the head's icons (the columns' gear) in white on the teal */
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) { --icon-stroke: #fff; --icon-fill: transparent; }
+  html.aw-on .form-layout .form-grid .grid-heading-row > .grid-row:not(:has(.filter-row)) :is(svg, .icon) { color: #fff; stroke: #fff; }
   /* table rows as compact as their head: Frappe fixes each cell at 43px with 10px padding (head 29px) */
   html.aw-on .form-layout .form-grid .grid-body .grid-row > .data-row > .col { height: 32px; padding-top: 6px; padding-bottom: 6px; }
   html.aw-on .form-layout .form-grid .grid-body .grid-row .editable-row :is(.form-control, .like-disabled-input) { height: 32px; }
+  /* Frappe keeps a table 75px tall (its head and one 43px row): with 32px rows that left an empty grey band */
+  html.aw-on .form-layout .form-grid { min-height: 0; }
   /* a row's cells are the table's own: no field line inside them */
   html.aw-on .form-layout .form-grid :is(.form-control, .like-disabled-input) { border-color: transparent; }
   /* tabs look like what they are, buttons: each in a light line, tinted under the pointer, the open one
@@ -205,7 +210,7 @@ function pageStyle() {
   html.aw-on .page-container .form-tabs-list .form-tabs .nav-item .nav-link { padding-inline: 10px; margin-inline: 3px; }
   html.aw-on .page-container .form-layout .form-column { padding-inline: 5px; }
   html.aw-on .page-container .form-layout .form-group { margin-bottom: 6px; }
-  /* !important: another app sets .form-section { padding-bottom: 15px !important } */
+  /* !important: older versions of the mysys app set .form-section { padding-bottom: 15px !important } */
   html.aw-on .page-container .form-layout .form-section { padding-bottom: 8px !important; }
   /* a folded section is its title alone: nothing under it */
   html.aw-on .page-container .form-layout .form-section:has(> .section-head.collapsed) { padding-bottom: 0 !important; }
